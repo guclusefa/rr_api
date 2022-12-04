@@ -15,7 +15,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[Route('/api/resources')]
@@ -25,7 +24,6 @@ class ResourceController extends AbstractController
         private readonly ResourceRepository $resourceRepository,
         private readonly SerializerInterface  $serializer,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TagAwareCacheInterface $cache,
     )
     {
     }
@@ -36,20 +34,12 @@ class ResourceController extends AbstractController
         // pagination
         $page = $request->query->getInt('page', 1);
         $limit = $request->query->getInt('limit', 10);
-        // get all resources and cache them
-        $cacheKey = 'resources_' . $page . '_' . $limit;
-        $resources = $this->cache->get($cacheKey, function (ItemInterface $item) use ($page, $limit) {
-            echo 'cache miss';
-            $item->tag('resources');
-            $resources = $this->resourceRepository->findAllWithPagination($page, $limit);
-            return $this->serializer->serialize(
-                $resources,
-                'json',
-                [AbstractNormalizer::GROUPS => 'resource:read']
-            );
-        });
+        // get all resources
+        $resources = $this->resourceRepository->findAllWithPagination($page, $limit);
         return new JsonResponse(
-            $resources,
+            $this->serializer->serialize($resources, 'json', [
+                AbstractNormalizer::GROUPS => ['resource:read'],
+            ]),
             Response::HTTP_OK,
             [],
             true
@@ -107,12 +97,8 @@ class ResourceController extends AbstractController
     #[Route('/{id}', name: 'api_resources_delete', methods: ['DELETE'])]
     public function delete(Resource $resource): JsonResponse
     {
-        // invalide the cache
-        $this->cache->invalidateTags(['resources']);
-        // delete the resource
         $this->entityManager->remove($resource);
         $this->entityManager->flush();
-        // return a response
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }
