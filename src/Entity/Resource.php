@@ -5,9 +5,38 @@ namespace App\Entity;
 use App\Repository\ResourceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "api_resources_show",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"})
+ * )
+ *
+ * @Hateoas\Relation(
+ *     "delete",
+ *     href = @Hateoas\Route(
+ *          "api_resources_delete",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"}, excludeIf = "expr(not is_granted('ROLE_ADMIN'))")
+ * )
+ *
+ * @Hateoas\Relation(
+ *     "update",
+ *     href = @Hateoas\Route(
+ *          "api_resources_update",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"}, excludeIf = "expr(not is_granted('ROLE_ADMIN'))")
+ * )
+ */
 #[ORM\Entity(repositoryClass: ResourceRepository::class)]
 class Resource
 {
