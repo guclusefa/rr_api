@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Resource;
 use App\Repository\ResourceRepository;
 use App\Repository\UserRepository;
+use App\Service\VersioningService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -27,7 +28,8 @@ class ResourceController extends AbstractController
         private readonly UserRepository $userRepository,
         private readonly SerializerInterface  $serializer,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
+        private readonly VersioningService $versioningService
     )
     {
     }
@@ -38,8 +40,10 @@ class ResourceController extends AbstractController
         // pagination
         $page = $request->query->getInt('page', 1);
         $limit = $request->query->getInt('limit', 10);
-        // get all resources
+        // context
         $context = SerializationContext::create()->setGroups(['resource:read']);
+        $context->setVersion($this->versioningService->getVersion());
+        // get resources
         $resources = $this->resourceRepository->findAllWithPagination($page, $limit);
         return new JsonResponse(
             $this->serializer->serialize($resources, 'json', $context),
@@ -52,7 +56,10 @@ class ResourceController extends AbstractController
     #[Route('/{id}', name: 'api_resources_show', methods: ['GET'])]
     public function show(Resource $resource): JsonResponse
     {
+        // context
         $context = SerializationContext::create()->setGroups(['resource:read']);
+        $context->setVersion($this->versioningService->getVersion());
+        // get resource
         return new JsonResponse(
             $this->serializer->serialize($resource, 'json', $context),
             Response::HTTP_OK,
