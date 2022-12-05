@@ -25,7 +25,6 @@ class ResourceController extends AbstractController
 {
     public function __construct(
         private readonly ResourceRepository $resourceRepository,
-        private readonly UserRepository $userRepository,
         private readonly SerializerInterface  $serializer,
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
@@ -41,7 +40,7 @@ class ResourceController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $limit = $request->query->getInt('limit', 10);
         // context
-        $context = SerializationContext::create()->setGroups(['resource:read']);
+        $context = SerializationContext::create()->setGroups(['resource:read', 'user:read']);
         $context->setVersion($this->versioningService->getVersion());
         // get resources
         $resources = $this->resourceRepository->findAllWithPagination($page, $limit);
@@ -57,7 +56,7 @@ class ResourceController extends AbstractController
     public function show(Resource $resource): JsonResponse
     {
         // context
-        $context = SerializationContext::create()->setGroups(['resource:read']);
+        $context = SerializationContext::create()->setGroups(['resource:read', 'user:read']);
         $context->setVersion($this->versioningService->getVersion());
         // get resource
         return new JsonResponse(
@@ -101,10 +100,6 @@ class ResourceController extends AbstractController
         // check for errors
         $errors = $this->validator->validate($resource);
         if (count($errors) > 0) throw new HttpException(Response::HTTP_BAD_REQUEST, (string) $errors);
-        // author
-        $content = $request->toArray();
-        $idAuthor = $content['idAuthor'] ?? -1;
-        $resource->setAuthor($this->userRepository->find($idAuthor));
         // save the resource
         $this->entityManager->persist($resource);
         $this->entityManager->flush();
