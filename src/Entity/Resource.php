@@ -86,13 +86,17 @@ class Resource
     #[ORM\ManyToOne(inversedBy: 'resources')]
     private ?Relation $relation = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'sharedResources')]
     private Collection $sharedTo;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'favourites')]
+    private Collection $favourites;
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->sharedTo = new ArrayCollection();
+        $this->favourites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -240,6 +244,33 @@ class Resource
     public function removeSharedTo(User $sharedTo): self
     {
         $this->sharedTo->removeElement($sharedTo);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getFavourites(): Collection
+    {
+        return $this->favourites;
+    }
+
+    public function addFavourite(User $favourite): self
+    {
+        if (!$this->favourites->contains($favourite)) {
+            $this->favourites->add($favourite);
+            $favourite->addFavourite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavourite(User $favourite): self
+    {
+        if ($this->favourites->removeElement($favourite)) {
+            $favourite->removeFavourite($this);
+        }
 
         return $this;
     }

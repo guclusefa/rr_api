@@ -88,10 +88,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class)]
     private Collection $comments;
 
+    #[ORM\ManyToMany(targetEntity: Resource::class, mappedBy: 'sharedTo')]
+    private Collection $sharedResources;
+
+    #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'favourites')]
+    private Collection $favourites;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->sharedResources = new ArrayCollection();
+        $this->favourites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -338,6 +346,57 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $comment->setAuthor(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Resource>
+     */
+    public function getSharedResources(): Collection
+    {
+        return $this->sharedResources;
+    }
+
+    public function addSharedResource(Resource $sharedResource): self
+    {
+        if (!$this->sharedResources->contains($sharedResource)) {
+            $this->sharedResources->add($sharedResource);
+            $sharedResource->addSharedTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSharedResource(Resource $sharedResource): self
+    {
+        if ($this->sharedResources->removeElement($sharedResource)) {
+            $sharedResource->removeSharedTo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Resource>
+     */
+    public function getFavourites(): Collection
+    {
+        return $this->favourites;
+    }
+
+    public function addFavourite(Resource $favourite): self
+    {
+        if (!$this->favourites->contains($favourite)) {
+            $this->favourites->add($favourite);
+        }
+
+        return $this;
+    }
+
+    public function removeFavourite(Resource $favourite): self
+    {
+        $this->favourites->removeElement($favourite);
 
         return $this;
     }
