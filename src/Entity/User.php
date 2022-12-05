@@ -92,7 +92,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $sharedResources;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'favourites')]
+    #[ORM\JoinTable(name: 'user_favourite_resource')]
     private Collection $favourites;
+
+    #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'saves')]
+    #[ORM\JoinTable(name: 'user_saved_resource')]
+    private Collection $saves;
+
+    #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'exploits')]
+    #[ORM\JoinTable(name: 'user_exploited_resource')]
+    private Collection $exploits;
+
+    #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'shares')]
+    #[ORM\JoinTable(name: 'user_shared_resource')]
+    private Collection $shared;
+
+    #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'consults')]
+    #[ORM\JoinTable(name: 'user_consulted_resource')]
+    private Collection $consults;
 
     public function __construct()
     {
@@ -100,6 +117,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->comments = new ArrayCollection();
         $this->sharedResources = new ArrayCollection();
         $this->favourites = new ArrayCollection();
+        $this->saves = new ArrayCollection();
+        $this->exploits = new ArrayCollection();
+        $this->shared = new ArrayCollection();
+        $this->consults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -397,6 +418,102 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeFavourite(Resource $favourite): self
     {
         $this->favourites->removeElement($favourite);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Resource>
+     */
+    public function getSaves(): Collection
+    {
+        return $this->saves;
+    }
+
+    public function addSave(Resource $save): self
+    {
+        if (!$this->saves->contains($save)) {
+            $this->saves->add($save);
+        }
+
+        return $this;
+    }
+
+    public function removeSave(Resource $save): self
+    {
+        $this->saves->removeElement($save);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Resource>
+     */
+    public function getExploits(): Collection
+    {
+        return $this->exploits;
+    }
+
+    public function addExploit(Resource $exploit): self
+    {
+        if (!$this->exploits->contains($exploit)) {
+            $this->exploits->add($exploit);
+        }
+
+        return $this;
+    }
+
+    public function removeExploit(Resource $exploit): self
+    {
+        $this->exploits->removeElement($exploit);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Resource>
+     */
+    public function getShared(): Collection
+    {
+        return $this->shared;
+    }
+
+    public function addShared(Resource $shared): self
+    {
+        if (!$this->shared->contains($shared)) {
+            $this->shared->add($shared);
+        }
+
+        return $this;
+    }
+
+    public function removeShared(Resource $shared): self
+    {
+        $this->shared->removeElement($shared);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Resource>
+     */
+    public function getConsults(): Collection
+    {
+        return $this->consults;
+    }
+
+    public function addConsult(Resource $consult): self
+    {
+        if (!$this->consults->contains($consult)) {
+            $this->consults->add($consult);
+        }
+
+        return $this;
+    }
+
+    public function removeConsult(Resource $consult): self
+    {
+        $this->consults->removeElement($consult);
 
         return $this;
     }

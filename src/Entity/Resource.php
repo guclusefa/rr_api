@@ -87,16 +87,33 @@ class Resource
     private ?Relation $relation = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'sharedResources')]
+    #[ORM\JoinTable(name: 'resource_shared_user')]
     private Collection $sharedTo;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'favourites')]
     private Collection $favourites;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'saves')]
+    private Collection $saves;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'exploits')]
+    private Collection $exploits;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shared')]
+    private Collection $shares;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'consults')]
+    private Collection $consults;
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->sharedTo = new ArrayCollection();
         $this->favourites = new ArrayCollection();
+        $this->saves = new ArrayCollection();
+        $this->exploits = new ArrayCollection();
+        $this->shares = new ArrayCollection();
+        $this->consults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -270,6 +287,114 @@ class Resource
     {
         if ($this->favourites->removeElement($favourite)) {
             $favourite->removeFavourite($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getSaves(): Collection
+    {
+        return $this->saves;
+    }
+
+    public function addSave(User $save): self
+    {
+        if (!$this->saves->contains($save)) {
+            $this->saves->add($save);
+            $save->addSave($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSave(User $save): self
+    {
+        if ($this->saves->removeElement($save)) {
+            $save->removeSave($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getExploits(): Collection
+    {
+        return $this->exploits;
+    }
+
+    public function addExploit(User $exploit): self
+    {
+        if (!$this->exploits->contains($exploit)) {
+            $this->exploits->add($exploit);
+            $exploit->addExploit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExploit(User $exploit): self
+    {
+        if ($this->exploits->removeElement($exploit)) {
+            $exploit->removeExploit($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getShares(): Collection
+    {
+        return $this->shares;
+    }
+
+    public function addShare(User $share): self
+    {
+        if (!$this->shares->contains($share)) {
+            $this->shares->add($share);
+            $share->addShared($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShare(User $share): self
+    {
+        if ($this->shares->removeElement($share)) {
+            $share->removeShared($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getConsults(): Collection
+    {
+        return $this->consults;
+    }
+
+    public function addConsult(User $consult): self
+    {
+        if (!$this->consults->contains($consult)) {
+            $this->consults->add($consult);
+            $consult->addConsult($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsult(User $consult): self
+    {
+        if ($this->consults->removeElement($consult)) {
+            $consult->removeConsult($this);
         }
 
         return $this;
