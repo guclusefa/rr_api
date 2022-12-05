@@ -86,9 +86,13 @@ class Resource
     #[ORM\ManyToOne(inversedBy: 'resources')]
     private ?Relation $relation = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    private Collection $sharedTo;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->sharedTo = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -212,6 +216,30 @@ class Resource
     public function setRelation(?Relation $relation): self
     {
         $this->relation = $relation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getSharedTo(): Collection
+    {
+        return $this->sharedTo;
+    }
+
+    public function addSharedTo(User $sharedTo): self
+    {
+        if (!$this->sharedTo->contains($sharedTo)) {
+            $this->sharedTo->add($sharedTo);
+        }
+
+        return $this;
+    }
+
+    public function removeSharedTo(User $sharedTo): self
+    {
+        $this->sharedTo->removeElement($sharedTo);
 
         return $this;
     }
