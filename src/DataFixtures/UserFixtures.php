@@ -53,6 +53,8 @@ class UserFixtures extends Fixture implements OrderedFixtureInterface
             // state
             $states = $this->stateRepository->findAll();
             $user->setState($states[array_rand($states)]);
+            // random photo
+            $user->setPhoto("https://picsum.photos/200/300?random=${i}");
             $manager->persist($user);
         }
 

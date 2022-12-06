@@ -6,11 +6,13 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
-trait TimeStampTrait {
+trait UserTimeStampTrait {
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['user:read'])]
     private ?\DateTimeInterface $updatedAt = null;
 
 

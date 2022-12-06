@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use App\Trait\TimeStampTrait;
+use App\Trait\UserTimeStampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -12,6 +12,7 @@ use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -19,86 +20,121 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['username'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    use TimeStampTrait;
+    use UserTimeStampTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['resource:read'])]
+    #[Groups(['user:read', 'resource:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
+    #[Groups(['user:confidential', 'user:write'])]
     private ?string $email = null;
 
-    #[ORM\Column]
-    #[Groups(['user:read'])]
-    private ?string $password = null;
+    #[Assert\NotBlank]
+    #[Assert\EqualTo(propertyPath: 'email')]
+    #[Groups(['user:write'])]
+    private ?string $confirmEmail = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 6, max: 4096)]
+    #[Groups(['user:write'])]
+    private ?string $password = null;
+
+    #[Assert\NotBlank]
+    #[Assert\EqualTo(propertyPath: 'password')]
+    #[Groups(['user:write'])]
+    private ?string $confirmPassword = null;
+
+    #[ORM\Column]
+    #[Groups(['user:item'])]
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
-    #[Groups(['resource:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
+    #[Groups(['user:read', 'resource:read', 'user:write'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:confidential', 'user:write'])]
     private ?string $mobile = null;
 
     #[ORM\Column(length: 1, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $gender = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $bio = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Groups(['user:item', 'user:write'])]
     private ?\DateTimeInterface $birthDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $photo = null;
 
     #[ORM\Column]
-    private ?bool $isVerified = null;
+    #[Groups(['user:item'])]
+    private ?bool $isVerified = false;
 
     #[ORM\Column]
-    private ?bool $isBanned = null;
+    #[Groups(['user:item'])]
+    private ?bool $isBanned = false;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
+    #[Groups(['user:read', 'user:write'])]
     private ?State $state = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Resource::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
     private Collection $resources;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class)]
+    #[Groups(['user:item'])]
     private Collection $comments;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, mappedBy: 'sharedTo')]
+    #[Groups(['user:item'])]
     private Collection $sharedResources;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'favourites')]
     #[ORM\JoinTable(name: 'user_favourite_resource')]
+    #[Groups(['user:item'])]
     private Collection $favourites;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'saves')]
     #[ORM\JoinTable(name: 'user_saved_resource')]
+    #[Groups(['user:item'])]
     private Collection $saves;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'exploits')]
     #[ORM\JoinTable(name: 'user_exploited_resource')]
+    #[Groups(['user:item'])]
     private Collection $exploits;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'shares')]
     #[ORM\JoinTable(name: 'user_shared_resource')]
+    #[Groups(['user:item'])]
     private Collection $shared;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, inversedBy: 'consults')]
     #[ORM\JoinTable(name: 'user_consulted_resource')]
+    #[Groups(['user:item'])]
     private Collection $consults;
 
     public function __construct()
@@ -111,9 +147,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->exploits = new ArrayCollection();
         $this->shared = new ArrayCollection();
         $this->consults = new ArrayCollection();
-
-        $this->isVerified = false;
-        $this->isBanned = false;
     }
 
     public function getId(): ?int

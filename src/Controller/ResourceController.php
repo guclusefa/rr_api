@@ -40,7 +40,7 @@ class ResourceController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $limit = $request->query->getInt('limit', 10);
         // context
-        $context = SerializationContext::create()->setGroups(['resource:read', 'timestamp:read']);
+        $context = SerializationContext::create()->setGroups(['resource:read']);
         $context->setVersion($this->versioningService->getVersion());
         // get resources
         $resources = $this->resourceRepository->findAllWithPagination($page, $limit);
@@ -113,9 +113,12 @@ class ResourceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_resources_delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function delete(Resource $resource): JsonResponse
     {
+        // if not admin or not my resource
+        if (!$this->isGranted('ROLE_ADMIN') && $resource->getAuthor() !== $this->getUser()) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'You are not allowed to delete this resource');
+        }
         $this->entityManager->remove($resource);
         $this->entityManager->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);

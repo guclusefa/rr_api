@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ResourceRepository;
+use App\Trait\ResourceTimeStampTrait;
 use App\Trait\TimeStampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,40 +13,40 @@ use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hateoas\Configuration\Annotation as Hateoas;
 
-/**
- * @Hateoas\Relation(
- *     "self",
- *     href = @Hateoas\Route(
- *          "api_resources_show",
- *          parameters = { "id" = "expr(object.getId())" },
- *     ),
- *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"})
- * )
- *
- * @Hateoas\Relation(
- *     "delete",
- *     href = @Hateoas\Route(
- *          "api_resources_delete",
- *          parameters = { "id" = "expr(object.getId())" },
- *     ),
- *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"}, excludeIf = "expr(not is_granted('ROLE_ADMIN'))")
- * )
- *
- * @Hateoas\Relation(
- *     "update",
- *     href = @Hateoas\Route(
- *          "api_resources_update",
- *          parameters = { "id" = "expr(object.getId())" },
- *     ),
- *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"}, excludeIf = "expr(not is_granted('ROLE_ADMIN'))")
- * )
- *
- */
+///**
+// * @Hateoas\Relation(
+// *     "self",
+// *     href = @Hateoas\Route(
+// *          "api_resources_show",
+// *          parameters = { "id" = "expr(object.getId())" },
+// *     ),
+// *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"})
+// * )
+// *
+// * @Hateoas\Relation(
+// *     "delete",
+// *     href = @Hateoas\Route(
+// *          "api_resources_delete",
+// *          parameters = { "id" = "expr(object.getId())" },
+// *     ),
+// *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"}, excludeIf = "expr(not is_granted('ROLE_ADMIN'))")
+// * )
+// *
+// * @Hateoas\Relation(
+// *     "update",
+// *     href = @Hateoas\Route(
+// *          "api_resources_update",
+// *          parameters = { "id" = "expr(object.getId())" },
+// *     ),
+// *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"}, excludeIf = "expr(not is_granted('ROLE_ADMIN'))")
+// * )
+// *
+// */
 #[ORM\Entity(repositoryClass: ResourceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Resource
 {
-    use TimeStampTrait;
+    use ResourceTimeStampTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -71,15 +72,15 @@ class Resource
 
     #[ORM\Column]
     #[Groups(['resource:read'])]
-    private ?bool $isPublished = null;
+    private ?bool $isPublished = false;
 
     #[ORM\Column]
     #[Groups(['resource:read'])]
-    private ?bool $isVerified = null;
+    private ?bool $isVerified = false;
 
     #[ORM\Column]
     #[Groups(['resource:read'])]
-    private ?bool $isSuspended = null;
+    private ?bool $isSuspended = false;
 
     #[ORM\ManyToOne(inversedBy: 'resources')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -128,10 +129,6 @@ class Resource
         $this->exploits = new ArrayCollection();
         $this->shares = new ArrayCollection();
         $this->consults = new ArrayCollection();
-
-        $this->isPublished = false;
-        $this->isVerified = false;
-        $this->isSuspended = false;
     }
 
     public function getId(): ?int
