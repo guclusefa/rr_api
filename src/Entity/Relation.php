@@ -7,6 +7,7 @@ use App\Trait\TimeStampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RelationRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -17,9 +18,11 @@ class Relation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['resource:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['resource:read'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'relation', targetEntity: Resource::class)]

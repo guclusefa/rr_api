@@ -24,11 +24,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['resource:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user:read'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -36,47 +35,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['resource:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
     private ?string $mobile = null;
 
     #[ORM\Column(length: 1, nullable: true)]
-    #[Groups(['user:read'])]
     private ?string $gender = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['user:read'])]
     private ?string $bio = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Groups(['user:read'])]
     private ?\DateTimeInterface $birthDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['resource:read'])]
     private ?string $photo = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
     private ?bool $isVerified = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
     private ?bool $isBanned = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
@@ -121,6 +111,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->exploits = new ArrayCollection();
         $this->shared = new ArrayCollection();
         $this->consults = new ArrayCollection();
+
+        $this->isVerified = false;
+        $this->isBanned = false;
     }
 
     public function getId(): ?int

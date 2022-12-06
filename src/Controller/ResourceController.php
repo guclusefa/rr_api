@@ -40,7 +40,7 @@ class ResourceController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $limit = $request->query->getInt('limit', 10);
         // context
-        $context = SerializationContext::create()->setGroups(['resource:read', 'user:read']);
+        $context = SerializationContext::create()->setGroups(['resource:read', 'timestamp:read']);
         $context->setVersion($this->versioningService->getVersion());
         // get resources
         $resources = $this->resourceRepository->findAllWithPagination($page, $limit);

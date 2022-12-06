@@ -39,6 +39,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     ),
  *     exclusion = @Hateoas\Exclusion(groups = {"resource:read"}, excludeIf = "expr(not is_granted('ROLE_ADMIN'))")
  * )
+ *
  */
 #[ORM\Entity(repositoryClass: ResourceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -60,9 +61,17 @@ class Resource
     #[Groups(['resource:read'])]
     private ?string $content = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['resource:read'])]
+    private ?string $photo = null;
+
     #[ORM\Column(type: Types::SMALLINT)]
     #[Groups(['resource:read'])]
     private ?int $visibility = null;
+
+    #[ORM\Column]
+    #[Groups(['resource:read'])]
+    private ?bool $isPublished = null;
 
     #[ORM\Column]
     #[Groups(['resource:read'])]
@@ -72,37 +81,42 @@ class Resource
     #[Groups(['resource:read'])]
     private ?bool $isSuspended = null;
 
-    #[ORM\Column]
-    #[Groups(['resource:read'])]
-    private ?bool $isPublished = null;
-
     #[ORM\ManyToOne(inversedBy: 'resources')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resource:read'])]
     private ?User $author = null;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'resources')]
-    private Collection $categories;
-
     #[ORM\ManyToOne(inversedBy: 'resources')]
+    #[Groups(['resource:read'])]
     private ?Relation $relation = null;
+
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'resources')]
+    #[Groups(['resource:read'])]
+    private Collection $categories;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'sharedResources')]
     #[ORM\JoinTable(name: 'resource_shared_user')]
+    #[Groups(['resource:read'])]
     private Collection $sharedTo;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'favourites')]
+    #[Groups(['resource:read'])]
     private Collection $favourites;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'saves')]
+    #[Groups(['resource:read'])]
     private Collection $saves;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'exploits')]
+    #[Groups(['resource:read'])]
     private Collection $exploits;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shared')]
+    #[Groups(['resource:read'])]
     private Collection $shares;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'consults')]
+    #[Groups(['resource:read'])]
     private Collection $consults;
 
     public function __construct()
@@ -114,6 +128,10 @@ class Resource
         $this->exploits = new ArrayCollection();
         $this->shares = new ArrayCollection();
         $this->consults = new ArrayCollection();
+
+        $this->isPublished = false;
+        $this->isVerified = false;
+        $this->isSuspended = false;
     }
 
     public function getId(): ?int
@@ -396,6 +414,18 @@ class Resource
         if ($this->consults->removeElement($consult)) {
             $consult->removeConsult($this);
         }
+
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
 
         return $this;
     }
