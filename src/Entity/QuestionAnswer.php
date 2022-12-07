@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\QuestionRepository;
+use App\Repository\QuestionAnswerRepository;
 use App\Trait\TimeStampTrait;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: QuestionRepository::class)]
-class Question
+#[ORM\Entity(repositoryClass: QuestionAnswerRepository::class)]
+class QuestionAnswer
 {
     use TimeStampTrait;
 
@@ -19,11 +19,9 @@ class Question
     #[ORM\Column(length: 255)]
     private ?string $content = null;
 
-    #[ORM\ManyToOne(inversedBy: 'questions')]
+    #[ORM\ManyToOne(inversedBy: 'questionAnswers')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
-
-    #[ORM\ManyToOne(inversedBy: 'questions')]
-    private ?QuestionType $type = null;
 
     public function getId(): ?int
     {
@@ -50,18 +48,6 @@ class Question
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getType(): ?QuestionType
-    {
-        return $this->type;
-    }
-
-    public function setType(?QuestionType $type): self
-    {
-        $this->type = $type;
 
         return $this;
     }

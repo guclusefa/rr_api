@@ -144,6 +144,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Question::class)]
     private Collection $questions;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: QuestionAnswer::class, orphanRemoval: true)]
+    private Collection $questionAnswers;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
@@ -155,6 +158,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->shared = new ArrayCollection();
         $this->consults = new ArrayCollection();
         $this->questions = new ArrayCollection();
+        $this->questionAnswers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -590,6 +594,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuestionAnswer>
+     */
+    public function getQuestionAnswers(): Collection
+    {
+        return $this->questionAnswers;
+    }
+
+    public function addQuestionAnswer(QuestionAnswer $questionAnswer): self
+    {
+        if (!$this->questionAnswers->contains($questionAnswer)) {
+            $this->questionAnswers->add($questionAnswer);
+            $questionAnswer->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionAnswer(QuestionAnswer $questionAnswer): self
+    {
+        if ($this->questionAnswers->removeElement($questionAnswer)) {
+            // set the owning side to null (unless already changed)
+            if ($questionAnswer->getUser() === $this) {
+                $questionAnswer->setUser(null);
+            }
+        }
 
         return $this;
     }

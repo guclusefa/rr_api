@@ -120,6 +120,9 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $consults;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: RessourceStats::class, orphanRemoval: true)]
+    private Collection $ressourceStats;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -129,6 +132,7 @@ class Resource
         $this->exploits = new ArrayCollection();
         $this->shares = new ArrayCollection();
         $this->consults = new ArrayCollection();
+        $this->ressourceStats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -423,6 +427,36 @@ class Resource
     public function setPhoto(?string $photo): self
     {
         $this->photo = $photo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RessourceStats>
+     */
+    public function getRessourceStats(): Collection
+    {
+        return $this->ressourceStats;
+    }
+
+    public function addRessourceStat(RessourceStats $ressourceStat): self
+    {
+        if (!$this->ressourceStats->contains($ressourceStat)) {
+            $this->ressourceStats->add($ressourceStat);
+            $ressourceStat->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRessourceStat(RessourceStats $ressourceStat): self
+    {
+        if ($this->ressourceStats->removeElement($ressourceStat)) {
+            // set the owning side to null (unless already changed)
+            if ($ressourceStat->getResource() === $this) {
+                $ressourceStat->setResource(null);
+            }
+        }
 
         return $this;
     }
