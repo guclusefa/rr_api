@@ -25,6 +25,9 @@ class Question
     #[ORM\ManyToOne(inversedBy: 'questions')]
     private ?QuestionType $type = null;
 
+    #[ORM\OneToOne(mappedBy: 'question', cascade: ['persist', 'remove'])]
+    private ?QuestionAnswer $questionAnswer = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,6 +65,23 @@ class Question
     public function setType(?QuestionType $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getQuestionAnswer(): ?QuestionAnswer
+    {
+        return $this->questionAnswer;
+    }
+
+    public function setQuestionAnswer(QuestionAnswer $questionAnswer): self
+    {
+        // set the owning side of the relation if necessary
+        if ($questionAnswer->getQuestion() !== $this) {
+            $questionAnswer->setQuestion($this);
+        }
+
+        $this->questionAnswer = $questionAnswer;
 
         return $this;
     }
