@@ -95,32 +95,37 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $categories;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: Comment::class, orphanRemoval: true)]
+    #[Groups(['resource:item'])]
+    private Collection $comments;
+
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'sharedResources')]
     #[ORM\JoinTable(name: 'resource_shared_user')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $sharedTo;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'favourites')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $favourites;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'saves')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $saves;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'exploits')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $exploits;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shared')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $shares;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'consults')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $consults;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: RessourceStats::class, orphanRemoval: true)]
+    #[Groups(['resource:item'])]
     private Collection $ressourceStats;
 
     public function __construct()
@@ -256,6 +261,36 @@ class Resource
     public function setRelation(?Relation $relation): self
     {
         $this->relation = $relation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getResource() === $this) {
+                $comment->setResource(null);
+            }
+        }
 
         return $this;
     }

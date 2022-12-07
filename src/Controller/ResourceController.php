@@ -36,8 +36,10 @@ class ResourceController extends AbstractController
     #[Route('', name: 'api_resources', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
+        // groups
+        $groups = ['resource:read'];
         // context
-        $context = SerializationContext::create()->setGroups(['resource:read']);
+        $context = SerializationContext::create()->setGroups($groups);
         $context->setVersion($this->versioningService->getVersion());
         // get resources with pagination
         $page = $request->query->getInt('page', 1);
@@ -54,8 +56,10 @@ class ResourceController extends AbstractController
     #[Route('/{id}', name: 'api_resources_show', methods: ['GET'])]
     public function show(Resource $resource): JsonResponse
     {
+        // groups
+        $groups = ['resource:read', 'resource:item'];
         // context
-        $context = SerializationContext::create()->setGroups(['resource:read', 'user:read']);
+        $context = SerializationContext::create()->setGroups($groups);
         $context->setVersion($this->versioningService->getVersion());
         // get resource
         return new JsonResponse(

@@ -57,7 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 255)]
-    #[Groups(['user:read', 'resource:read', 'user:register'])]
+    #[Groups(['user:read','user:register', 'resource:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -101,6 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isBanned = false;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
+    #[Groups(['user:read'])]
     private ?State $state = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Resource::class, orphanRemoval: true)]

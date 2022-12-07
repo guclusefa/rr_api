@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\ResourceRepository;
 use App\Repository\UserRepository;
 use App\Service\VersioningService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,7 +31,7 @@ class UserController extends AbstractController
     public function index(Request $request): JsonResponse
     {
         // groups
-        $groups = ['user:read'];
+        $groups = ['user:read', 'state:read'];
         // context
         $context = SerializationContext::create()->setGroups($groups);
         $context->setVersion($this->versioningService->getVersion());
@@ -52,7 +51,7 @@ class UserController extends AbstractController
     public function show(User $user): JsonResponse
     {
         // groups
-        $groups = ['user:read', 'user:item', 'resource:read'];
+        $groups = ['user:read', 'user:item', 'state:read', 'resource:read', 'category:read', 'relation:read'];
         // if admin or if user is me, add confidential data
         if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN')) {
             $groups[] = 'user:confidential';
