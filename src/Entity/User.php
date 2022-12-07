@@ -94,6 +94,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Groups(['user:item'])]
+    private ?bool $isActive = true;
+
+    #[ORM\Column]
+    #[Groups(['user:item'])]
     private ?bool $isBanned = false;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
@@ -137,6 +141,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $consults;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Question::class)]
+    private Collection $questions;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
@@ -147,6 +154,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->exploits = new ArrayCollection();
         $this->shared = new ArrayCollection();
         $this->consults = new ArrayCollection();
+        $this->questions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -540,6 +548,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeConsult(Resource $consult): self
     {
         $this->consults->removeElement($consult);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Question>
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): self
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions->add($question);
+            $question->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): self
+    {
+        if ($this->questions->removeElement($question)) {
+            // set the owning side to null (unless already changed)
+            if ($question->getUser() === $this) {
+                $question->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

@@ -31,6 +31,9 @@ class Comment
     #[ORM\OneToOne(inversedBy: 'comment', cascade: ['persist', 'remove'])]
     private ?User $replyTo = null;
 
+    #[ORM\Column]
+    private ?bool $isSuspended = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -80,6 +83,18 @@ class Comment
     public function setReplyTo(?User $replyTo): self
     {
         $this->replyTo = $replyTo;
+
+        return $this;
+    }
+
+    public function isIsSuspended(): ?bool
+    {
+        return $this->isSuspended;
+    }
+
+    public function setIsSuspended(bool $isSuspended): self
+    {
+        $this->isSuspended = $isSuspended;
 
         return $this;
     }
