@@ -3,12 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\RessourceStatsRepository;
+use App\Trait\TimeStampTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RessourceStatsRepository::class)]
 class RessourceStats
 {
+    use TimeStampTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,9 +28,6 @@ class RessourceStats
 
     #[ORM\Column]
     private ?int $shares = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
 
     #[ORM\ManyToOne(inversedBy: 'ressourceStats')]
     #[ORM\JoinColumn(nullable: false)]
@@ -82,18 +82,6 @@ class RessourceStats
     public function setShares(int $shares): self
     {
         $this->shares = $shares;
-
-        return $this;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): self
-    {
-        $this->date = $date;
 
         return $this;
     }
