@@ -36,14 +36,13 @@ class ResourceController extends AbstractController
     #[Route('', name: 'api_resources', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
-        // pagination
-        $page = $request->query->getInt('page', 1);
-        $limit = $request->query->getInt('limit', 10);
         // context
         $context = SerializationContext::create()->setGroups(['resource:read']);
         $context->setVersion($this->versioningService->getVersion());
-        // get resources
-        $resources = $this->resourceRepository->findAllWithPagination($page, $limit);
+        // get resources with pagination
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', 10);
+        $resources = $this->resourceRepository->findBy([], [], $limit, ($page - 1) * $limit);
         return new JsonResponse(
             $this->serializer->serialize($resources, 'json', $context),
             Response::HTTP_OK,

@@ -39,17 +39,6 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllWithPagination($page, $limit): array
-    {
-        return $this->createQueryBuilder('r')
-            ->where('r.visibility = 1 OR r.visibility = 2')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
 //    /**
 //     * @return Resource[] Returns an array of Resource objects
 //     */

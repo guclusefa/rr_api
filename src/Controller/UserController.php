@@ -31,16 +31,15 @@ class UserController extends AbstractController
     #[Route('', name: 'api_users', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
-        // pagination
-        $page = $request->query->getInt('page', 1);
-        $limit = $request->query->getInt('limit', 10);
         // groups
         $groups = ['user:read'];
         // context
         $context = SerializationContext::create()->setGroups($groups);
         $context->setVersion($this->versioningService->getVersion());
-        // get users
-        $users = $this->userRepository->findAllWithPagination($page, $limit);
+        // get users with pagination
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', 10);
+        $users = $this->userRepository->findBy([], [], $limit, ($page - 1) * $limit);
         return new JsonResponse(
             $this->serializer->serialize($users, 'json', $context),
             Response::HTTP_OK,

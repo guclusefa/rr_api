@@ -31,23 +31,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:confidential', 'user:write'])]
+    #[Groups(['user:confidential', 'user:register'])]
     private ?string $email = null;
 
     #[Assert\NotBlank]
     #[Assert\EqualTo(propertyPath: 'email')]
-    #[Groups(['user:write'])]
+    #[Groups(['user:register'])]
     private ?string $confirmEmail = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\Length(min: 6, max: 4096)]
-    #[Groups(['user:write'])]
+    #[Groups(['user:register'])]
     private ?string $password = null;
 
     #[Assert\NotBlank]
     #[Assert\EqualTo(propertyPath: 'password')]
-    #[Groups(['user:write'])]
+    #[Groups(['user:register'])]
     private ?string $confirmPassword = null;
 
     #[ORM\Column]
@@ -57,35 +57,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 255)]
-    #[Groups(['user:read', 'resource:read', 'user:write'])]
+    #[Groups(['user:read', 'resource:read', 'user:register'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:register'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:register'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:confidential', 'user:write'])]
+    #[Groups(['user:confidential', 'user:register'])]
     private ?string $mobile = null;
 
     #[ORM\Column(length: 1, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:register'])]
     private ?string $gender = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:register'])]
     private ?string $bio = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Groups(['user:item', 'user:write'])]
+    #[Groups(['user:item', 'user:register'])]
     private ?\DateTimeInterface $birthDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:register'])]
     private ?string $photo = null;
 
     #[ORM\Column]
@@ -101,7 +101,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isBanned = false;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups(['user:read', 'user:write'])]
     private ?State $state = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Resource::class, orphanRemoval: true)]
@@ -142,9 +141,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $consults;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Question::class)]
+    #[Groups(['user:item'])]
     private Collection $questions;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: QuestionAnswer::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
     private Collection $questionAnswers;
 
     public function __construct()

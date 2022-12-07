@@ -40,7 +40,7 @@ class SecurityController extends AbstractController
     public function register(Request $request): JsonResponse
     {
         // groups
-        $groups = ['user:write'];
+        $groups = ['user:register'];
         // get user and limit to write
         $context = DeserializationContext::create()->setGroups($groups);
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json', $context);
