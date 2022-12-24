@@ -96,7 +96,7 @@ class Resource
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: Comment::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
+    #[Groups(['resource:read'])]
     private Collection $comments;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'sharedResources')]
@@ -105,7 +105,7 @@ class Resource
     private Collection $sharedTo;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'favourites')]
-    #[Groups(['resource:item'])]
+    #[Groups(['resource:read'])]
     private Collection $favourites;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'saves')]
@@ -128,9 +128,22 @@ class Resource
     #[Groups(['resource:item'])]
     private Collection $ressourceStats;
 
+    // custoom a revoir
+    #[Groups(['resource:read'])]
+    private ?int $nbComments = null;
+    #[Groups(['resource:read'])]
+    private ?int $nbFavourites = null;
+    private ?int $nbSaves = null;
+    private ?int $nbExploits = null;
+    private ?int $nbShares = null;
+    private ?int $nbConsults = null;
+    private ?int $nbSharedTo = null;
+    // a revoir
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->comments = new ArrayCollection();
         $this->sharedTo = new ArrayCollection();
         $this->favourites = new ArrayCollection();
         $this->saves = new ArrayCollection();
@@ -495,4 +508,90 @@ class Resource
 
         return $this;
     }
+
+//    CUSTOM
+    public function getNbComments(): int
+    {
+        return $this->comments->count();
+    }
+
+    public function setNbComments(int $nbComments): self
+    {
+        $this->nbComments = $nbComments;
+
+        return $this;
+    }
+
+    public function getNbFavourites(): int
+    {
+        return $this->favourites->count();
+    }
+
+    public function setNbFavourites(int $nbFavourites): self
+    {
+        $this->nbFavourites = $nbFavourites;
+
+        return $this;
+    }
+
+    public function getNbSaves(): int
+    {
+        return $this->saves->count();
+    }
+
+    public function setNbSaves(int $nbSaves): self
+    {
+        $this->nbSaves = $nbSaves;
+
+        return $this;
+    }
+
+    public function getNbExploits(): int
+    {
+        return $this->exploits->count();
+    }
+
+    public function setNbExploits(int $nbExploits): self
+    {
+        $this->nbExploits = $nbExploits;
+
+        return $this;
+    }
+
+    public function getNbShares(): int
+    {
+        return $this->shares->count();
+    }
+
+    public function setNbShares(int $nbShares): self
+    {
+        $this->nbShares = $nbShares;
+
+        return $this;
+    }
+
+    public function getNbConsults(): int
+    {
+        return $this->consults->count();
+    }
+
+    public function setNbConsults(int $nbConsults): self
+    {
+        $this->nbConsults = $nbConsults;
+
+        return $this;
+    }
+
+    public function getNbSharedTo(): int
+    {
+        return $this->sharedTo->count();
+    }
+
+    public function setNbSharedTo(int $nbSharedTo): self
+    {
+        $this->nbSharedTo = $nbSharedTo;
+
+        return $this;
+    }
+//    END CUSSTOM A REVOIR
 }

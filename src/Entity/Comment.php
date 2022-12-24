@@ -6,6 +6,7 @@ use App\Repository\CommentRepository;
 use App\Trait\TimeStampTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -16,22 +17,28 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['comment:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['comment:read'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[Groups(['comment:read'])]
     private ?User $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Relation $resource = null;
+    #[Groups(['comment:read'])]
+    private ?Resource $resource = null;
 
     #[ORM\OneToOne(inversedBy: 'comment', cascade: ['persist', 'remove'])]
+    #[Groups(['comment:read'])]
     private ?User $replyTo = null;
 
     #[ORM\Column]
+    #[Groups(['comment:read'])]
     private ?bool $isSuspended = false;
 
     public function getId(): ?int
@@ -63,12 +70,12 @@ class Comment
         return $this;
     }
 
-    public function getResource(): ?Relation
+    public function getResource(): ?Resource
     {
         return $this->resource;
     }
 
-    public function setResource(?Relation $resource): self
+    public function setResource(?Resource $resource): self
     {
         $this->resource = $resource;
 

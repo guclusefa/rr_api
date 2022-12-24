@@ -57,7 +57,7 @@ class ResourceController extends AbstractController
     public function show(Resource $resource): JsonResponse
     {
         // groups
-        $groups = ['resource:read', 'resource:item'];
+        $groups = ['resource:read', 'resource:item', 'comment:read'];
         // context
         $context = SerializationContext::create()->setGroups($groups);
         $context->setVersion($this->versioningService->getVersion());
