@@ -14,18 +14,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function onKernelException(ExceptionEvent $event)
     {
         $message = $event->getThrowable()->getMessage();
-        dd($message);
         if ($event->getThrowable() instanceof HttpExceptionInterface) {
             $event->setResponse(new JsonResponse([
                 'code' => $event->getThrowable()->getStatusCode(),
                 'message' => $event->getThrowable()->getMessage(),
             ], $event->getThrowable()->getStatusCode()));
         } else {
-            // internal server error
-            $event->setResponse(new JsonResponse([
-                'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR],
-            ], Response::HTTP_INTERNAL_SERVER_ERROR));
+//            // internal server error
+//            $event->setResponse(new JsonResponse([
+//                'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
+//                'message' => Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR],
+//            ], Response::HTTP_INTERNAL_SERVER_ERROR));
         }
     }
 

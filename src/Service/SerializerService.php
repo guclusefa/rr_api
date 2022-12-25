@@ -37,4 +37,10 @@ class SerializerService
         }
         return $object;
     }
+
+    public function getSerializedData($data): string
+    {
+        $data = ["data" => json_decode($data, true)];
+        return json_encode($data);
+    }
 }

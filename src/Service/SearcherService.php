@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 
 class SearcherService
 {
@@ -98,14 +99,50 @@ class SearcherService
         }
     }
 
-    public function orderAndPaginate($qb, $order, $direction, $page, $limit): void
+    public function createQueryBuilder($object): QueryBuilder
     {
+        return $this->entityManager->createQueryBuilder()->select('o')->from($object, 'o')->where('true = true');
+    }
+
+    public function searchAndFilter($qb, $fieldsToSearchFrom, $search, $filters): QueryBuilder
+    {
+        // search & filter
+        $this->searchFromFields($qb, $fieldsToSearchFrom, $search);
+        $this->filterFromFilters($qb, $filters);
+        // result
+        return $qb;
+    }
+
+    public function orderAndPaginate($qb, $order, $direction, $page, $limit): QueryBuilder
+    {
+        // order & paginate
         $qb->orderBy('o.'.$order, $direction);
         $qb->setFirstResult(($page - 1) * $limit);
         $qb->setMaxResults($limit);
+        // result
+        return $qb;
     }
 
-    public function advanceSearch($query, $fieldsToSearchFrom, $defaultFilters, $fieldsToFilterFrom, $fieldsToOrderFrom, $object){
+    public function getMetaData($qb, $page, $limit): array
+    {
+        $total = count($qb->getQuery()->getResult());
+        $start = ($page - 1) * $limit + 1;
+        $pages = (int) ceil($total / $limit);
+        $next = $page < $pages;
+        $previous = $page > 1;
+        return [
+            'total' => $total,
+            'start' => $start,
+            'page' => $page,
+            'pages' => $pages,
+            'next' => $next,
+            'previous' => $previous,
+            'limit' => $limit,
+        ];
+    }
+
+    public function fullyFilteredData($query, $fieldsToSearchFrom, $defaultFilters, $fieldsToFilterFrom, $fieldsToOrderFrom, $object): array
+    {
         // criterias
         $search = $this->getSearchFromQuery($query);
         $filters = $this->getFiltersFromQuery($query, $defaultFilters, $fieldsToFilterFrom);
@@ -114,13 +151,13 @@ class SearcherService
         $page = $this->getPageFromQuery($query);
         $limit = $this->getLimitFromQuery($query);
         // query
-        $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('o')->from($object, 'o')->where('true = true');
-        // search & filter
-        $this->searchFromFields($qb, $fieldsToSearchFrom, $search);
-        $this->filterFromFilters($qb, $filters);
-        $this->orderAndPaginate($qb, $order, $direction, $page, $limit);
-        // return
-        return $qb->getQuery()->getResult();
+        $qb = $this->createQueryBuilder($object);
+        $qb = $this->searchAndFilter($qb, $fieldsToSearchFrom, $search, $filters);
+        $qb = $this->orderAndPaginate($qb, $order, $direction, $page, $limit);
+        // result
+        return [
+            'data' => $qb->getQuery()->getResult(),
+            'meta' => $this->getMetaData($qb, $page, $limit),
+        ];
     }
 }

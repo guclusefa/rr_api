@@ -35,20 +35,18 @@ class SecurityController extends AbstractController
     #[Route('/register', name: 'api_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
-        // deserialize
+        // deserialize & validate
         $groupsToDeserialize = ['user:register'];
         $user = $this->serializerService->deserialize($groupsToDeserialize ,$request, User::class);
-        // validate
         $errors = $this->validator->validate($user);
         if (count($errors) > 0) throw new HttpException(Response::HTTP_BAD_REQUEST, (string) $errors);
         // save and persist
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // serialize
+        // serialize & return
         $groupsToSerialize = ['user:read', 'user:item'];
         $user = $this->serializerService->serialize($groupsToSerialize, $user);
-        // send response
         return new JsonResponse($user, Response::HTTP_CREATED, [], true);
     }
 }
