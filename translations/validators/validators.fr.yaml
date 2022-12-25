@@ -1,0 +1,9 @@
+user:
+  email:
+    blank: 'Veuillez saisir votre adresse email'
+    unique: 'Votre adresse email est déjà utilisée'
+    invalid: 'Votre adresse email est invalide'
+    length: 'Votre adresse email doit faire un maximum de {{ limit }} caractères'
+  confirm_email:
+    blank: 'Veuillez confirmer votre adresse email'
+    mismatch: 'Votre adresse email et votre adresse email de confirmation ne correspondent pas'

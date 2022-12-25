@@ -4,7 +4,6 @@ namespace App\Trait;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
 
 trait TimeStampTrait {
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
@@ -12,7 +11,6 @@ trait TimeStampTrait {
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
-
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

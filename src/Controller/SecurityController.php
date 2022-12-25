@@ -3,11 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\VersioningService;
+use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\DeserializationContext;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,11 +19,10 @@ class SecurityController extends AbstractController
 {
     public function __construct
     (
-        private readonly SerializerInterface $serializer,
+        private readonly SerializerService $serializerService,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
-        private readonly VersioningService $versioningService
+        private readonly ValidatorInterface $validator,
     )
     {
     }
@@ -39,28 +35,20 @@ class SecurityController extends AbstractController
     #[Route('/register', name: 'api_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
-        // groups
-        $groups = ['user:register'];
-        // get user and limit to write
-        $context = DeserializationContext::create()->setGroups($groups);
-        $user = $this->serializer->deserialize($request->getContent(), User::class, 'json', $context);
+        // deserialize
+        $groupsToDeserialize = ['user:register'];
+        $user = $this->serializerService->deserialize($groupsToDeserialize ,$request, User::class);
         // validate
         $errors = $this->validator->validate($user);
         if (count($errors) > 0) throw new HttpException(Response::HTTP_BAD_REQUEST, (string) $errors);
-        // hash password
+        // save and persist
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
-        // save
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // context
-        $context = SerializationContext::create()->setGroups(['user:read', 'user:item']);
-        $context->setVersion($this->versioningService->getVersion());
-        // return
-        return new JsonResponse(
-            $this->serializer->serialize($user, 'json', $context),
-            Response::HTTP_CREATED,
-            [],
-            true
-        );
+        // serialize
+        $groupsToSerialize = ['user:read', 'user:item'];
+        $user = $this->serializerService->serialize($groupsToSerialize, $user);
+        // send response
+        return new JsonResponse($user, Response::HTTP_CREATED, [], true);
     }
 }

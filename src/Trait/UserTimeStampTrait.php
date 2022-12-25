@@ -8,13 +8,12 @@ use JMS\Serializer\Annotation\Groups;
 
 trait UserTimeStampTrait {
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:item'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:item'])]
     private ?\DateTimeInterface $updatedAt = null;
-
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

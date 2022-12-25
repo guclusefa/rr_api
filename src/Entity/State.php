@@ -7,7 +7,6 @@ use App\Trait\TimeStampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StateRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -18,15 +17,12 @@ class State
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['state:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['state:read'])]
+    #[ORM\Column(length: 10)]
     private ?string $code = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['state:read'])]
+    #[ORM\Column(length: 50)]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'state', targetEntity: User::class)]

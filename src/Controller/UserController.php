@@ -3,26 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Service\VersioningService;
-use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
+use App\Service\SearcherService;
+use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/users')]
 class UserController extends AbstractController
 {
-    public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly SerializerInterface  $serializer,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly VersioningService $versioningService
+    public function __construct
+    (
+        private readonly SerializerService $serializerService,
+        private readonly SearcherService $searcherService
     )
     {
     }
@@ -30,51 +25,36 @@ class UserController extends AbstractController
     #[Route('', name: 'api_users', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
-        // groups
-        $groups = ['user:read', 'state:read'];
-        // context
-        $context = SerializationContext::create()->setGroups($groups);
-        $context->setVersion($this->versioningService->getVersion());
-        // get users with pagination
-        $page = $request->query->getInt('page', 1);
-        $limit = $request->query->getInt('limit', 10);
-        $users = $this->userRepository->findBy([], [], $limit, ($page - 1) * $limit);
-        return new JsonResponse(
-            $this->serializer->serialize($users, 'json', $context),
-            Response::HTTP_OK,
-            [],
-            true
+        // search fields
+        $fieldsToSearchFrom = ['firstName', 'lastName', 'username'];
+        // filter fields
+        $defaultFilters = ['isVerified' => false];
+        $fieldsToFilterFrom = ['state'];
+        // order fields
+        $fieldsToOrderFrom = ['id','username'];
+        // search by criterias
+        $users = $this->searcherService->advanceSearch(
+            $request->query->all(),
+            $fieldsToSearchFrom,
+            $defaultFilters,
+            $fieldsToFilterFrom,
+            $fieldsToOrderFrom,
+            User::class
         );
+        // serialize
+        $groupsToSerialize = ['user:read'];
+        $users = $this->serializerService->serialize($groupsToSerialize, $users);
+        // send response
+        return new JsonResponse($users, Response::HTTP_OK, [], true);
     }
 
     #[Route('/{id}', name: 'api_users_show', methods: ['GET'])]
     public function show(User $user): JsonResponse
     {
-        // groups
-        $groups = ['user:read', 'user:item', 'state:read', 'resource:read', 'category:read', 'relation:read'];
-        // if admin or if user is me, add confidential data
-        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN')) {
-            $groups[] = 'user:confidential';
-        }
-        $context = SerializationContext::create()->setGroups($groups);
-        $context->setVersion($this->versioningService->getVersion());
-        return new JsonResponse(
-            $this->serializer->serialize($user, 'json', $context),
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
-    #[Route('/{id}', name: 'api_users_delete', methods: ['DELETE'])]
-    public function delete(User $user): JsonResponse
-    {
-        // if not admin or not my account, throw exception
-        if ($this->getUser() !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'You are not authorized to delete this user');
-        }
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        // serialize
+        $groupsToSerialize = ['user:read', 'user:item'];
+        $user = $this->serializerService->serialize($groupsToSerialize, $user);
+        // send response
+        return new JsonResponse($user, Response::HTTP_OK, [], true);
     }
 }
