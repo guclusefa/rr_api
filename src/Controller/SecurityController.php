@@ -30,6 +30,7 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'api_login', methods: ['POST'])]
     public function login(): void
     {
+        // this method is never called, it's just here to satisfy the security system
     }
 
     #[Route('/register', name: 'api_register', methods: ['POST'])]

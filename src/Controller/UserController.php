@@ -27,7 +27,7 @@ class UserController extends AbstractController
     {
         // criterias
         $fieldsToSearchFrom = ['username', 'firstName', 'lastName'];
-        $defaultFilters = ['isVerified' => true, 'isActive' => true, 'isBanned' => false];
+        $defaultFilters = ['isBanned' => false];
         $fieldsToFilterFrom = ['gender', 'state'];
         $fieldsToOrderFrom = ['id','username', 'createdAt'];
         // search by criterias

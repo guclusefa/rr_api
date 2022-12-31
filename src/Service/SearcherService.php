@@ -126,13 +126,18 @@ class SearcherService
     public function getMetaData($qb, $page, $limit): array
     {
         $total = count($qb->getQuery()->getResult());
+        // get the index of first item and last item of the page
         $start = ($page - 1) * $limit + 1;
+        $end = $start + $limit - 1;
+        // if the last item is greater than the total, set the last item to the total
+        if ($end > $total) $end = $total;
         $pages = (int) ceil($total / $limit);
         $next = $page < $pages;
         $previous = $page > 1;
         return [
             'total' => $total,
             'start' => $start,
+            'end' => $end,
             'page' => $page,
             'pages' => $pages,
             'next' => $next,

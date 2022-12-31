@@ -1,4 +1,5 @@
 user:
+
   email:
     blank: 'Veuillez saisir votre adresse email'
     unique: 'Votre adresse email est déjà utilisée'

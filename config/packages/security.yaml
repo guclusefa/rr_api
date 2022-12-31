@@ -8,18 +8,15 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: email
         # used to reload user from session & other features (e.g. switch_user)
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-#        main:
-#            lazy: true
-#            provider: app_user_provider
         login:
             pattern: ^/api/login
             stateless: true
+            user_checker: App\Security\UserChecker
             json_login:
                 check_path: /api/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -28,7 +25,6 @@ security:
             pattern: ^/api
             stateless: true
             jwt: ~
-
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
