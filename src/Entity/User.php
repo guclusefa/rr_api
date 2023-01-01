@@ -18,6 +18,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['username'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    const GROUP_GET = ['user:read'];
+    const GROUP_ITEM = ['user:read', 'user:item'];
+    const GROUP_REGISTER = ['user:register'];
+    const GROUP_RESET_PASSWORD = ['user:reset_password'];
+
     use UserTimeStampTrait;
 
     #[ORM\Id]
@@ -33,21 +38,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:confidential', 'user:register'])]
     private ?string $email = null;
 
-    #[Assert\EqualTo(propertyPath: 'email')]
-    #[Assert\NotBlank]
-    #[Groups(['user:register'])]
-    private ?string $confirmEmail = null;
-
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\Length(min: 6, max: 4096)]
-    #[Groups(['user:register'])]
+    #[Groups(['user:register', 'user:reset_password'])]
     private ?string $password = null;
-
-    #[Assert\NotBlank]
-    #[Assert\EqualTo(propertyPath: 'password')]
-    #[Groups(['user:register'])]
-    private ?string $confirmPassword = null;
 
     #[ORM\Column(length: 20)]
     #[Assert\NotBlank]

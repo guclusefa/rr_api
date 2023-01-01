@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\JWTService;
+use App\Service\MailerService;
 use App\Service\SearcherService;
 use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,8 +42,7 @@ class UserController extends AbstractController
             User::class
         );
         // serialize & return
-        $groupsToSerialize = ['user:read'];
-        $users = $this->serializerService->serialize($groupsToSerialize, $users);
+        $users = $this->serializerService->serialize(User::GROUP_GET, $users);
         return new JsonResponse($users, Response::HTTP_OK, [], true);
     }
 
@@ -49,8 +50,7 @@ class UserController extends AbstractController
     public function show(User $user): JsonResponse
     {
         // serialize & return
-        $groupsToSerialize = ['user:read', 'user:item'];
-        $user = $this->serializerService->serialize($groupsToSerialize, $user);
+        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
         return new JsonResponse($this->serializerService->getSerializedData($user), Response::HTTP_OK, [], true);
     }
 }

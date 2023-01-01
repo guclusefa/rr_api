@@ -7,30 +7,49 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SerializerService
 {
     public function __construct(
-        private readonly SerializerInterface $serializer
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
     )
     {
     }
 
     public function deserialize($groupsToDeserialize, $request, $object): object
     {
-        $context = DeserializationContext::create()->setGroups($groupsToDeserialize);
         try {
-            $object = $this->serializer->deserialize($request->getContent(), $object, 'json', $context);
+            if ($groupsToDeserialize) {
+                $context = DeserializationContext::create()->setGroups($groupsToDeserialize);
+                $object = $this->serializer->deserialize($request->getContent(), $object, 'json', $context);
+            } else {
+                $object = $this->serializer->deserialize($request->getContent(), $object, 'json');
+            }
         } catch (\Exception $e) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, $e->getMessage());
         }
         return $object;
     }
 
+    public function validate($object): void
+    {
+        $errors = $this->validator->validate($object);
+        if (count($errors) > 0) throw new HttpException(Response::HTTP_BAD_REQUEST, (string) $errors);
+    }
+
+    public function deserializeAndValidate($groupsToDeserialize, $request, $object): object
+    {
+        $object = $this->deserialize($groupsToDeserialize, $request, $object);
+        $this->validate($object);
+        return $object;
+    }
+
     public function serialize($groupsToSerialize, $object): string
     {
-        $context = SerializationContext::create()->setGroups($groupsToSerialize);
         try {
+            $context = SerializationContext::create()->setGroups($groupsToSerialize);
             $object = $this->serializer->serialize($object, 'json', $context);
         } catch (\Exception $e) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, $e->getMessage());
