@@ -67,7 +67,8 @@ class SecurityController extends AbstractController
             $this->mailerService->sendEmail(
                 $user->getEmail(),
                 'Confirmation de votre adresse email',
-                $token
+                "confirmation",
+                ['token' => $token, 'validity' => $this->jwtService->getValidityInHours($token)]
             );
         }
         // return
@@ -116,7 +117,8 @@ class SecurityController extends AbstractController
             $this->mailerService->sendEmail(
                 $user->getEmail(),
                 'Réinitialisation de votre mot de passe',
-                $token
+                "forgot-password",
+                ['token' => $token, 'validity' => $this->jwtService->getValidityInHours($token)]
             );
         }
         // return

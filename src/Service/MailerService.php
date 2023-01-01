@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Exception;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -26,14 +27,14 @@ class MailerService
     /**
      * @throws Exception
      */
-    public function sendEmail(string $to, string $subject, string $body): void
+    public function sendEmail(string $to, string $subject, string $template, array $context): void
     {
-        $email = (new Email())
+        $email = (new TemplatedEmail())
             ->from(new Address($this->sender, $this->name))
             ->to($to)
             ->subject($subject)
-            ->html($body)
-            ->text($body);
+            ->htmlTemplate("emails/$template.html.twig")
+            ->context($context);
         try {
             $this->mailer->send($email);
         } catch (TransportExceptionInterface $e) {

@@ -62,4 +62,16 @@ class SerializerService
         $data = ["data" => json_decode($data, true)];
         return json_encode($data);
     }
+
+    public function mergeTEST($object, $deserializedObject)
+    {
+        // for each property of $deserializedObject
+        foreach($deserializedObject as $key => $value) {
+            // if the property is not null
+            if ($value !== null) {
+                // set the property of $object to the value of $deserializedObject
+                $object->$key = $value;
+            }
+        }
+    }
 }

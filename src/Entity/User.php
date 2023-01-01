@@ -22,6 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     const GROUP_ITEM = ['user:read', 'user:item'];
     const GROUP_REGISTER = ['user:register'];
     const GROUP_RESET_PASSWORD = ['user:reset_password'];
+    const GROUP_UPDATE = ['user:update'];
 
     use UserTimeStampTrait;
 
@@ -47,7 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 20)]
-    #[Groups(['user:read', 'user:register'])]
+    #[Groups(['user:read', 'user:register', 'user:update'])]
     private ?string $username = null;
 
     #[ORM\Column]
@@ -56,33 +57,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Length(min: 3, max: 20)]
-    #[Groups(['user:read', 'user:register'])]
+    #[Groups(['user:read', 'user:register', 'user:update'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Length(min: 3, max: 20)]
-    #[Groups(['user:read', 'user:register'])]
+    #[Groups(['user:read', 'user:register', 'user:update'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 1, nullable: true)]
     #[Assert\Length(min: 1, max: 1)]
-    #[Groups(['user:item'])]
+    #[Groups(['user:item', 'user:update'])]
     private ?string $gender = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Assert\Type(type: 'DateTime')]
     #[Assert\LessThan('-18 years')]
-    #[Groups(['user:item'])]
+    #[Groups(['user:item', 'user:update'])]
     private ?\DateTimeInterface $birthDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 3, max: 255)]
-    #[Groups(['user:item'])]
+    #[Groups(['user:item', 'user:update'])]
     private ?string $bio = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:update'])]
     private ?string $photo = null;
 
     #[ORM\Column]
@@ -99,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['user:item'])]
+    #[Groups(['user:item', 'user:update'])]
     private ?State $state = null;
 
     public function getId(): ?int

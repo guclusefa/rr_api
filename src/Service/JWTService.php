@@ -65,6 +65,26 @@ class JWTService
         return json_decode($payload, true);
     }
 
+    // get validity of a JWT token
+    public function getValidity(string $token): int
+    {
+        $payload = $this->getPayload($token);
+        if (isset($payload['exp'])) {
+            $now = new \DateTimeImmutable();
+            $exp = $payload['exp'];
+            $now = $now->getTimestamp();
+            return $exp - $now;
+        }
+        return 0;
+    }
+
+    // get validity of a JWT token in hours
+    public function getValidityInHours(string $token): float
+    {
+        $validity = $this->getValidity($token);
+        return $validity / 3600;
+    }
+
     // verify a JWT token
     public function isValid(string $token): bool
     {
