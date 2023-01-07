@@ -2,10 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\State;
 use App\Entity\User;
-use App\Service\JWTService;
-use App\Service\MailerService;
 use App\Service\SearcherService;
 use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +20,7 @@ class UserController extends AbstractController
     (
         private readonly SerializerService $serializerService,
         private readonly SearcherService $searcherService,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager
     )
     {
     }
@@ -58,10 +55,19 @@ class UserController extends AbstractController
         return new JsonResponse($this->serializerService->getSerializedData($user), Response::HTTP_OK, [], true);
     }
 
+    // check request a revoir ?
+    private function checkRequest(Request $request){
+        $stateRequest = json_decode($request->getContent())->state ?? null;
+        if ($stateRequest && !is_int($stateRequest)) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le département doit être un nombre');
+        }
+    }
+
     #[Route('/{id}', name: 'api_users_update', methods: ['PUT'])]
     public function update(User $user, Request $request): JsonResponse
     {
-        // deserialize & validate
+        // check request, deserialize & validate
+        $this->checkRequest($request);
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE, $request, User::class);
         // update
         $user->setUsername($updatedUser->getUsername());
@@ -70,6 +76,7 @@ class UserController extends AbstractController
         $user->setGender($updatedUser->getGender());
         $user->setBirthDate($updatedUser->getBirthDate());
         $user->setBio($updatedUser->getBio());
+        $user->setState($updatedUser->getState());
         // TODO : update avatar
         $base64Photo = $updatedUser->getPhoto();
         if ($base64Photo) {
@@ -80,20 +87,14 @@ class UserController extends AbstractController
             file_put_contents($imagePath, $image);
             $user->setPhoto($imageName);
         }
-        $state = $this->entityManager->getRepository(State::class)->findBy(['id' => $updatedUser->getState()->getId()]);
-        if ($state) {
-            $user->setState($updatedUser->getState());
-        } else {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Département invalide');
-        }
         // check
-        $this->serializerService->validate($user);
+        $errors = $this->serializerService->validate($user);
+        if ($errors) return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
         // persist & flush
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // photo is absolute path
-        $user->setPhoto($request->getSchemeAndHttpHost() . '/uploads/users/images/' . $user->getPhoto());
         // serialize & return
+        $user->setPhoto($request->getSchemeAndHttpHost() . $this->getParameter("app.user.images.path") . $user->getPhoto());
         $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
         return new JsonResponse($user, Response::HTTP_OK, [], true);
     }

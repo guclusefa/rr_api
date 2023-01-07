@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use App\Trait\UserTimeStampTrait;
+use App\Validator as AppAssert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -23,6 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     const GROUP_REGISTER = ['user:register'];
     const GROUP_RESET_PASSWORD = ['user:reset_password'];
     const GROUP_UPDATE = ['user:update'];
+    const GROUP_UPDATE_PASSWORD = ['user:update_password'];
 
     use UserTimeStampTrait;
 
@@ -42,7 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\Length(min: 6, max: 4096)]
-    #[Groups(['user:register', 'user:reset_password'])]
+    #[Groups(['user:register', 'user:reset_password', 'user:update_password'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 20)]
@@ -97,8 +99,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private ?bool $isBanned = false;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: State::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
+    #[AppAssert\ValidState]
     #[Groups(['user:item', 'user:update'])]
     private ?State $state = null;
 

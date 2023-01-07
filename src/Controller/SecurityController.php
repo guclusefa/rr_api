@@ -39,7 +39,9 @@ class SecurityController extends AbstractController
     public function register(Request $request): JsonResponse
     {
         // deserialize & validate
-        $user = $this->serializerService->deserializeAndValidate(User::GROUP_REGISTER ,$request, User::class);
+        $user = $this->serializerService->deserialize(User::GROUP_REGISTER ,$request, User::class);
+        $errors = $this->serializerService->validate($user);
+        if ($errors) return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
         // save and persist
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
         $this->entityManager->persist($user);
