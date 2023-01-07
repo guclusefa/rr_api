@@ -39,7 +39,7 @@ class SecurityController extends AbstractController
     public function register(Request $request): JsonResponse
     {
         // deserialize & validate
-        $user = $this->serializerService->deserialize(User::GROUP_REGISTER ,$request, User::class);
+        $user = $this->serializerService->deserialize(User::GROUP_WRITE ,$request, User::class);
         $errors = $this->serializerService->validate($user);
         if ($errors) return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
         // save and persist
@@ -140,7 +140,7 @@ class SecurityController extends AbstractController
             $user = $this->entityManager->getRepository(User::class)->find($payload['id']);
             if (!$user) throw new HttpException(Response::HTTP_NOT_FOUND, 'Utilisateur non trouvé');
             // deserialize & validate
-            $updatedPassword = $this->serializerService->deserialize(User::GROUP_RESET_PASSWORD, $request, User::class);
+            $updatedPassword = $this->serializerService->deserialize(User::GROUP_UPDATE_PASSWORD, $request, User::class);
             $user->setPassword($updatedPassword->getPassword());
             $this->serializerService->validate($user);
             $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));

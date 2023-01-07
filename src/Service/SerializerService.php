@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;

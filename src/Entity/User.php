@@ -20,11 +20,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const GROUP_GET = ['user:read'];
-    const GROUP_ITEM = ['user:read', 'user:item'];
-    const GROUP_REGISTER = ['user:register'];
-    const GROUP_RESET_PASSWORD = ['user:reset_password'];
+    const GROUP_ITEM = ['user:read', 'user:item', 'state:read'];
+    const GROUP_WRITE = ['user:write'];
     const GROUP_UPDATE = ['user:update'];
+    const GROUP_UPDATE_PHOTO = ['user:update_photo'];
     const GROUP_UPDATE_PASSWORD = ['user:update_password'];
+    const GROUP_UPDATE_EMAIL = ['user:update_email'];
 
     use UserTimeStampTrait;
 
@@ -38,19 +39,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(max: 180)]
     #[Assert\Email]
-    #[Groups(['user:confidential', 'user:register'])]
+    #[Groups(['user:write', 'user:update_email'])]
     private ?string $email = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\Length(min: 6, max: 4096)]
-    #[Groups(['user:register', 'user:reset_password', 'user:update_password'])]
+    #[Groups(['user:write', 'user:update_password'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 20)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 20)]
-    #[Groups(['user:read', 'user:register', 'user:update'])]
+    #[Groups(['user:read', 'user:write', 'user:update'])]
     private ?string $username = null;
 
     #[ORM\Column]
@@ -59,16 +60,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Length(min: 3, max: 20)]
-    #[Groups(['user:read', 'user:register', 'user:update'])]
+    #[Groups(['user:read', 'user:write', 'user:update'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Length(min: 3, max: 20)]
-    #[Groups(['user:read', 'user:register', 'user:update'])]
+    #[Groups(['user:read', 'user:write', 'user:update'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 1, nullable: true)]
     #[Assert\Length(min: 1, max: 1)]
+    #[Assert\Choice(choices: ['M', 'F', 'O'])]
     #[Groups(['user:item', 'user:update'])]
     private ?string $gender = null;
 
@@ -84,7 +86,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255)]
-    #[Groups(['user:read', 'user:update'])]
+    #[Groups(['user:read', 'user:update_photo'])]
     private ?string $photo = null;
 
     #[ORM\Column]

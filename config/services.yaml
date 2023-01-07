@@ -7,7 +7,7 @@ parameters:
     app.mailer.sender: 'ressources_r@cesi.fr'
     app.mailer.name: 'RR-CESI'
     app.jwtsecret: '%env(JWT_PASSPHRASE)%'
-    app.user.images.path: '/uploads/users/images/'
+    app.user.images.path: 'uploads/users/images/'
 services:
     # default configuration for services in *this* file
     _defaults:
