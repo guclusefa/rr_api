@@ -41,12 +41,14 @@ class UserController extends AbstractController
 
     private function checkAutho(User $user): void
     {
-        $this->isBanned($user);
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isMe($user)){
             throw new HttpException(
                 Response::HTTP_FORBIDDEN,
                 'Vous n\'avez pas les droits d\'acceder à cette ressource'
             );
+        }
+        if (!$this->isGranted('ROLE_ADMIN')){
+            $this->isBanned($user);
         }
     }
 
