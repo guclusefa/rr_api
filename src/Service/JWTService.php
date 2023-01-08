@@ -2,7 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class JWTService
 {
@@ -10,7 +14,8 @@ class JWTService
     private string $secret;
     public function __construct
     (
-        private readonly ParameterBagInterface $params
+        private readonly ParameterBagInterface $params,
+        private readonly EntityManagerInterface $entityManager
     )
     {
         $this->header = ["alg" => "HS256", "typ" => "JWT", "cty" => "JWT"];
@@ -107,5 +112,23 @@ class JWTService
     private function cleanToken(string $base64): string
     {
         return str_replace(['+', '/', '='], ['-', '_', ''], $base64);
+    }
+
+    // check if a JWT token is valid
+    public function checkToken(string $token): bool
+    {
+        if (!($this->isValid($token) && $this->checkSignature($token) && !$this->isExpired($token))) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Token invalide');
+        }
+        return true;
+    }
+
+    // get user from a JWT token
+    public function getUserFromToken(string $token)
+    {
+        $payload = $this->getPayload($token);
+        $user = $this->entityManager->getRepository(User::class)->find($payload['id']);
+        if (!$user) throw new HttpException(Response::HTTP_BAD_REQUEST, 'Utilisateur introuvable');
+        return $user;
     }
 }

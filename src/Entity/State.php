@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\TimeStampTrait;
 use App\Repository\StateRepository;
-use App\Trait\TimeStampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

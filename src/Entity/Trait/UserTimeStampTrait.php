@@ -1,15 +1,18 @@
 <?php
 
-namespace App\Trait;
+namespace App\Entity\Trait;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
-trait TimeStampTrait {
+trait UserTimeStampTrait {
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['user:item'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['user:item'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     public function getCreatedAt(): ?\DateTimeImmutable

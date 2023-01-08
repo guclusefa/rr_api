@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\UserTimeStampTrait;
 use App\Repository\UserRepository;
-use App\Trait\UserTimeStampTrait;
 use App\Validator as AppAssert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,9 +21,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const GROUP_GET = ['user:read'];
     const GROUP_ITEM = ['user:read', 'user:item', 'state:read'];
+    const GROUP_ITEM_CONFIDENTIAL = ['user:read', 'user:item', 'user:confidential', 'state:read'];
     const GROUP_WRITE = ['user:write'];
     const GROUP_UPDATE = ['user:update'];
-    const GROUP_UPDATE_PHOTO = ['user:update_photo'];
     const GROUP_UPDATE_PASSWORD = ['user:update_password'];
     const GROUP_UPDATE_EMAIL = ['user:update_email'];
 
@@ -39,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(max: 180)]
     #[Assert\Email]
-    #[Groups(['user:write', 'user:update_email'])]
+    #[Groups(['user:confidential', 'user:write', 'user:update_email'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -86,7 +86,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255)]
-    #[Groups(['user:read', 'user:update_photo'])]
+    #[Groups(['user:read'])]
     private ?string $photo = null;
 
     #[ORM\Column]

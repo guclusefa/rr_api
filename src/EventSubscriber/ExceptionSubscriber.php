@@ -13,11 +13,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function onKernelException(ExceptionEvent $event)
     {
+        // get code and message
         $message = $event->getThrowable()->getMessage();
+        // if message is not json, then convert it to json
+        if (json_decode($message) === null) {
+            $message = json_encode(['message' => $message]);
+        }
+        $message = json_decode($message, true);
         if ($event->getThrowable() instanceof HttpExceptionInterface) {
             $event->setResponse(new JsonResponse([
                 'code' => $event->getThrowable()->getStatusCode(),
-                'errors' => $event->getThrowable()->getMessage(),
+                'errors' => $message,
             ], $event->getThrowable()->getStatusCode()));
         } else {
 //            // internal server error

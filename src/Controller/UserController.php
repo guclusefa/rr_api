@@ -29,6 +29,35 @@ class UserController extends AbstractController
     {
     }
 
+    private function isMe(User $user): bool
+    {
+        return $this->getUser() === $user;
+    }
+
+    private function isBanned(User $user): void
+    {
+        if ($user->isIsBanned()) throw new HttpException(Response::HTTP_FORBIDDEN, 'Cet utilisateur est banni');
+    }
+
+    private function checkAutho(User $user): void
+    {
+        $this->isBanned($user);
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isMe($user)){
+            throw new HttpException(
+                Response::HTTP_FORBIDDEN,
+                'Vous n\'avez pas les droits d\'acceder à cette ressource'
+            );
+        }
+    }
+
+    // check request (a revoir ?)
+    private function checkRequest(Request $request){
+        $stateRequest = json_decode($request->getContent())->state ?? null;
+        if ($stateRequest && !is_int($stateRequest)) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le département doit être un nombre');
+        }
+    }
+
     #[Route('', name: 'api_users', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
@@ -48,28 +77,38 @@ class UserController extends AbstractController
         );
         // serialize & return
         $users = $this->serializerService->serialize(User::GROUP_GET, $users);
-        return new JsonResponse($users, Response::HTTP_OK, [], true);
+        return new JsonResponse(
+            $users,
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     #[Route('/{id}', name: 'api_users_show', methods: ['GET'])]
     public function show(User $user): JsonResponse
     {
-        // serialize & return
-        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
-        return new JsonResponse($this->serializerService->getSerializedData($user), Response::HTTP_OK, [], true);
-    }
-
-    // check request a revoir ?
-    private function checkRequest(Request $request){
-        $stateRequest = json_decode($request->getContent())->state ?? null;
-        if ($stateRequest && !is_int($stateRequest)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le département doit être un nombre');
+        // check autho & serialize
+        $this->checkAutho($user);
+        if ($this->isMe($user)) {
+            $user = $this->serializerService->serialize(User::GROUP_ITEM_CONFIDENTIAL, $user);
+        } else {
+            $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
         }
+        // return
+        return new JsonResponse(
+            $this->serializerService->getSerializedData($user),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     #[Route('/{id}', name: 'api_users_update', methods: ['PUT'])]
     public function update(User $user, Request $request): JsonResponse
     {
+        // check autho
+        $this->checkAutho($user);
         // check request & deserialize
         $this->checkRequest($request);
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE, $request, User::class);
@@ -82,19 +121,23 @@ class UserController extends AbstractController
         $user->setBio($updatedUser->getBio());
         $user->setState($updatedUser->getState());
         // check for errors
-        $errors = $this->serializerService->validate($user);
-        if ($errors) return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
-        // persist & flush
+        $this->serializerService->checkErrors($user);
+        // save and persist
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // serialize & return
-        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
-        return new JsonResponse($user, Response::HTTP_OK, [], true);
+        // return
+        return new JsonResponse(
+            ['message' => 'Utilisateur modifié avec succès'],
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{id}/photo', name: 'api_users_update_photo', methods: ['POST'])]
     public function updatePhoto(User $user, Request $request): JsonResponse
     {
+        // check autho
+        $this->checkAutho($user);
+        // check & upload file
         $photo = $request->files->get('photo');
         if ($photo) {
             // check and upload photo
@@ -117,55 +160,65 @@ class UserController extends AbstractController
         // persist & flush
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // serialize & return
-        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
-        return new JsonResponse($user, Response::HTTP_OK, [], true);
+        // return
+        return new JsonResponse(
+            ['message' => 'Photo modifiée avec succès'],
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{id}/password', name: 'api_users_update_password', methods: ['PUT'])]
     public function updatePassword(User $user, Request $request): JsonResponse
     {
+        // check autho
+        $this->checkAutho($user);
         // check if old password is correct
         $oldPassword = json_decode($request->getContent())->old?? null;
         if (!$oldPassword || !$this->userPasswordHasher->isPasswordValid($user, $oldPassword)) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'L\'ancien mot de passe est incorrect');
         }
-        // check request & deserialize
+        // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_PASSWORD, $request, User::class);
-        // update user
         $user->setPassword($updatedUser->getPassword());
         // check for errors
-        $errors = $this->serializerService->validate($user);
-        if ($errors) return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
-        // persist & flush
+        $this->serializerService->checkErrors($user);
+        // save and persist
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // serialize & return
-        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
-        return new JsonResponse($user, Response::HTTP_OK, [], true);
+        // return
+        return new JsonResponse(
+            ['message' => 'Mot de passe modifié avec succès'],
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{id}/email', name: 'api_users_update_email', methods: ['PUT'])]
     public function updateEmail(User $user, Request $request): JsonResponse
     {
+        // check autho
+        $this->checkAutho($user);
         // check if old password is correct
         $oldPassword = json_decode($request->getContent())->old?? null;
         if (!$oldPassword || !$this->userPasswordHasher->isPasswordValid($user, $oldPassword)) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'L\'ancien mot de passe est incorrect');
         }
+        // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_EMAIL, $request, User::class);
-        // update user
+        if ($user->getEmail() === $updatedUser->getEmail()) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Vous êtes déjà inscrit avec cette adresse email');
+        }
         $user->setEmail($updatedUser->getEmail());
         $user->setIsVerified(false);
         // check for errors
-        $errors = $this->serializerService->validate($user);
-        if ($errors) return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
-        // persist & flush
+        $this->serializerService->checkErrors($user);
+        // save and persist
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // serialize & return
-        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
-        return new JsonResponse($user, Response::HTTP_OK, [], true);
+        // return
+        return new JsonResponse(
+            ['message' => 'Adresse email modifiée avec succès, veuillez vous reconnecter'],
+            Response::HTTP_OK
+        );
     }
 }
