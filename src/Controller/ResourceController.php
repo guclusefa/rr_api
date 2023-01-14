@@ -111,4 +111,37 @@ class ResourceController extends AbstractController
             Response::HTTP_OK
         );
     }
+
+    #[Route('/{id}/media', name: 'api_resources_update_media', methods: ['POST'])]
+    public function addMedia(Request $request, Resource $resource): JsonResponse
+    {
+        // check & upload media
+        $media = $request->files->get('media');
+        if ($media) {
+            // check and upload media
+            $resource->setMedia(
+                $this->fileUploaderService->uploadMedia(
+                    $media,
+                    $resource->getId(),
+                    $this->getParameter("app.resource.media.path")
+                )
+            );
+        } else {
+            // delete file from server if exists
+            $mediaName = $resource->getMedia();
+            if ($mediaName) {
+                $mediaPath = $this->getParameter("app.resource.media.path") . '/' . $mediaName;
+                $this->fileUploaderService->deleteFile($mediaPath);
+            }
+            $resource->setMedia(null);
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => 'Le media de la ressource a bien été modifié'],
+            Response::HTTP_OK
+        );
+    }
 }

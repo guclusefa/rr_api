@@ -25,10 +25,28 @@ class FileUploaderService
         return $photoName;
     }
 
-    public function deletePhoto($photoPath): void
+    public function uploadMedia($media, $mediaName, $mediaPath): string
     {
-        if (file_exists($photoPath)) {
-            unlink($photoPath);
+        // check if media is a video
+        $mimeType = $media->getMimeType();
+        if (!in_array($mimeType, ['video/mp4', 'video/mp3', 'image/jpeg', 'image/png', 'image/gif'])) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le média n\'est pas valide');
+        }
+        // check if media is too big
+        $size = $media->getSize();
+        if ($size > 10000000) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le média ne peut pas dépasser 10Mo');
+        }
+        // upload media to path and rename media to user id
+        $mediaName = $mediaName . '.' . $media->guessExtension();
+        $media->move($mediaPath, $mediaName);
+        return $mediaName;
+    }
+
+    public function deleteFile($filePath): void
+    {
+        if (file_exists($filePath)) {
+            unlink($filePath);
         }
     }
 }

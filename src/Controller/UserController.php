@@ -153,7 +153,7 @@ class UserController extends AbstractController
             $photoName = $user->getPhoto();
             if ($photoName) {
                 $photoPath = $this->getParameter("app.user.images.path") . '/' . $photoName;
-                $this->fileUploaderService->deletePhoto($photoPath);
+                $this->fileUploaderService->deleteFile($photoPath);
             }
             $user->setPhoto(null);
         }
