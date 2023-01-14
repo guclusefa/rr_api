@@ -2,20 +2,26 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\ResourceTimeStampTrait;
 use App\Repository\ResourceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ResourceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Resource
 {
-    use TimeStampTrait;
+    use ResourceTimeStampTrait;
+
+    const GROUP_GET = ['resource:read', 'user:read', 'relation:read', 'category:read'];
+    const GROUP_ITEM = ['resource:read', 'resource:item', 'user:read', 'relation:read', 'category:read'];
+    const GROUP_WRITE = ['resource:write'];
+    const GROUP_UPDATE = ['resource:update'];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,7 +31,7 @@ class Resource
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -33,41 +39,55 @@ class Resource
     private ?string $media = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private ?string $content = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url]
+    #[Groups(['resource:item', 'resource:write', 'resource:update'])]
+    private ?string $link = null;
+
     #[ORM\Column(type: Types::SMALLINT)]
-    #[Groups(['resource:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [1, 2, 3])]
+    #[Groups(['resource:item', 'resource:write', 'resource:update'])]
     private ?int $visibility = null;
 
     #[ORM\Column]
-    #[Groups(['resource:item'])]
-    private ?bool $isPublished = null;
+    #[Groups(['resource:item', 'resource:write', 'resource:update'])]
+    private ?bool $isPublished = true;
 
     #[ORM\Column]
     #[Groups(['resource:item'])]
-    private ?bool $isVerified = null;
+    private ?bool $isVerified = false;
 
     #[ORM\Column]
     #[Groups(['resource:item'])]
-    private ?bool $isSuspended = null;
+    private ?bool $isSuspended = false;
 
     #[ORM\ManyToOne(inversedBy: 'resources')]
-    #[Groups(['resource:read'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank]
+    #[Groups(['resource:read', 'resource:write'])]
     private ?User $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'resources')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private ?Relation $relation = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'resources')]
     #[ORM\JoinTable(name: 'resource_categories')]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private Collection $categories;
+
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: Comment::class, orphanRemoval: true)]
+    #[Groups(['resource:read'])]
+    private Collection $comments;
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -107,6 +127,18 @@ class Resource
     public function setContent(?string $content): self
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    public function setLink(?string $link): self
+    {
+        $this->link = $link;
 
         return $this;
     }
@@ -203,6 +235,46 @@ class Resource
     public function removeCategory(Category $category): self
     {
         $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    public function updateCategories(Collection $categories): self
+    {
+        $this->categories->clear();
+        foreach ($categories as $category) {
+            $this->addCategory($category);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getResource() === $this) {
+                $comment->setResource(null);
+            }
+        }
 
         return $this;
     }

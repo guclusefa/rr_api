@@ -90,8 +90,6 @@ class UserController extends AbstractController
     #[Route('/{id}', name: 'api_users_show', methods: ['GET'])]
     public function show(User $user): JsonResponse
     {
-        // check autho & serialize
-        $this->checkAutho($user);
         if ($this->isMe($user)) {
             $user = $this->serializerService->serialize(User::GROUP_ITEM_CONFIDENTIAL, $user);
         } else {

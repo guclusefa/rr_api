@@ -21,15 +21,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['username'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use UserTimeStampTrait;
+
     const GROUP_GET = ['user:read'];
-    const GROUP_ITEM = ['user:read', 'user:item', 'state:read', 'resource:read'];
+    const GROUP_ITEM = ['user:read', 'user:item', 'state:read'];
     const GROUP_ITEM_CONFIDENTIAL = ['user:read', 'user:item', 'user:confidential', 'state:read'];
     const GROUP_WRITE = ['user:write'];
     const GROUP_UPDATE = ['user:update'];
     const GROUP_UPDATE_PASSWORD = ['user:update_password'];
     const GROUP_UPDATE_EMAIL = ['user:update_email'];
-
-    use UserTimeStampTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -113,9 +113,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $resources;
 
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class)]
+    #[Groups(['user:item'])]
+    private Collection $comments;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -344,6 +349,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($resource->getAuthor() === $this) {
                 $resource->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getAuthor() === $this) {
+                $comment->setAuthor(null);
             }
         }
 
