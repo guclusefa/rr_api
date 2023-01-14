@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Trait\UserTimeStampTrait;
 use App\Repository\UserRepository;
 use App\Validator as AppAssert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -20,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const GROUP_GET = ['user:read'];
-    const GROUP_ITEM = ['user:read', 'user:item', 'state:read'];
+    const GROUP_ITEM = ['user:read', 'user:item', 'state:read', 'resource:read'];
     const GROUP_ITEM_CONFIDENTIAL = ['user:read', 'user:item', 'user:confidential', 'state:read'];
     const GROUP_WRITE = ['user:write'];
     const GROUP_UPDATE = ['user:update'];
@@ -106,6 +108,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[AppAssert\ValidState]
     #[Groups(['user:item', 'user:update'])]
     private ?State $state = null;
+
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Resource::class)]
+    #[Groups(['user:item'])]
+    private Collection $resources;
+
+    public function __construct()
+    {
+        $this->resources = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -305,6 +316,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setState(?State $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Resource>
+     */
+    public function getResources(): Collection
+    {
+        return $this->resources;
+    }
+
+    public function addResource(Resource $resource): self
+    {
+        if (!$this->resources->contains($resource)) {
+            $this->resources->add($resource);
+            $resource->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResource(Resource $resource): self
+    {
+        if ($this->resources->removeElement($resource)) {
+            // set the owning side to null (unless already changed)
+            if ($resource->getAuthor() === $this) {
+                $resource->setAuthor(null);
+            }
+        }
 
         return $this;
     }
