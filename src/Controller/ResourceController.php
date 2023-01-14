@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Resource;
-use App\Entity\User;
 use App\Service\FileUploaderService;
 use App\Service\SearcherService;
 use App\Service\SerializerService;

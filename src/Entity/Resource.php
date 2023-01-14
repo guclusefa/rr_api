@@ -26,12 +26,12 @@ class Resource
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:read', 'resource:identifier'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Groups(['resource:read', 'resource:write', 'resource:update'])]
+    #[Groups(['resource:read', 'resource:identifier', 'resource:write', 'resource:update'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]

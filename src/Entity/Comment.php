@@ -16,6 +16,11 @@ class Comment
 {
     use CommentTimeStampTrait;
 
+    const GROUP_GET = ['comment:read'];
+    const GROUP_ITEM = ['comment:read', 'comment:item', 'resource:identifier', 'user:read'];
+    const GROUP_WRITE = ['comment:write'];
+    const GROUP_REPLY = ['comment:reply'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,12 +29,13 @@ class Comment
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'comment:write', 'comment:reply'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['comment:item'])]
+    #[Assert\NotBlank]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?Resource $resource = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
@@ -37,7 +43,7 @@ class Comment
     private ?User $author = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
-    #[Groups(['test'])]
+    #[Groups(['comment:read','comment:reply'])]
     private ?self $replyTo = null;
 
     #[ORM\OneToMany(mappedBy: 'replyTo', targetEntity: self::class)]
