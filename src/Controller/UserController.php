@@ -223,4 +223,19 @@ class UserController extends AbstractController
             Response::HTTP_OK
         );
     }
+
+    #[Route('/{id}/delete', name: 'api_users_delete', methods: ['DELETE'])]
+    public function delete(User $user): JsonResponse
+    {
+        // check autho
+        $this->checkAutho($user);
+        // delete user
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => 'Utilisateur supprimé avec succès'],
+            Response::HTTP_OK
+        );
+    }
 }
