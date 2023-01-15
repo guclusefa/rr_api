@@ -76,7 +76,6 @@ class Resource
     private ?Relation $relation = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'resources')]
-    #[ORM\JoinTable(name: 'resource_categories')]
     #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private Collection $categories;
 
@@ -84,10 +83,15 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $comments;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceLike::class, orphanRemoval: true)]
+    #[Groups(['resource:read'])]
+    private Collection $likes;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->likes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -273,6 +277,36 @@ class Resource
             // set the owning side to null (unless already changed)
             if ($comment->getResource() === $this) {
                 $comment->setResource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceLike>
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(ResourceLike $like): self
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes->add($like);
+            $like->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(ResourceLike $like): self
+    {
+        if ($this->likes->removeElement($like)) {
+            // set the owning side to null (unless already changed)
+            if ($like->getResource() === $this) {
+                $like->setResource(null);
             }
         }
 

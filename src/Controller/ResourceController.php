@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Resource;
+use App\Entity\ResourceLike;
 use App\Service\FileUploaderService;
 use App\Service\SearcherService;
 use App\Service\SerializerService;
@@ -140,6 +141,34 @@ class ResourceController extends AbstractController
         // return
         return new JsonResponse(
             ['message' => 'Le media de la ressource a bien été modifié'],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/like', name: 'api_resources_like', methods: ['POST'])]
+    public function like(Resource $resource): JsonResponse
+    {
+        // check if user already liked
+        $like = $resource->getLikes()->filter(function ($like) {
+            return $like->getUser() === $this->getUser();
+        })->first();
+        if ($like) {
+            $resource->removeLike($like);
+            $this->entityManager->remove($like);
+            $message = 'Vous avez bien retiré votre like';
+        } else {
+            $like = new ResourceLike();
+            $like->setUser($this->getUser());
+            $resource->addLike($like);
+            $this->entityManager->persist($like);
+            $message = 'Vous avez bien liké cette ressource';
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => $message],
             Response::HTTP_OK
         );
     }
