@@ -36,7 +36,7 @@ class ResourceFixture extends Fixture implements OrderedFixtureInterface
             $resource->setTitle("Ressource $i");
             $resource->setContent("Contenu {$i}");
             $resource->setLink("https://www.google.com");
-            $resource->setVisibility($faker->numberBetween(1,3));
+            $resource->setVisibility(1);
             for($j = 0; $j < $faker->numberBetween(1,5); $j++) {
                 $resource->addCategory($categories[array_rand($categories)]);
             }
