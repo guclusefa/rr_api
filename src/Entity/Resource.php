@@ -107,6 +107,7 @@ class Resource
     private Collection $sharesTo;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceStats::class, orphanRemoval: true)]
+    #[Groups(['resource:read'])]
     private Collection $stats;
 
     public function __construct()

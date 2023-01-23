@@ -369,16 +369,16 @@ class ResourceController extends AbstractController
     #[Route('/{id}/generatestats', name: 'api_resources_generate_stats', methods: ['POST'])]
     public function generateStats(Resource $resource): JsonResponse
     {
-        // check if stats already exist today
-        $stats = $resource->getStats()->filter(function ($stat) {
-            return $stat->getCreatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
-        })->first();
-        if ($stats) {
-            return new JsonResponse(
-                ['message' => 'Les statistiques de cette ressource ont déjà été générées aujourd\'hui'],
-                Response::HTTP_OK
-            );
-        }
+//        // check if stats already exist today
+//        $stats = $resource->getStats()->filter(function ($stat) {
+//            return $stat->getCreatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
+//        })->first();
+//        if ($stats) {
+//            return new JsonResponse(
+//                ['message' => 'Les statistiques de cette ressource ont déjà été générées aujourd\'hui'],
+//                Response::HTTP_OK
+//            );
+//        }
         // get number of consults, exploits, likes, saves and shares of the resource
         $consults = $resource->getConsults()->count();
         $exploits = $resource->getExploits()->count();
