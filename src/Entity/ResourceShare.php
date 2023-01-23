@@ -3,12 +3,12 @@
 namespace App\Entity;
 
 use App\Entity\Trait\TimeStampTrait;
-use App\Repository\ResourceLikeRepository;
+use App\Repository\ResourceShareRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ResourceLikeRepository::class)]
+#[ORM\Entity(repositoryClass: ResourceShareRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class ResourceLike
+class ResourceShare
 {
     use TimeStampTrait;
 
@@ -17,11 +17,11 @@ class ResourceLike
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'likes')]
+    #[ORM\ManyToOne(inversedBy: 'shares')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Resource $resource = null;
 
-    #[ORM\ManyToOne(inversedBy: 'likes')]
+    #[ORM\ManyToOne(inversedBy: 'shares')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 

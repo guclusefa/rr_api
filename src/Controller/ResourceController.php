@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Resource;
 use App\Entity\ResourceLike;
+use App\Entity\ResourceShare;
 use App\Repository\ResourceRepository;
 use App\Service\FileUploaderService;
 use App\Service\SerializerService;
@@ -162,6 +163,34 @@ class ResourceController extends AbstractController
             $resource->addLike($like);
             $this->entityManager->persist($like);
             $message = 'Vous avez bien liké cette ressource';
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => $message],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/share', name: 'api_resources_share', methods: ['POST'])]
+    public function share(Resource $resource): JsonResponse
+    {
+        // check if user already shared
+        $share = $resource->getShares()->filter(function ($share) {
+            return $share->getUser() === $this->getUser();
+        })->first();
+        if ($share) {
+            $resource->removeShare($share);
+            $this->entityManager->remove($share);
+            $message = 'Vous avez bien retiré votre partage';
+        } else {
+            $share = new ResourceShare();
+            $share->setUser($this->getUser());
+            $resource->addShare($share);
+            $this->entityManager->persist($share);
+            $message = 'Vous avez bien partagé cette ressource';
         }
         // persist & flush
         $this->entityManager->persist($resource);

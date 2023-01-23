@@ -52,14 +52,6 @@ class UserController extends AbstractController
         }
     }
 
-    // check request (a revoir ?)
-    private function checkRequest(Request $request){
-        $stateRequest = json_decode($request->getContent())->state ?? null;
-        if ($stateRequest && !is_int($stateRequest)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le département doit être un nombre');
-        }
-    }
-
     #[Route('', name: 'api_users', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
@@ -108,7 +100,10 @@ class UserController extends AbstractController
         // check autho
         $this->checkAutho($user);
         // check request & deserialize
-        $this->checkRequest($request);
+        $stateRequest = json_decode($request->getContent())->state ?? null;
+        if ($stateRequest && !is_int($stateRequest)) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le département doit être un nombre');
+        }
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE, $request, User::class);
         // update user
         $user->setUsername($updatedUser->getUsername());

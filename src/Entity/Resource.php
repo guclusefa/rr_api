@@ -86,11 +86,16 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $likes;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceShare::class, orphanRemoval: true)]
+    #[Groups(['resource:read'])]
+    private Collection $shares;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->shares = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -306,6 +311,36 @@ class Resource
             // set the owning side to null (unless already changed)
             if ($like->getResource() === $this) {
                 $like->setResource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceShare>
+     */
+    public function getShares(): Collection
+    {
+        return $this->shares;
+    }
+
+    public function addShare(ResourceShare $share): self
+    {
+        if (!$this->shares->contains($share)) {
+            $this->shares->add($share);
+            $share->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShare(ResourceShare $share): self
+    {
+        if ($this->shares->removeElement($share)) {
+            // set the owning side to null (unless already changed)
+            if ($share->getResource() === $this) {
+                $share->setResource(null);
             }
         }
 

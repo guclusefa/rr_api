@@ -121,11 +121,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $likes;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceShare::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
+    private Collection $shares;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->shares = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -414,6 +419,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($like->getUser() === $this) {
                 $like->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceShare>
+     */
+    public function getShares(): Collection
+    {
+        return $this->shares;
+    }
+
+    public function addShare(ResourceShare $share): self
+    {
+        if (!$this->shares->contains($share)) {
+            $this->shares->add($share);
+            $share->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShare(ResourceShare $share): self
+    {
+        if ($this->shares->removeElement($share)) {
+            // set the owning side to null (unless already changed)
+            if ($share->getUser() === $this) {
+                $share->setUser(null);
             }
         }
 
