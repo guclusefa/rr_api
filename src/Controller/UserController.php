@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use App\Service\FileUploaderService;
 use App\Service\SearcherService;
 use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +23,7 @@ class UserController extends AbstractController
     public function __construct
     (
         private readonly SerializerService $serializerService,
+        private readonly UserRepository $userRepository,
         private readonly SearcherService $searcherService,
         private readonly EntityManagerInterface $entityManager,
         private readonly FileUploaderService $fileUploaderService,
@@ -63,20 +66,17 @@ class UserController extends AbstractController
     #[Route('', name: 'api_users', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
-        // criterias
-        $fieldsToSearchFrom = ['username', 'firstName', 'lastName'];
-        $defaultFilters = ['isBanned' => false];
-        $fieldsToFilterFrom = ['gender', 'state'];
-        $fieldsToOrderFrom = ['id','username', 'createdAt'];
-        // search by criterias
-        $users = $this->searcherService->fullyFilteredData(
-            $request->query->all(),
-            $fieldsToSearchFrom,
-            $defaultFilters,
-            $fieldsToFilterFrom,
-            $fieldsToOrderFrom,
-            User::class
-        );
+        $search = $request->query->get('search');
+
+        $states = $request->query->all('state');
+        $genders = $request->query->all("gender");
+
+        $order = $request->query->get('order', 'id');
+        $direction = $request->query->get('direction', 'ASC');
+        $page = $request->query->get('page', 1);
+        $limit = $request->query->get('limit', 10);
+
+        $users = $this->userRepository->advanceSearch($search, $states, $genders, $order, $direction, $page, $limit);
         // serialize & return
         $users = $this->serializerService->serialize(User::GROUP_GET, $users);
         return new JsonResponse(

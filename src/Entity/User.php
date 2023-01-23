@@ -23,7 +23,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use UserTimeStampTrait;
 
-    const GROUP_GET = ['user:read'];
+    const GROUP_GET = ['user:read', 'state:read'];
     const GROUP_ITEM = ['user:read', 'user:item', 'state:read'];
     const GROUP_ITEM_CONFIDENTIAL = ['user:read', 'user:item', 'user:confidential', 'state:read'];
     const GROUP_WRITE = ['user:write'];
@@ -73,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 1, nullable: true)]
     #[Assert\Length(min: 1, max: 1)]
     #[Assert\Choice(choices: ['M', 'F', 'O'])]
-    #[Groups(['user:item', 'user:update'])]
+    #[Groups(['user:read', 'user:update'])]
     private ?string $gender = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
@@ -96,17 +96,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isVerified = false;
 
     #[ORM\Column]
-    #[Groups(['user:item'])]
+    #[Groups(['user:read'])]
     private ?bool $isActive = true;
 
     #[ORM\Column]
-    #[Groups(['user:item'])]
+    #[Groups(['user:read'])]
     private ?bool $isBanned = false;
 
     #[ORM\ManyToOne(targetEntity: State::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
     #[AppAssert\ValidState]
-    #[Groups(['user:item', 'user:update'])]
+    #[Groups(['user:read', 'user:update'])]
     private ?State $state = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Resource::class)]
@@ -118,6 +118,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $comments;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceLike::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
     private Collection $likes;
 
     public function __construct()

@@ -5,8 +5,11 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -72,6 +75,74 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult()
         ;
     }
+    public function findBySearch($qb, $search)
+    {
+        if ($search) {
+            $qb->andWhere('u.username LIKE :search')
+                ->orWhere('u.firstName LIKE :search')
+                ->orWhere('u.lastName LIKE :search')
+                ->setParameter('search', '%'.$search.'%');
+        }
+    }
+
+    public function findByStates($qb, $states)
+    {
+        if ($states) {
+            $qb->andWhere('u.state IN (:states)')
+                ->setParameter('states', $states);
+        }
+    }
+
+    public function findByGenders($qb, $genders)
+    {
+        if ($genders) {
+            $qb->andWhere('u.gender IN (:genders)')
+                ->setParameter('genders', $genders);
+        }
+    }
+
+    public function orderBy($qb, $order, $direction)
+    {
+        if ($order && $direction) {
+            $qb->orderBy('u.'.$order, $direction);
+        }
+    }
+
+    public function paginate($qb, $page, $limit): Paginator
+    {
+        $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        return new Paginator($qb);
+    }
+
+    public function getMetadata($paginator, $page, $limit): array
+    {
+        return [
+            'page' => (int) $page,
+            'limit' => (int) $limit,
+            'pages' => (int) ceil($paginator->count() / $limit),
+            'total' => $paginator->count(),
+            'start' => ($page - 1) * $limit + 1,
+            'end' => $page * $limit,
+        ];
+    }
+
+    public function advanceSearch($search, $states, $genders, $order, $direction, $page, $limit): array
+    {
+        $qb = $this->createQueryBuilder('u');
+        $this->findBySearch($qb, $search);
+        $this->findByStates($qb, $states);
+        $this->findByGenders($qb, $genders);
+        $this->orderBy($qb, $order, $direction);
+        $paginator = $this->paginate($qb, $page, $limit);
+        $metadata = $this->getMetadata($paginator, $page, $limit);
+        return [
+            'data' => $qb->getQuery()->getResult(),
+            'meta' => $metadata,
+        ];
+    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */
