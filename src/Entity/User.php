@@ -125,12 +125,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $shares;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceExploit::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
+    private Collection $exploits;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
         $this->shares = new ArrayCollection();
+        $this->exploits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -449,6 +454,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($share->getUser() === $this) {
                 $share->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceExploit>
+     */
+    public function getExploits(): Collection
+    {
+        return $this->exploits;
+    }
+
+    public function addExploit(ResourceExploit $exploit): self
+    {
+        if (!$this->exploits->contains($exploit)) {
+            $this->exploits->add($exploit);
+            $exploit->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExploit(ResourceExploit $exploit): self
+    {
+        if ($this->exploits->removeElement($exploit)) {
+            // set the owning side to null (unless already changed)
+            if ($exploit->getUser() === $this) {
+                $exploit->setUser(null);
             }
         }
 

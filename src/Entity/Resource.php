@@ -90,12 +90,17 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $shares;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceExploit::class, orphanRemoval: true)]
+    #[Groups(['resource:read'])]
+    private Collection $exploits;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
         $this->shares = new ArrayCollection();
+        $this->exploits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -341,6 +346,36 @@ class Resource
             // set the owning side to null (unless already changed)
             if ($share->getResource() === $this) {
                 $share->setResource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceExploit>
+     */
+    public function getExploits(): Collection
+    {
+        return $this->exploits;
+    }
+
+    public function addExploit(ResourceExploit $exploit): self
+    {
+        if (!$this->exploits->contains($exploit)) {
+            $this->exploits->add($exploit);
+            $exploit->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExploit(ResourceExploit $exploit): self
+    {
+        if ($this->exploits->removeElement($exploit)) {
+            // set the owning side to null (unless already changed)
+            if ($exploit->getResource() === $this) {
+                $exploit->setResource(null);
             }
         }
 

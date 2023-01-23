@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Resource;
+use App\Entity\ResourceExploit;
 use App\Entity\ResourceLike;
 use App\Entity\ResourceShare;
 use App\Repository\ResourceRepository;
@@ -191,6 +192,34 @@ class ResourceController extends AbstractController
             $resource->addShare($share);
             $this->entityManager->persist($share);
             $message = 'Vous avez bien partagé cette ressource';
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => $message],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/exploit', name: 'api_resources_exploit', methods: ['POST'])]
+    public function exploit(Resource $resource): JsonResponse
+    {
+        // check if user already exploited
+        $exploit = $resource->getExploits()->filter(function ($exploit) {
+            return $exploit->getUser() === $this->getUser();
+        })->first();
+        if ($exploit) {
+            $resource->removeExploit($exploit);
+            $this->entityManager->remove($exploit);
+            $message = 'Vous avez bien retiré votre exploitation';
+        } else {
+            $exploit = new ResourceExploit();
+            $exploit->setUser($this->getUser());
+            $resource->addExploit($exploit);
+            $this->entityManager->persist($exploit);
+            $message = 'Vous avez bien exploité cette ressource';
         }
         // persist & flush
         $this->entityManager->persist($resource);
