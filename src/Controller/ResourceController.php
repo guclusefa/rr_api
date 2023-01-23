@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Resource;
 use App\Entity\ResourceLike;
+use App\Repository\ResourceRepository;
 use App\Service\FileUploaderService;
 use App\Service\SearcherService;
 use App\Service\SerializerService;
@@ -22,7 +23,8 @@ class ResourceController extends AbstractController
         private readonly SerializerService $serializerService,
         private readonly SearcherService $searcherService,
         private readonly EntityManagerInterface $entityManager,
-        private readonly FileUploaderService $fileUploaderService
+        private readonly FileUploaderService $fileUploaderService,
+        private readonly ResourceRepository $resourceRepository
     )
     {
     }
@@ -32,20 +34,20 @@ class ResourceController extends AbstractController
     public function index(Request $request): JsonResponse
     {
         // criterias
-        $fieldsToSearchFrom = ['title', 'content'];
-        $defaultFilters = ['isPublished' => true, 'isSuspended' => false, 'visibility' => 1];
-        $fieldsToFilterFrom = ['author', 'relation'];
-        $fieldsToOrderFrom = ['id','title', 'createdAt', 'updatedAt'];
-        // search by criterias
-        $resources = $this->searcherService->fullyFilteredData(
-            $request->query->all(),
-            $fieldsToSearchFrom,
-            $defaultFilters,
-            $fieldsToFilterFrom,
-            $fieldsToOrderFrom,
-            Resource::class
-        );
-        // serialize & return
+        $search = $request->query->get('search');
+        // array of criterias
+        $author = $request->query->all('author');
+        $relation = $request->query->all('relation');
+        $category = $request->query->all('category');
+        // pagination
+        $order = $request->query->get('order', 'id');
+        $direction = $request->query->get('direction', 'ASC');
+        $page = $request->query->get('page', 1);
+        $limit = $request->query->get('limit', 10);
+
+
+        // get, serialize & return
+        $resources = $this->resourceRepository->advanceSearch($search, $author, $relation, $category, $order, $direction, $page, $limit);
         $resources = $this->serializerService->serialize(Resource::GROUP_GET, $resources);
         return new JsonResponse(
             $resources,
