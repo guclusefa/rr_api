@@ -129,6 +129,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $exploits;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceSave::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
+    private Collection $saves;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
@@ -136,6 +140,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->likes = new ArrayCollection();
         $this->shares = new ArrayCollection();
         $this->exploits = new ArrayCollection();
+        $this->saves = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -484,6 +489,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($exploit->getUser() === $this) {
                 $exploit->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceSave>
+     */
+    public function getSaves(): Collection
+    {
+        return $this->saves;
+    }
+
+    public function addSave(ResourceSave $save): self
+    {
+        if (!$this->saves->contains($save)) {
+            $this->saves->add($save);
+            $save->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSave(ResourceSave $save): self
+    {
+        if ($this->saves->removeElement($save)) {
+            // set the owning side to null (unless already changed)
+            if ($save->getUser() === $this) {
+                $save->setUser(null);
             }
         }
 

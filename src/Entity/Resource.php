@@ -94,6 +94,10 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $exploits;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceSave::class, orphanRemoval: true)]
+    #[Groups(['resource:read'])]
+    private Collection $saves;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -101,6 +105,7 @@ class Resource
         $this->likes = new ArrayCollection();
         $this->shares = new ArrayCollection();
         $this->exploits = new ArrayCollection();
+        $this->saves = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -376,6 +381,36 @@ class Resource
             // set the owning side to null (unless already changed)
             if ($exploit->getResource() === $this) {
                 $exploit->setResource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceSave>
+     */
+    public function getSaves(): Collection
+    {
+        return $this->saves;
+    }
+
+    public function addSave(ResourceSave $save): self
+    {
+        if (!$this->saves->contains($save)) {
+            $this->saves->add($save);
+            $save->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSave(ResourceSave $save): self
+    {
+        if ($this->saves->removeElement($save)) {
+            // set the owning side to null (unless already changed)
+            if ($save->getResource() === $this) {
+                $save->setResource(null);
             }
         }
 

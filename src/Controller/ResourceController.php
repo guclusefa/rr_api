@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Resource;
 use App\Entity\ResourceExploit;
 use App\Entity\ResourceLike;
+use App\Entity\ResourceSave;
 use App\Entity\ResourceShare;
 use App\Repository\ResourceRepository;
 use App\Service\FileUploaderService;
@@ -220,6 +221,34 @@ class ResourceController extends AbstractController
             $resource->addExploit($exploit);
             $this->entityManager->persist($exploit);
             $message = 'Vous avez bien exploité cette ressource';
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => $message],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/save', name: 'api_resources_save', methods: ['POST'])]
+    public function save(Resource $resource): JsonResponse
+    {
+        // check if user already saved
+        $save = $resource->getSaves()->filter(function ($save) {
+            return $save->getUser() === $this->getUser();
+        })->first();
+        if ($save) {
+            $resource->removeSave($save);
+            $this->entityManager->remove($save);
+            $message = 'Vous avez bien retiré votre sauvegarde';
+        } else {
+            $save = new ResourceSave();
+            $save->setUser($this->getUser());
+            $resource->addSave($save);
+            $this->entityManager->persist($save);
+            $message = 'Vous avez bien sauvegardé cette ressource';
         }
         // persist & flush
         $this->entityManager->persist($resource);
