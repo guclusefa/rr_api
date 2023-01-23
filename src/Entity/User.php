@@ -133,6 +133,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $saves;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceConsult::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
+    private Collection $consults;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
@@ -141,6 +145,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->shares = new ArrayCollection();
         $this->exploits = new ArrayCollection();
         $this->saves = new ArrayCollection();
+        $this->consults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -519,6 +524,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($save->getUser() === $this) {
                 $save->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceConsult>
+     */
+    public function getConsults(): Collection
+    {
+        return $this->consults;
+    }
+
+    public function addConsult(ResourceConsult $consult): self
+    {
+        if (!$this->consults->contains($consult)) {
+            $this->consults->add($consult);
+            $consult->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsult(ResourceConsult $consult): self
+    {
+        if ($this->consults->removeElement($consult)) {
+            // set the owning side to null (unless already changed)
+            if ($consult->getUser() === $this) {
+                $consult->setUser(null);
             }
         }
 

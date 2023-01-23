@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Resource;
+use App\Entity\ResourceConsult;
 use App\Entity\ResourceExploit;
 use App\Entity\ResourceLike;
 use App\Entity\ResourceSave;
@@ -249,6 +250,32 @@ class ResourceController extends AbstractController
             $resource->addSave($save);
             $this->entityManager->persist($save);
             $message = 'Vous avez bien sauvegardé cette ressource';
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => $message],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/consult', name: 'api_resources_consult', methods: ['POST'])]
+    public function consult(Resource $resource): JsonResponse
+    {
+        // add consult  if last consultation by me not today
+        $lastConsultation = $resource->getConsults()->filter(function ($consultation) {
+            return $consultation->getUser() === $this->getUser();
+        })->first();
+        if (!$lastConsultation || $lastConsultation->getCreatedAt()->format('Y-m-d') !== (new \DateTime())->format('Y-m-d')) {
+            $consult = new ResourceConsult();
+            $consult->setUser($this->getUser());
+            $resource->addConsult($consult);
+            $this->entityManager->persist($consult);
+            $message = 'Vous avez bien consulté cette ressource';
+        } else {
+            $message = 'Vous avez déjà consulté cette ressource aujourd\'hui';
         }
         // persist & flush
         $this->entityManager->persist($resource);

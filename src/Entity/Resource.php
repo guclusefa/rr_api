@@ -98,6 +98,10 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $saves;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceConsult::class, orphanRemoval: true)]
+    #[Groups(['resource:read'])]
+    private Collection $consults;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -106,6 +110,7 @@ class Resource
         $this->shares = new ArrayCollection();
         $this->exploits = new ArrayCollection();
         $this->saves = new ArrayCollection();
+        $this->consults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -411,6 +416,36 @@ class Resource
             // set the owning side to null (unless already changed)
             if ($save->getResource() === $this) {
                 $save->setResource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceConsult>
+     */
+    public function getConsults(): Collection
+    {
+        return $this->consults;
+    }
+
+    public function addConsult(ResourceConsult $consult): self
+    {
+        if (!$this->consults->contains($consult)) {
+            $this->consults->add($consult);
+            $consult->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsult(ResourceConsult $consult): self
+    {
+        if ($this->consults->removeElement($consult)) {
+            // set the owning side to null (unless already changed)
+            if ($consult->getResource() === $this) {
+                $consult->setResource(null);
             }
         }
 
