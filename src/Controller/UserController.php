@@ -77,6 +77,20 @@ class UserController extends AbstractController
         );
     }
 
+    #[Route('/me', name: 'api_users_me', methods: ['GET'])]
+    public function me(): JsonResponse
+    {
+        // get, serialize & return
+        $user = $this->serializerService->serialize(User::GROUP_ITEM_CONFIDENTIAL, $this->getUser());
+        return new JsonResponse(
+            $this->serializerService->getSerializedData($user),
+            Response::HTTP_OK,
+            [],
+            true
+        );
+    }
+
+
     #[Route('/{id}', name: 'api_users_show', methods: ['GET'])]
     public function show(User $user): JsonResponse
     {
