@@ -75,16 +75,6 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
-    public function orderByLikes($qb, $direction)
-    {
-        if ($direction) {
-            $qb->addSelect('COUNT(rl.id) AS HIDDEN likes')
-                ->leftJoin('r.likes', 'rl')
-                ->groupBy('r.id')
-                ->orderBy('likes', $direction);
-        }
-    }
-
     public function orderByComments($qb, $direction)
     {
         if ($direction) {
@@ -95,15 +85,81 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
+    public function orderByLikes($qb, $direction)
+    {
+        if ($direction) {
+            $qb->addSelect('COUNT(rl.id) AS HIDDEN likes')
+                ->leftJoin('r.likes', 'rl')
+                ->groupBy('r.id')
+                ->orderBy('likes', $direction);
+        }
+    }
+
+    public function orderByShares($qb, $direction)
+    {
+        if ($direction) {
+            $qb->addSelect('COUNT(rs.id) AS HIDDEN shares')
+                ->leftJoin('r.shares', 'rs')
+                ->groupBy('r.id')
+                ->orderBy('shares', $direction);
+        }
+    }
+
+    public function orderByExploits($qb, $direction)
+    {
+        if ($direction) {
+            $qb->addSelect('COUNT(re.id) AS HIDDEN exploits')
+                ->leftJoin('r.exploits', 're')
+                ->groupBy('r.id')
+                ->orderBy('exploits', $direction);
+        }
+    }
+
+    public function orderBySaves($qb, $direction)
+    {
+        if ($direction) {
+            $qb->addSelect('COUNT(rs.id) AS HIDDEN saves')
+                ->leftJoin('r.saves', 'rs')
+                ->groupBy('r.id')
+                ->orderBy('saves', $direction);
+        }
+    }
+
+    public function orderByConsults($qb, $direction)
+    {
+        if ($direction) {
+            $qb->addSelect('COUNT(rc.id) AS HIDDEN consults')
+                ->leftJoin('r.consults', 'rc')
+                ->groupBy('r.id')
+                ->orderBy('consults', $direction);
+        }
+    }
+
     public function orderBy($qb, $order, $direction)
     {
         if ($order && $direction) {
-            if ($order == "likes"){
-                $this->orderByLikes($qb, $direction);
-            } else if ($order == "comments"){
-                $this->orderByComments($qb, $direction);
-            } else {
-                $qb->orderBy('r.'.$order, $direction);
+            switch ($order) {
+                case 'likes':
+                    $this->orderByLikes($qb, $direction);
+                    break;
+                case 'comments':
+                    $this->orderByComments($qb, $direction);
+                    break;
+                case 'shares':
+                    $this->orderByShares($qb, $direction);
+                    break;
+                case 'exploits':
+                    $this->orderByExploits($qb, $direction);
+                    break;
+                case 'saves':
+                    $this->orderBySaves($qb, $direction);
+                    break;
+                case 'consults':
+                    $this->orderByConsults($qb, $direction);
+                    break;
+                default:
+                    $qb->orderBy('r.'.$order, $direction);
+                    break;
             }
         }
     }
