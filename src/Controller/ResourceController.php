@@ -6,7 +6,6 @@ use App\Entity\Resource;
 use App\Entity\ResourceLike;
 use App\Repository\ResourceRepository;
 use App\Service\FileUploaderService;
-use App\Service\SearcherService;
 use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

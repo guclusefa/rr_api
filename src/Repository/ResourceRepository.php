@@ -75,10 +75,36 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
+    public function orderByLikes($qb, $direction)
+    {
+        if ($direction) {
+            $qb->addSelect('COUNT(rl.id) AS HIDDEN likes')
+                ->leftJoin('r.likes', 'rl')
+                ->groupBy('r.id')
+                ->orderBy('likes', $direction);
+        }
+    }
+
+    public function orderByComments($qb, $direction)
+    {
+        if ($direction) {
+            $qb->addSelect('COUNT(rc.id) AS HIDDEN comments')
+                ->leftJoin('r.comments', 'rc')
+                ->groupBy('r.id')
+                ->orderBy('comments', $direction);
+        }
+    }
+
     public function orderBy($qb, $order, $direction)
     {
         if ($order && $direction) {
-            $qb->orderBy('r.'.$order, $direction);
+            if ($order == "likes"){
+                $this->orderByLikes($qb, $direction);
+            } else if ($order == "comments"){
+                $this->orderByComments($qb, $direction);
+            } else {
+                $qb->orderBy('r.'.$order, $direction);
+            }
         }
     }
 
