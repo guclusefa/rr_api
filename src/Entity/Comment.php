@@ -17,7 +17,7 @@ class Comment
     use CommentTimeStampTrait;
 
     const GROUP_GET = ['comment:read', 'resource:identifier', 'user:identifier'];
-    const GROUP_ITEM = ['comment:read', 'comment:item', 'resource:identifier', 'user:read'];
+    const GROUP_ITEM = ['comment:read', 'comment:item', 'resource:identifier', 'user:identifier'];
     const GROUP_WRITE = ['comment:write'];
     const GROUP_REPLY = ['comment:reply'];
 

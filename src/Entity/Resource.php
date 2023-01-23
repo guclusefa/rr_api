@@ -18,8 +18,8 @@ class Resource
 {
     use ResourceTimeStampTrait;
 
-    const GROUP_GET = ['resource:read', 'user:read', 'relation:read', 'category:read'];
-    const GROUP_ITEM = ['resource:read', 'resource:item', 'user:read', 'relation:read', 'category:read'];
+    const GROUP_GET = ['resource:read', 'category:read', 'relation:read', 'user:identifier'];
+    const GROUP_ITEM = ['resource:read', 'resource:item', 'category:read', 'relation:read', 'user:identifier'];
     const GROUP_WRITE = ['resource:write'];
     const GROUP_UPDATE = ['resource:update'];
 
