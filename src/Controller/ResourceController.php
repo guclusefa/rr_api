@@ -9,6 +9,7 @@ use App\Entity\ResourceLike;
 use App\Entity\ResourceSave;
 use App\Entity\ResourceShare;
 use App\Entity\ResourceSharedTo;
+use App\Entity\ResourceStats;
 use App\Entity\User;
 use App\Repository\ResourceRepository;
 use App\Service\FileUploaderService;
@@ -361,6 +362,43 @@ class ResourceController extends AbstractController
         // return
         return new JsonResponse(
             ['message' => 'Vous avez bien retiré le partage avec ' . $count . ' utilisateur(s)'],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/generatestats', name: 'api_resources_generate_stats', methods: ['POST'])]
+    public function generateStats(Resource $resource): JsonResponse
+    {
+        // check if stats already exist today
+        $stats = $resource->getStats()->filter(function ($stat) {
+            return $stat->getCreatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
+        })->first();
+        if ($stats) {
+            return new JsonResponse(
+                ['message' => 'Les statistiques de cette ressource ont déjà été générées aujourd\'hui'],
+                Response::HTTP_OK
+            );
+        }
+        // get number of consults, exploits, likes, saves and shares of the resource
+        $consults = $resource->getConsults()->count();
+        $exploits = $resource->getExploits()->count();
+        $likes = $resource->getLikes()->count();
+        $saves = $resource->getSaves()->count();
+        $shares = $resource->getShares()->count();
+        // add to db
+        $resourceStats = new ResourceStats();
+        $resourceStats->setResource($resource);
+        $resourceStats->setNbConsults($consults);
+        $resourceStats->setNbExploits($exploits);
+        $resourceStats->setNbLikes($likes);
+        $resourceStats->setNbSaves($saves);
+        $resourceStats->setNbShares($shares);
+        // persist & flush
+        $this->entityManager->persist($resourceStats);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => 'Les statistiques ont bien été générées'],
             Response::HTTP_OK
         );
     }

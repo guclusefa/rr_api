@@ -138,6 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $consults;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceSharedTo::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
     private Collection $sharesTo;
 
     public function __construct()
