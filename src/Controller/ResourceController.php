@@ -8,6 +8,8 @@ use App\Entity\ResourceExploit;
 use App\Entity\ResourceLike;
 use App\Entity\ResourceSave;
 use App\Entity\ResourceShare;
+use App\Entity\ResourceSharedTo;
+use App\Entity\User;
 use App\Repository\ResourceRepository;
 use App\Service\FileUploaderService;
 use App\Service\SerializerService;
@@ -46,7 +48,6 @@ class ResourceController extends AbstractController
         $direction = $request->query->get('direction', 'ASC');
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 10);
-
 
         // get, serialize & return
         $resources = $this->resourceRepository->advanceSearch($search, $author, $relation, $category, $order, $direction, $page, $limit);
@@ -283,6 +284,83 @@ class ResourceController extends AbstractController
         // return
         return new JsonResponse(
             ['message' => $message],
+            Response::HTTP_OK
+        );
+    }
+
+    // TODO a revoir
+    #[Route('/{id}/shareto', name: 'api_resources_shareto', methods: ['POST'])]
+    public function shareTo(Resource $resource, Request $request): JsonResponse
+    {
+        // get users array from request
+        $users = $request->getContent();
+        $users = json_decode($users, true);
+        // for each user
+        $count = 0;
+        foreach ($users["users"] as $user) {
+            $user = $this->entityManager->getRepository(User::class)->find($user['id']);
+            if ($user) {
+                // check if user already shared
+                $share = $resource->getSharesTo()->filter(function ($share) use ($user) {
+                    return $share->getUser() === $user;
+                })->first();
+                if (!$share) {
+                    $share = new ResourceSharedTo();
+                    $share->setUser($user);
+                    $resource->addSharedTo($share);
+                    $this->entityManager->persist($share);
+                    $count++;
+                }
+            } else {
+                return new JsonResponse(
+                    ['message' => 'Un des utilisateurs n\'existe pas'],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => 'Vous avez bien partagé cette ressource avec ' . $count . ' utilisateur(s)'],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/shareto', name: 'api_resources_shareto_delete', methods: ['DELETE'])]
+    public function shareToDelete(Resource $resource, Request $request): JsonResponse
+    {
+        // get users array from request
+        $users = $request->getContent();
+        $users = json_decode($users, true);
+        // for each user
+        $count = 0;
+        foreach ($users["users"] as $user) {
+            $user = $this->entityManager->getRepository(User::class)->find($user['id']);
+            if ($user) {
+                // check if user already shared
+                $share = $resource->getSharesTo()->filter(function ($share) use ($user) {
+                    return $share->getUser() === $user;
+                })->first();
+                if ($share) {
+                    $resource->removeSharedTo($share);
+                    $this->entityManager->remove($share);
+                    $count++;
+                }
+            } else {
+                return new JsonResponse(
+                    ['message' => 'Un des utilisateurs n\'existe pas'],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+        }
+        // persist & flush
+        $this->entityManager->persist($resource);
+        $this->entityManager->flush();
+        // return
+        return new JsonResponse(
+            ['message' => 'Vous avez bien retiré le partage avec ' . $count . ' utilisateur(s)'],
             Response::HTTP_OK
         );
     }

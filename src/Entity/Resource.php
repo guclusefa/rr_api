@@ -102,6 +102,9 @@ class Resource
     #[Groups(['resource:read'])]
     private Collection $consults;
 
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceSharedTo::class, orphanRemoval: true)]
+    private Collection $sharesTo;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -111,6 +114,7 @@ class Resource
         $this->exploits = new ArrayCollection();
         $this->saves = new ArrayCollection();
         $this->consults = new ArrayCollection();
+        $this->sharesTo = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -446,6 +450,36 @@ class Resource
             // set the owning side to null (unless already changed)
             if ($consult->getResource() === $this) {
                 $consult->setResource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceSharedTo>
+     */
+    public function getSharesTo(): Collection
+    {
+        return $this->sharesTo;
+    }
+
+    public function addSharedTo(ResourceSharedTo $sharesTo): self
+    {
+        if (!$this->sharesTo->contains($sharesTo)) {
+            $this->sharesTo->add($sharesTo);
+            $sharesTo->setResource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSharedTo(ResourceSharedTo $sharesTo): self
+    {
+        if ($this->sharesTo->removeElement($sharesTo)) {
+            // set the owning side to null (unless already changed)
+            if ($sharesTo->getResource() === $this) {
+                $sharesTo->setResource(null);
             }
         }
 

@@ -88,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:identifier'])]
     private ?string $photo = null;
 
     #[ORM\Column]
@@ -137,6 +137,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $consults;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceSharedTo::class, orphanRemoval: true)]
+    private Collection $sharesTo;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
@@ -146,6 +149,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->exploits = new ArrayCollection();
         $this->saves = new ArrayCollection();
         $this->consults = new ArrayCollection();
+        $this->sharesTo = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -554,6 +558,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($consult->getUser() === $this) {
                 $consult->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResourceSharedTo>
+     */
+    public function getSharesTo(): Collection
+    {
+        return $this->sharesTo;
+    }
+
+    public function addSharesTo(ResourceSharedTo $sharesTo): self
+    {
+        if (!$this->sharesTo->contains($sharesTo)) {
+            $this->sharesTo->add($sharesTo);
+            $sharesTo->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSharesTo(ResourceSharedTo $sharesTo): self
+    {
+        if ($this->sharesTo->removeElement($sharesTo)) {
+            // set the owning side to null (unless already changed)
+            if ($sharesTo->getUser() === $this) {
+                $sharesTo->setUser(null);
             }
         }
 
