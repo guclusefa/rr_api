@@ -24,7 +24,6 @@ class UserController extends AbstractController
     (
         private readonly SerializerService $serializerService,
         private readonly UserRepository $userRepository,
-        private readonly SearcherService $searcherService,
         private readonly EntityManagerInterface $entityManager,
         private readonly FileUploaderService $fileUploaderService,
         private readonly UserPasswordHasherInterface $userPasswordHasher,

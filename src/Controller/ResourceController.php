@@ -21,7 +21,6 @@ class ResourceController extends AbstractController
     public function __construct
     (
         private readonly SerializerService $serializerService,
-        private readonly SearcherService $searcherService,
         private readonly EntityManagerInterface $entityManager,
         private readonly FileUploaderService $fileUploaderService,
         private readonly ResourceRepository $resourceRepository
