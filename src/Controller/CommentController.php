@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Repository\CommentRepository;
 use App\Service\SearcherService;
 use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +20,8 @@ class CommentController extends AbstractController
     (
         private readonly SerializerService $serializerService,
         private readonly SearcherService $searcherService,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly CommentRepository $commentRepository
     )
     {
     }
@@ -29,20 +31,19 @@ class CommentController extends AbstractController
     public function index(Request $request): JsonResponse
     {
         // criterias
-        $fieldsToSearchFrom = ['content'];
-        $defaultFilters = [];
-        $fieldsToFilterFrom = ['author', 'resource', 'replyTo'];
-        $fieldsToOrderFrom = ['id','content', 'createdAt', 'updatedAt'];
-        // search by criterias
-        $comments = $this->searcherService->fullyFilteredData(
-            $request->query->all(),
-            $fieldsToSearchFrom,
-            $defaultFilters,
-            $fieldsToFilterFrom,
-            $fieldsToOrderFrom,
-            Comment::class
-        );
-        // serialize & return
+        $search = $request->query->get('search');
+        // array of criterias
+        $author = $request->query->all('author');
+        $resource = $request->query->all('resource');
+        $replyto = $request->query->all('replyto');
+        // pagination
+        $order = $request->query->get('order', 'id');
+        $direction = $request->query->get('direction', 'ASC');
+        $page = $request->query->get('page', 1);
+        $limit = $request->query->get('limit', 10);
+
+        // get, serialize & return
+        $comments = $this->commentRepository->advanceSearch($search, $author, $resource, $replyto, $order, $direction, $page, $limit);
         $comments = $this->serializerService->serialize(Comment::GROUP_GET, $comments);
         return new JsonResponse(
             $comments,

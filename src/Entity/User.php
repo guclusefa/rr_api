@@ -34,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:identifier'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -53,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 20)]
-    #[Groups(['user:read', 'user:write', 'user:update'])]
+    #[Groups(['user:read', 'user:identifier', 'user:write', 'user:update'])]
     private ?string $username = null;
 
     #[ORM\Column]

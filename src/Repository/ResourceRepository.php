@@ -40,18 +40,6 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByExampleField($value): array
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.categories IN (:val)')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
     public function findBySearch($qb, $search)
     {
         if ($search) {
