@@ -43,7 +43,8 @@ class ResourceRepository extends ServiceEntityRepository
 
     public function isAccesibleToMe($resource, $user): bool
     {
-        // mine
+        // IF resource is mine return true
+        // IF resource is not published or suspended return false
         if ($user) {
             $myResources = $resource->getAuthor() == $user;
             if ($myResources) {
@@ -79,6 +80,15 @@ class ResourceRepository extends ServiceEntityRepository
         $qb->andWhere('r.visibility = 1')
             ->orWhere('r.visibility = 2 AND EXISTS (SELECT rst FROM App\Entity\ResourceSharedTo rst WHERE rst.resource = r AND rst.user = :user)')
             ->orWhere('r.visibility = 3 AND r.author = :user')
+            ->setParameter('user', $user);
+    }
+
+    public function findByStatus($qb, $user)
+    {
+        // FIND all with author me
+        // OR FIND all with isPublished 1 & isSuspended 0
+        $qb->andWhere('r.author = :user')
+            ->orWhere('r.isPublished = 1 AND r.isSuspended = 0')
             ->setParameter('user', $user);
     }
 
@@ -246,6 +256,7 @@ class ResourceRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('r');
         $this->findByAccesibility($qb, $user);
+        $this->findByStatus($qb, $user);
         $this->findBySearch($qb, $search);
         $this->findByVerified($qb, $verified);
         $this->findByVisibility($qb, $visibility);
