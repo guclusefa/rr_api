@@ -25,6 +25,13 @@ class UserService
         }
     }
 
+    public function checkUpdateAccess($user, $me): void
+    {
+        if ($user !== $me) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à la modification de cet utilisateur');
+        }
+    }
+
     public function checkOldPassword($user, $oldPassword): void
     {
        if (!$oldPassword || !$this->userPasswordHasher->isPasswordValid($user, $oldPassword)) {

@@ -89,6 +89,8 @@ class UserController extends AbstractController
     #[Route('/{id}', name: 'api_users_update', methods: ['PUT'])]
     public function update(User $user, Request $request): JsonResponse
     {
+        // check access
+        $this->userService->checkUpdateAccess($user, $this->getUser());
         // deserialize
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE, $request, User::class);
         // update user
@@ -114,6 +116,8 @@ class UserController extends AbstractController
     #[Route('/{id}/photo', name: 'api_users_update_photo', methods: ['POST'])]
     public function updatePhoto(User $user, Request $request): JsonResponse
     {
+        // check access
+        $this->userService->checkUpdateAccess($user, $this->getUser());
         // check & upload file
         $photo = $request->files->get('photo');
         if ($photo) {
@@ -147,6 +151,8 @@ class UserController extends AbstractController
     #[Route('/{id}/password', name: 'api_users_update_password', methods: ['PUT'])]
     public function updatePassword(User $user, Request $request): JsonResponse
     {
+        // check access
+        $this->userService->checkUpdateAccess($user, $this->getUser());
         // check if old password is correct
         $this->userService->checkOldPassword($user,json_decode($request->getContent())->old ?? null);
         // deserialize & update
@@ -168,6 +174,8 @@ class UserController extends AbstractController
     #[Route('/{id}/email', name: 'api_users_update_email', methods: ['PUT'])]
     public function updateEmail(User $user, Request $request): JsonResponse
     {
+        // check access
+        $this->userService->checkUpdateAccess($user, $this->getUser());
         // check if old password is correct
         $this->userService->checkOldPassword($user,json_decode($request->getContent())->old ?? null);
         // deserialize check email & update
@@ -190,6 +198,8 @@ class UserController extends AbstractController
     #[Route('/{id}/delete', name: 'api_users_delete', methods: ['DELETE'])]
     public function delete(User $user): JsonResponse
     {
+        // check access
+        $this->userService->checkUpdateAccess($user, $this->getUser());
         // delete user
         $this->entityManager->remove($user);
         $this->entityManager->flush();
