@@ -126,8 +126,12 @@ class JWTService
     // get user from a JWT token
     public function getUserFromToken(string $token)
     {
+        // check if token is valid
+        $this->checkToken($token);
+        // get user from token
         $payload = $this->getPayload($token);
         $user = $this->entityManager->getRepository(User::class)->find($payload['id']);
+        // check if user exists
         if (!$user) throw new HttpException(Response::HTTP_BAD_REQUEST, 'Utilisateur introuvable');
         return $user;
     }

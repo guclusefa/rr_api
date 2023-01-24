@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -42,6 +41,16 @@ class UserService
             return true;
         }
         return false;
+    }
+
+    public function createUser($user): void
+    {
+        // check for errors
+        $this->serializerService->checkErrors($user);
+        // hash password
+        $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
+        // save
+        $this->userRepository->save($user, true);
     }
 
     public function updateUser($user, $updatedUser): void
@@ -91,6 +100,17 @@ class UserService
        }
     }
 
+    public function resetPassword($user, $updatedUser): void
+    {
+        // set plain password
+        $user->setPassword($updatedUser->getPassword());
+        // check for errors
+        $this->serializerService->checkErrors($user);
+        // update
+        $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
+        $this->userRepository->save($user, true);
+    }
+
     public function updatePassword($user, $oldPassword, $updatedUser): void
     {
         // check password
@@ -123,6 +143,16 @@ class UserService
         // check for errors
         $this->serializerService->checkErrors($user);
         // save user
+        $this->userRepository->save($user, true);
+    }
+
+    public function verifyEmail($user): void
+    {
+        // check if user is already verified
+        if ($user->isIsVerified()) throw new HttpException(Response::HTTP_BAD_REQUEST, 'Votre adresse email est déjà vérifiée');
+        // confirm user
+        $user->setIsVerified(true);
+        // save
         $this->userRepository->save($user, true);
     }
 }

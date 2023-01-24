@@ -2,7 +2,6 @@
 
 namespace App\Fixtures;
 
-use App\Entity\Category;
 use App\Entity\Comment;
 use App\Repository\ResourceRepository;
 use App\Repository\UserRepository;
