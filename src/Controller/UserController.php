@@ -95,6 +95,14 @@ class UserController extends AbstractController
     #[Route('/{id}', name: 'api_users_show', methods: ['GET'])]
     public function show(User $user): JsonResponse
     {
+        // check access
+        if (!$this->userRepository->isAccesibleToMe($user, $this->getUser())) {
+            return new JsonResponse(
+                ['message' => 'Vous n\'avez pas accès à cet utilisateur'],
+                Response::HTTP_FORBIDDEN
+            );
+        }
+        // check if me for confidential data
         if ($this->isMe($user)) {
             $user = $this->serializerService->serialize(User::GROUP_ITEM_CONFIDENTIAL, $user);
         } else {

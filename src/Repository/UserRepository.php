@@ -76,6 +76,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
 
+    public function isAccesibleToMe($user, $me): bool
+    {
+        // IF BANNED AND NOT ME RETURN FALSE
+        if ($user->isIsBanned() && $user->getId() !== $me->getId()) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function findByBanned($qb, $user)
     {
         if ($user){

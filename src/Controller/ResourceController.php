@@ -66,7 +66,6 @@ class ResourceController extends AbstractController
     #[Route('/{id}', name: 'api_resources_show', methods: ['GET'])]
     public function show(Resource $resource): JsonResponse
     {
-        // check access
         if (!$this->resourceRepository->isAccesibleToMe($resource, $this->getUser())) {
             return new JsonResponse(
                 ['message' => 'Vous n\'avez pas accès à cette ressource'],
