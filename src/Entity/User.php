@@ -100,7 +100,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isVerified = false;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:update'])]
     private ?bool $isActive = true;
 
     #[ORM\Column]

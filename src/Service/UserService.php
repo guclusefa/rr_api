@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,6 +44,20 @@ class UserService
         return false;
     }
 
+    public function formatUser($user, $baseUrl) : User
+    {
+        $user->setPhoto($baseUrl . "/" . $this->params->get("app.user.images.path") . $user->getPhoto());
+        return $user;
+    }
+
+    public function formatsUsers($users, $baseUrl)
+    {
+        foreach ($users["data"] as $user) {
+            $this->formatUser($user, $baseUrl);
+        }
+        return $users;
+    }
+
     public function createUser($user): void
     {
         // check for errors
@@ -63,6 +78,7 @@ class UserService
         $user->setBirthDate($updatedUser->getBirthDate());
         $user->setBio($updatedUser->getBio());
         $user->setState($updatedUser->getState());
+        $user->setIsActive($updatedUser->isIsActive());
         // check for errors
         $this->serializerService->checkErrors($user);
         // save
