@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Resource;
+use App\Entity\ResourceSharedTo;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,6 +41,47 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
+    public function isAccesibleToMe($resource, $user): bool
+    {
+        // mine
+        if ($user) {
+            $myResources = $resource->getAuthor() == $user;
+            if ($myResources) {
+                return true;
+            } else if (!$resource->isIsPublished() || $resource->isIsSuspended()) {
+                return false;
+            }
+        }
+        // public
+        if ($resource->getVisibility() == 1) {
+            return true;
+        }
+        // shared
+        if ($resource->getVisibility() == 2) {
+            if ($user) {
+                // sharedTo me
+                $sharedToResponsitory = $this->getEntityManager()->getRepository(ResourceSharedTo::class);
+                $sharedToMe = $sharedToResponsitory->findOneBy(['resource' => $resource, 'user' => $user]);
+                if ($sharedToMe) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function findByAccesibility($qb, $user)
+    {
+        // FIND all with visibility 1
+        // OR FIND all with visibility 2 and sharedTo me
+        // OR FIND all with visibility 3 and author me
+        $qb->andWhere('r.visibility = 1')
+            ->orWhere('r.visibility = 2 AND EXISTS (SELECT rst FROM App\Entity\ResourceSharedTo rst WHERE rst.resource = r AND rst.user = :user)')
+            ->orWhere('r.visibility = 3 AND r.author = :user')
+            ->setParameter('user', $user);
+    }
+
     public function findBySearch($qb, $search)
     {
         if ($search) {
@@ -47,6 +89,22 @@ class ResourceRepository extends ServiceEntityRepository
                 ->orWhere('r.content LIKE :search')
                 ->orWhere('r.link LIKE :search')
                 ->setParameter('search', '%'.$search.'%');
+        }
+    }
+
+    public function findByVerified($qb, $verified)
+    {
+        if ($verified) {
+            $qb->andWhere('r.isVerified = :verified')
+                ->setParameter('verified', $verified);
+        }
+    }
+
+    public function findByVisibility($qb, $visibility)
+    {
+        if ($visibility) {
+            $qb->andWhere('r.visibility = :visibility')
+                ->setParameter('visibility', $visibility);
         }
     }
 
@@ -184,10 +242,13 @@ class ResourceRepository extends ServiceEntityRepository
         ];
     }
 
-    public function advanceSearch($search, $authors, $relations, $categories, $order, $direction, $page, $limit): array
+    public function advanceSearch($user, $search, $verified, $visibility, $authors, $relations, $categories, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('r');
+        $this->findByAccesibility($qb, $user);
         $this->findBySearch($qb, $search);
+        $this->findByVerified($qb, $verified);
+        $this->findByVisibility($qb, $visibility);
         $this->findByAuthors($qb, $authors);
         $this->findByRelations($qb, $relations);
         $this->findByCategories($qb, $categories);

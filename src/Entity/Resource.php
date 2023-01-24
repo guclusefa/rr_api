@@ -49,7 +49,7 @@ class Resource
     #[ORM\Column(type: Types::SMALLINT)]
     #[Assert\NotBlank]
     #[Assert\Choice(choices: [1, 2, 3])]
-    #[Groups(['resource:item', 'resource:write', 'resource:update'])]
+    #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private ?int $visibility = null;
 
     #[ORM\Column]
@@ -57,7 +57,7 @@ class Resource
     private ?bool $isPublished = true;
 
     #[ORM\Column]
-    #[Groups(['resource:item'])]
+    #[Groups(['resource:read'])]
     private ?bool $isVerified = false;
 
     #[ORM\Column]

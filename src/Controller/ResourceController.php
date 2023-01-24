@@ -40,6 +40,8 @@ class ResourceController extends AbstractController
     {
         // criterias
         $search = $request->query->get('search');
+        $verified = $request->query->get('verified');
+        $visibility = $request->query->get('visibility');
         // array of criterias
         $author = $request->query->all('author');
         $relation = $request->query->all('relation');
@@ -51,7 +53,7 @@ class ResourceController extends AbstractController
         $limit = $request->query->get('limit', 10);
 
         // get, serialize & return
-        $resources = $this->resourceRepository->advanceSearch($search, $author, $relation, $category, $order, $direction, $page, $limit);
+        $resources = $this->resourceRepository->advanceSearch($this->getUser(), $search, $verified, $visibility, $author, $relation, $category, $order, $direction, $page, $limit);
         $resources = $this->serializerService->serialize(Resource::GROUP_GET, $resources);
         return new JsonResponse(
             $resources,
@@ -64,6 +66,13 @@ class ResourceController extends AbstractController
     #[Route('/{id}', name: 'api_resources_show', methods: ['GET'])]
     public function show(Resource $resource): JsonResponse
     {
+        // check access
+        if (!$this->resourceRepository->isAccesibleToMe($resource, $this->getUser())) {
+            return new JsonResponse(
+                ['message' => 'Vous n\'avez pas accès à cette ressource'],
+                Response::HTTP_FORBIDDEN
+            );
+        }
         // serialize
         $resource = $this->serializerService->serialize(Resource::GROUP_ITEM, $resource);
         // return
