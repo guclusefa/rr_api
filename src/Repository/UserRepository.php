@@ -75,6 +75,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult()
         ;
     }
+
+    public function findByBanned($qb, $user)
+    {
+        if ($user){
+            // find all the users that isBanned = 0 unless the user is the current user
+            $qb->andWhere('u.isBanned = :isBanned')
+                ->andWhere('u.id != :id')
+                ->setParameter('isBanned', 0)
+                ->setParameter('id', $user->getId());
+        } else {
+            // find all the users that isBanned = 0
+            $qb->andWhere('u.isBanned = :isBanned')
+                ->setParameter('isBanned', 0);
+        }
+    }
+
     public function findBySearch($qb, $search)
     {
         if ($search) {
@@ -82,6 +98,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 ->orWhere('u.firstName LIKE :search')
                 ->orWhere('u.lastName LIKE :search')
                 ->setParameter('search', '%'.$search.'%');
+        }
+    }
+
+    public function findByCertified($qb, $certified)
+    {
+        if ($certified) {
+            $qb->andWhere('u.isVerified = :certified')
+                ->setParameter('certified', $certified);
         }
     }
 
@@ -128,10 +152,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ];
     }
 
-    public function advanceSearch($search, $states, $genders, $order, $direction, $page, $limit): array
+    public function advanceSearch($user, $search, $certified, $states, $genders, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('u');
+        $this->findByBanned($qb, $user);
         $this->findBySearch($qb, $search);
+        $this->findByCertified($qb, $certified);
         $this->findByStates($qb, $states);
         $this->findByGenders($qb, $genders);
         $this->orderBy($qb, $order, $direction);

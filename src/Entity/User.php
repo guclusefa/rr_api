@@ -92,6 +92,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $photo = null;
 
     #[ORM\Column]
+    #[Groups(['user:read', 'user:identifier'])]
+    private ?bool $isCertified = false;
+
+    #[ORM\Column]
     #[Groups(['user:item'])]
     private ?bool $isVerified = false;
 
@@ -303,6 +307,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhoto(?string $photo): self
     {
         $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function isIsCertified(): ?bool
+    {
+        return $this->isCertified;
+    }
+
+    public function setIsCertified(bool $isCertified): self
+    {
+        $this->isCertified = $isCertified;
 
         return $this;
     }

@@ -57,6 +57,7 @@ class UserController extends AbstractController
     {
         // criterias
         $search = $request->query->get('search');
+        $certified = $request->query->get('certified');
         // arrays of criterias
         $states = $request->query->all('state');
         $genders = $request->query->all("gender");
@@ -67,7 +68,7 @@ class UserController extends AbstractController
         $limit = $request->query->get('limit', 10);
 
         // get, serialize & return
-        $users = $this->userRepository->advanceSearch($search, $states, $genders, $order, $direction, $page, $limit);
+        $users = $this->userRepository->advanceSearch($this->getUser(), $search, $certified, $states, $genders, $order, $direction, $page, $limit);
         $users = $this->serializerService->serialize(User::GROUP_GET, $users);
         return new JsonResponse(
             $users,
