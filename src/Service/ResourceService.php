@@ -1,0 +1,182 @@
+<?php
+
+namespace App\Service;
+
+use App\Entity\Resource;
+use App\Entity\ResourceConsult;
+use App\Entity\ResourceExploit;
+use App\Entity\ResourceSave;
+use App\Entity\ResourceSharedTo;
+use App\Entity\ResourceStats;
+use App\Entity\User;
+use App\Repository\ResourceRepository;
+use App\Repository\ResourceSharedToRepository;
+use App\Repository\ResourceStatsRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
+class ResourceService
+{
+    public function __construct
+    (
+        private readonly ResourceRepository $resourceRepository,
+        private readonly ResourceStatsRepository $resourceStatsRepository,
+        private readonly UserRepository $userRepository,
+        private readonly EntityManagerInterface $entityManager
+    )
+    {
+    }
+
+    public function exploit(Resource $resource, $user): string
+    {
+        // check if user already exploited
+        $exploit = $resource->getExploits()->filter(function ($exploit) use ($user) {
+            return $exploit->getUser() === $user;
+        })->first();
+        if ($exploit) {
+            $resource->removeExploit($exploit);
+            $this->entityManager->remove($exploit);
+            $message = 'Vous avez bien retiré votre exploitation';
+        } else {
+            $exploit = new ResourceExploit();
+            $exploit->setUser($user);
+            $resource->addExploit($exploit);
+            $this->entityManager->persist($exploit);
+            $message = 'Vous avez bien exploité cette ressource';
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+        // return message
+        return $message;
+    }
+
+    public function save(Resource $resource, $user): string
+    {
+        // check if user already saved
+        $save = $resource->getSaves()->filter(function ($save) use ($user) {
+            return $save->getUser() === $user;
+        })->first();
+        if ($save) {
+            $resource->removeSave($save);
+            $this->entityManager->remove($save);
+            $message = 'Vous avez bien retiré votre sauvegarde';
+        } else {
+            $save = new ResourceSave();
+            $save->setUser($user);
+            $resource->addSave($save);
+            $this->entityManager->persist($save);
+            $message = 'Vous avez bien sauvegardé cette ressource';
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+        // return message
+        return $message;
+    }
+
+    public function consult(Resource $resource, $user): string
+    {
+        // add consult  if last consultation by me not today
+        $lastConsultation = $resource->getConsults()->filter(function ($consult) use ($user) {
+            return $consult->getUser() === $user;
+        })->first();
+        if (!$lastConsultation || $lastConsultation->getCreatedAt()->format('Y-m-d') !== (new \DateTime())->format('Y-m-d')) {
+            $consult = new ResourceConsult();
+            $consult->setUser($user);
+            $resource->addConsult($consult);
+            $this->entityManager->persist($consult);
+            $message = 'Vous avez bien consulté cette ressource';
+        } else {
+            $message = 'Vous avez déjà consulté cette ressource aujourd\'hui';
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+        // return message
+        return $message;
+    }
+
+    public function addSharedTo(Resource $resource, $users): int
+    {
+        $count = 0;
+        foreach ($users["users"] as $user) {
+            $user = $this->entityManager->getRepository(User::class)->find($user['id']);
+            if ($user) {
+                // check if user already shared
+                $share = $resource->getSharesTo()->filter(function ($share) use ($user) {
+                    return $share->getUser() === $user;
+                })->first();
+                if (!$share) {
+                    $share = new ResourceSharedTo();
+                    $share->setUser($user);
+                    $resource->addSharedTo($share);
+                    $this->entityManager->persist($share);
+                    $count++;
+                }
+            } else {
+                throw new HttpException(Response::HTTP_NOT_FOUND, 'Un des utilisateurs n\'existe pas');
+            }
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+        // return count
+        return $count;
+    }
+
+    public function removeSharedTo(Resource $resource, $users): int
+    {
+        // for each user
+        $count = 0;
+        foreach ($users["users"] as $user) {
+            $user = $this->userRepository->find($user['id']);
+            if ($user) {
+                // check if user already shared
+                $share = $resource->getSharesTo()->filter(function ($share) use ($user) {
+                    return $share->getUser() === $user;
+                })->first();
+                if ($share) {
+                    $resource->removeSharedTo($share);
+                    $this->entityManager->remove($share);
+                    $count++;
+                }
+            } else {
+                throw new HttpException(Response::HTTP_NOT_FOUND, 'Un des utilisateurs n\'existe pas');
+            }
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+        // return count
+        return $count;
+    }
+
+    public function generateStats(Resource $resource): void
+    {
+        //        // check if stats already exist today
+//        $stats = $resource->getStats()->filter(function ($stat) {
+//            return $stat->getCreatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
+//        })->first();
+//        if ($stats) {
+//            return new JsonResponse(
+//                ['message' => 'Les statistiques de cette ressource ont déjà été générées aujourd\'hui'],
+//                Response::HTTP_OK
+//            );
+//        }
+        // get all the stats
+        $consults = $resource->getConsults()->count();
+        $exploits = $resource->getExploits()->count();
+        $likes = $resource->getLikes()->count();
+        $saves = $resource->getSaves()->count();
+        $shares = $resource->getShares()->count();
+        // add to db
+        $resourceStats = new ResourceStats();
+        $resourceStats->setResource($resource);
+        $resourceStats->setNbConsults($consults);
+        $resourceStats->setNbExploits($exploits);
+        $resourceStats->setNbLikes($likes);
+        $resourceStats->setNbSaves($saves);
+        $resourceStats->setNbShares($shares);
+        // save
+        $this->resourceStatsRepository->save($resourceStats);
+    }
+}

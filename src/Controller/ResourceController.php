@@ -13,6 +13,7 @@ use App\Entity\ResourceStats;
 use App\Entity\User;
 use App\Repository\ResourceRepository;
 use App\Service\FileUploaderService;
+use App\Service\ResourceService;
 use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,6 +27,7 @@ class ResourceController extends AbstractController
 {
     public function __construct
     (
+        private readonly ResourceService $resourceService,
         private readonly SerializerService $serializerService,
         private readonly EntityManagerInterface $entityManager,
         private readonly FileUploaderService $fileUploaderService,
@@ -218,24 +220,8 @@ class ResourceController extends AbstractController
     #[Route('/{id}/exploit', name: 'api_resources_exploit', methods: ['POST'])]
     public function exploit(Resource $resource): JsonResponse
     {
-        // check if user already exploited
-        $exploit = $resource->getExploits()->filter(function ($exploit) {
-            return $exploit->getUser() === $this->getUser();
-        })->first();
-        if ($exploit) {
-            $resource->removeExploit($exploit);
-            $this->entityManager->remove($exploit);
-            $message = 'Vous avez bien retiré votre exploitation';
-        } else {
-            $exploit = new ResourceExploit();
-            $exploit->setUser($this->getUser());
-            $resource->addExploit($exploit);
-            $this->entityManager->persist($exploit);
-            $message = 'Vous avez bien exploité cette ressource';
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        // exploit
+        $message = $this->resourceService->exploit($resource, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => $message],
@@ -246,24 +232,8 @@ class ResourceController extends AbstractController
     #[Route('/{id}/save', name: 'api_resources_save', methods: ['POST'])]
     public function save(Resource $resource): JsonResponse
     {
-        // check if user already saved
-        $save = $resource->getSaves()->filter(function ($save) {
-            return $save->getUser() === $this->getUser();
-        })->first();
-        if ($save) {
-            $resource->removeSave($save);
-            $this->entityManager->remove($save);
-            $message = 'Vous avez bien retiré votre sauvegarde';
-        } else {
-            $save = new ResourceSave();
-            $save->setUser($this->getUser());
-            $resource->addSave($save);
-            $this->entityManager->persist($save);
-            $message = 'Vous avez bien sauvegardé cette ressource';
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        // save
+        $message = $this->resourceService->save($resource, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => $message],
@@ -274,22 +244,8 @@ class ResourceController extends AbstractController
     #[Route('/{id}/consult', name: 'api_resources_consult', methods: ['POST'])]
     public function consult(Resource $resource): JsonResponse
     {
-        // add consult  if last consultation by me not today
-        $lastConsultation = $resource->getConsults()->filter(function ($consultation) {
-            return $consultation->getUser() === $this->getUser();
-        })->first();
-        if (!$lastConsultation || $lastConsultation->getCreatedAt()->format('Y-m-d') !== (new \DateTime())->format('Y-m-d')) {
-            $consult = new ResourceConsult();
-            $consult->setUser($this->getUser());
-            $resource->addConsult($consult);
-            $this->entityManager->persist($consult);
-            $message = 'Vous avez bien consulté cette ressource';
-        } else {
-            $message = 'Vous avez déjà consulté cette ressource aujourd\'hui';
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        // consult
+        $message = $this->resourceService->consult($resource, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => $message],
@@ -302,34 +258,9 @@ class ResourceController extends AbstractController
     public function shareTo(Resource $resource, Request $request): JsonResponse
     {
         // get users array from request
-        $users = $request->getContent();
-        $users = json_decode($users, true);
-        // for each user
-        $count = 0;
-        foreach ($users["users"] as $user) {
-            $user = $this->entityManager->getRepository(User::class)->find($user['id']);
-            if ($user) {
-                // check if user already shared
-                $share = $resource->getSharesTo()->filter(function ($share) use ($user) {
-                    return $share->getUser() === $user;
-                })->first();
-                if (!$share) {
-                    $share = new ResourceSharedTo();
-                    $share->setUser($user);
-                    $resource->addSharedTo($share);
-                    $this->entityManager->persist($share);
-                    $count++;
-                }
-            } else {
-                return new JsonResponse(
-                    ['message' => 'Un des utilisateurs n\'existe pas'],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        $users = json_decode($request->getContent(), true);
+        // add share to
+        $count = $this->resourceService->addSharedTo($resource, $users);
         // return
         return new JsonResponse(
             ['message' => 'Vous avez bien partagé cette ressource avec ' . $count . ' utilisateur(s)'],
@@ -341,32 +272,9 @@ class ResourceController extends AbstractController
     public function shareToDelete(Resource $resource, Request $request): JsonResponse
     {
         // get users array from request
-        $users = $request->getContent();
-        $users = json_decode($users, true);
-        // for each user
-        $count = 0;
-        foreach ($users["users"] as $user) {
-            $user = $this->entityManager->getRepository(User::class)->find($user['id']);
-            if ($user) {
-                // check if user already shared
-                $share = $resource->getSharesTo()->filter(function ($share) use ($user) {
-                    return $share->getUser() === $user;
-                })->first();
-                if ($share) {
-                    $resource->removeSharedTo($share);
-                    $this->entityManager->remove($share);
-                    $count++;
-                }
-            } else {
-                return new JsonResponse(
-                    ['message' => 'Un des utilisateurs n\'existe pas'],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        $users = json_decode($request->getContent(), true);
+        // remove shared to
+        $count = $this->resourceService->removeSharedTo($resource, $users);
         // return
         return new JsonResponse(
             ['message' => 'Vous avez bien retiré le partage avec ' . $count . ' utilisateur(s)'],
@@ -377,33 +285,8 @@ class ResourceController extends AbstractController
     #[Route('/{id}/generatestats', name: 'api_resources_generate_stats', methods: ['POST'])]
     public function generateStats(Resource $resource): JsonResponse
     {
-//        // check if stats already exist today
-//        $stats = $resource->getStats()->filter(function ($stat) {
-//            return $stat->getCreatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
-//        })->first();
-//        if ($stats) {
-//            return new JsonResponse(
-//                ['message' => 'Les statistiques de cette ressource ont déjà été générées aujourd\'hui'],
-//                Response::HTTP_OK
-//            );
-//        }
-        // get number of consults, exploits, likes, saves and shares of the resource
-        $consults = $resource->getConsults()->count();
-        $exploits = $resource->getExploits()->count();
-        $likes = $resource->getLikes()->count();
-        $saves = $resource->getSaves()->count();
-        $shares = $resource->getShares()->count();
-        // add to db
-        $resourceStats = new ResourceStats();
-        $resourceStats->setResource($resource);
-        $resourceStats->setNbConsults($consults);
-        $resourceStats->setNbExploits($exploits);
-        $resourceStats->setNbLikes($likes);
-        $resourceStats->setNbSaves($saves);
-        $resourceStats->setNbShares($shares);
-        // persist & flush
-        $this->entityManager->persist($resourceStats);
-        $this->entityManager->flush();
+        // generate stats
+        $this->resourceService->generateStats($resource);
         // return
         return new JsonResponse(
             ['message' => 'Les statistiques ont bien été générées'],
