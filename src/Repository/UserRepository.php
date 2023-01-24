@@ -92,16 +92,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findByBanned($qb, $user)
     {
-        if ($user){
-            // find all the users that isBanned = 0 unless the user is the current user
-            $qb->andWhere('u.isBanned = :isBanned')
-                ->andWhere('u.id != :id')
-                ->setParameter('isBanned', 0)
+        // find all the users that are not banned or the user is me
+        $qb->andWhere('u.isBanned = :isBanned')
+            ->setParameter('isBanned', false);
+        if ($user) {
+            $qb->orWhere('u.id = :id')
                 ->setParameter('id', $user->getId());
-        } else {
-            // find all the users that isBanned = 0
-            $qb->andWhere('u.isBanned = :isBanned')
-                ->setParameter('isBanned', 0);
         }
     }
 
