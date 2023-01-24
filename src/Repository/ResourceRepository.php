@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Resource;
 use App\Entity\ResourceSharedTo;
+use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,7 +19,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ResourceRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PaginatorService $paginatorService
+    )
     {
         parent::__construct($registry, Resource::class);
     }
@@ -232,26 +236,6 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
-    public function paginate($qb, $page, $limit): Paginator
-    {
-        $qb->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit);
-
-        return new Paginator($qb);
-    }
-
-    public function getMetadata($paginator, $page, $limit): array
-    {
-        return [
-            'page' => (int) $page,
-            'limit' => (int) $limit,
-            'pages' => (int) ceil($paginator->count() / $limit),
-            'total' => $paginator->count(),
-            'start' => ($page - 1) * $limit + 1,
-            'end' => $page * $limit,
-        ];
-    }
-
     public function advanceSearch($user, $search, $verified, $visibility, $authors, $relations, $categories, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('r');
@@ -264,8 +248,8 @@ class ResourceRepository extends ServiceEntityRepository
         $this->findByRelations($qb, $relations);
         $this->findByCategories($qb, $categories);
         $this->orderBy($qb, $order, $direction);
-        $paginator = $this->paginate($qb, $page, $limit);
-        $metadata = $this->getMetadata($paginator, $page, $limit);
+        $paginator = $this->paginatorService->paginate($qb, $page, $limit);
+        $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
         return [
             'data' => $qb->getQuery()->getResult(),
             'meta' => $metadata,
