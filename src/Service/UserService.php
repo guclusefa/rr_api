@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -11,8 +13,16 @@ class UserService
     public function __construct
     (
         private readonly UserPasswordHasherInterface $userPasswordHasher,
+        private readonly UserRepository $userRepository,
     )
     {
+    }
+
+    public function checkAccess($user, $me): void
+    {
+        if (!$this->userRepository->isAccesibleToMe($user, $me)) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à cet utilisateur');
+        }
     }
 
     public function checkOldPassword($user, $oldPassword): void

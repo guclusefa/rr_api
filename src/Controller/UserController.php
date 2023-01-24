@@ -75,15 +75,9 @@ class UserController extends AbstractController
     public function show(User $user): JsonResponse
     {
         // check access
-        if (!$this->userRepository->isAccesibleToMe($user, $this->getUser())) {
-            return new JsonResponse(
-                ['message' => 'Vous n\'avez pas accès à cet utilisateur'],
-                Response::HTTP_FORBIDDEN
-            );
-        }
-        // serialize
+        $this->userService->checkAccess($user, $this->getUser());
+        // get, serialize & return
         $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
-        // return
         return new JsonResponse(
             $this->serializerService->getSerializedData($user),
             Response::HTTP_OK,
