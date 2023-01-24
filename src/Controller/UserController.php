@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Service\FileUploaderService;
 use App\Service\SerializerService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +22,6 @@ class UserController extends AbstractController
         private readonly SerializerService $serializerService,
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly FileUploaderService $fileUploaderService,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
         private readonly UserService $userService,
     )
@@ -90,21 +88,9 @@ class UserController extends AbstractController
     {
         // check access
         $this->userService->checkUpdateAccess($user, $this->getUser());
-        // deserialize
+        // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE, $request, User::class);
-        // update user
-        $user->setUsername($updatedUser->getUsername());
-        $user->setFirstName($updatedUser->getFirstName());
-        $user->setLastName($updatedUser->getLastName());
-        $user->setGender($updatedUser->getGender());
-        $user->setBirthDate($updatedUser->getBirthDate());
-        $user->setBio($updatedUser->getBio());
-        $user->setState($updatedUser->getState());
-        // check for errors
-        $this->serializerService->checkErrors($user);
-        // save and persist
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->userService->updateUser($user, $updatedUser);
         // return
         return new JsonResponse(
             ['message' => 'Utilisateur modifié avec succès'],
@@ -117,12 +103,9 @@ class UserController extends AbstractController
     {
         // check access
         $this->userService->checkUpdateAccess($user, $this->getUser());
-        // check & upload file
+        // update
         $photo = $request->files->get('photo');
         $this->userService->updatePhoto($user, $photo);
-        // persist & flush
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
         // return
         return new JsonResponse(
             ['message' => 'Photo modifiée avec succès'],
@@ -135,17 +118,10 @@ class UserController extends AbstractController
     {
         // check access
         $this->userService->checkUpdateAccess($user, $this->getUser());
-        // check if old password is correct
-        $this->userService->checkOldPassword($user,json_decode($request->getContent())->old ?? null);
         // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_PASSWORD, $request, User::class);
-        $user->setPassword($updatedUser->getPassword());
-        // check for errors
-        $this->serializerService->checkErrors($user);
-        // save and persist
-        $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $oldPassword = json_decode($request->getContent())->old ?? null;
+        $this->userService->updatePassword($user, $oldPassword, $updatedUser);
         // return
         return new JsonResponse(
             ['message' => 'Mot de passe modifié avec succès'],
@@ -158,16 +134,10 @@ class UserController extends AbstractController
     {
         // check access
         $this->userService->checkUpdateAccess($user, $this->getUser());
-        // check if old password is correct
-        $this->userService->checkOldPassword($user,json_decode($request->getContent())->old ?? null);
         // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_EMAIL, $request, User::class);
-        $this->userService->updateEmail($user, $updatedUser->getEmail());
-        // check for errors
-        $this->serializerService->checkErrors($user);
-        // save and persist
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $oldPassword = json_decode($request->getContent())->old ?? null;
+        $this->userService->updateEmail($user, $oldPassword, $updatedUser->getEmail());
         // return
         return new JsonResponse(
             ['message' => 'Adresse email modifiée avec succès, veuillez vous reconnecter'],
@@ -181,8 +151,7 @@ class UserController extends AbstractController
         // check access
         $this->userService->checkUpdateAccess($user, $this->getUser());
         // delete user
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
+        $this->userRepository->remove($user, true);
         // return
         return new JsonResponse(
             ['message' => 'Utilisateur supprimé avec succès'],
