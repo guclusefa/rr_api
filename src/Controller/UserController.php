@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -120,24 +119,7 @@ class UserController extends AbstractController
         $this->userService->checkUpdateAccess($user, $this->getUser());
         // check & upload file
         $photo = $request->files->get('photo');
-        if ($photo) {
-            // check and upload photo
-            $user->setPhoto(
-                $this->fileUploaderService->uploadPhoto(
-                    $photo,
-                    $user->getId(),
-                    $this->getParameter("app.user.images.path")
-                )
-            );
-        } else {
-            // delete file from server if exists
-            $photoName = $user->getPhoto();
-            if ($photoName) {
-                $photoPath = $this->getParameter("app.user.images.path") . '/' . $photoName;
-                $this->fileUploaderService->deleteFile($photoPath);
-            }
-            $user->setPhoto(null);
-        }
+        $this->userService->updatePhoto($user, $photo);
         // persist & flush
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -178,11 +160,9 @@ class UserController extends AbstractController
         $this->userService->checkUpdateAccess($user, $this->getUser());
         // check if old password is correct
         $this->userService->checkOldPassword($user,json_decode($request->getContent())->old ?? null);
-        // deserialize check email & update
+        // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_EMAIL, $request, User::class);
-        $this->userService->checkSameEmail($user, $updatedUser->getEmail());
-        $user->setEmail($updatedUser->getEmail());
-        $user->setIsVerified(false);
+        $this->userService->updateEmail($user, $updatedUser->getEmail());
         // check for errors
         $this->serializerService->checkErrors($user);
         // save and persist
