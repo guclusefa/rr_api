@@ -6,12 +6,10 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\SerializerService;
 use App\Service\UserService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/users')]
@@ -21,8 +19,6 @@ class UserController extends AbstractController
     (
         private readonly SerializerService $serializerService,
         private readonly UserRepository $userRepository,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly UserPasswordHasherInterface $userPasswordHasher,
         private readonly UserService $userService,
     )
     {
@@ -73,8 +69,13 @@ class UserController extends AbstractController
     {
         // check access
         $this->userService->checkAccess($user, $this->getUser());
+        // get groups
+        $groups = User::GROUP_ITEM;
+        if ($this->userService->allowedConfidentialFields($user, $this->getUser())) {
+            $groups = User::GROUP_ITEM_CONFIDENTIAL;
+        }
         // get, serialize & return
-        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
+        $user = $this->serializerService->serialize($groups, $user);
         return new JsonResponse(
             $this->serializerService->getSerializedData($user),
             Response::HTTP_OK,

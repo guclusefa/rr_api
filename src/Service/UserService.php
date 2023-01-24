@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -18,8 +17,7 @@ class UserService
         private readonly UserRepository $userRepository,
         private readonly FileUploaderService $fileUploaderService,
         private readonly ParameterBagInterface $params,
-        private readonly SerializerService $serializerService,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly SerializerService $serializerService
     )
     {
     }
@@ -36,6 +34,14 @@ class UserService
         if ($user !== $me) {
             throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à la modification de cet utilisateur');
         }
+    }
+
+    public function allowedConfidentialFields($user, $me): bool
+    {
+        if ($user === $me) {
+            return true;
+        }
+        return false;
     }
 
     public function updateUser($user, $updatedUser): void
