@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\FileUploaderService;
 use App\Service\SerializerService;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,31 +26,9 @@ class UserController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly FileUploaderService $fileUploaderService,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
+        private readonly UserService $userService,
     )
     {
-    }
-
-    private function isMe(User $user): bool
-    {
-        return $this->getUser() === $user;
-    }
-
-    private function isBanned(User $user): void
-    {
-        if ($user->isIsBanned()) throw new HttpException(Response::HTTP_FORBIDDEN, 'Cet utilisateur est banni');
-    }
-
-    private function checkAutho(User $user): void
-    {
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isMe($user)){
-            throw new HttpException(
-                Response::HTTP_FORBIDDEN,
-                'Vous n\'avez pas les droits d\'acceder à cette ressource'
-            );
-        }
-        if (!$this->isGranted('ROLE_ADMIN')){
-            $this->isBanned($user);
-        }
     }
 
     #[Route('', name: 'api_users', methods: ['GET'])]
@@ -102,12 +81,8 @@ class UserController extends AbstractController
                 Response::HTTP_FORBIDDEN
             );
         }
-        // check if me for confidential data
-        if ($this->isMe($user)) {
-            $user = $this->serializerService->serialize(User::GROUP_ITEM_CONFIDENTIAL, $user);
-        } else {
-            $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
-        }
+        // serialize
+        $user = $this->serializerService->serialize(User::GROUP_ITEM, $user);
         // return
         return new JsonResponse(
             $this->serializerService->getSerializedData($user),
@@ -120,13 +95,7 @@ class UserController extends AbstractController
     #[Route('/{id}', name: 'api_users_update', methods: ['PUT'])]
     public function update(User $user, Request $request): JsonResponse
     {
-        // check autho
-        $this->checkAutho($user);
-        // check request & deserialize
-        $stateRequest = json_decode($request->getContent())->state ?? null;
-        if ($stateRequest && !is_int($stateRequest)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Le département doit être un nombre');
-        }
+        // deserialize
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE, $request, User::class);
         // update user
         $user->setUsername($updatedUser->getUsername());
@@ -151,8 +120,6 @@ class UserController extends AbstractController
     #[Route('/{id}/photo', name: 'api_users_update_photo', methods: ['POST'])]
     public function updatePhoto(User $user, Request $request): JsonResponse
     {
-        // check autho
-        $this->checkAutho($user);
         // check & upload file
         $photo = $request->files->get('photo');
         if ($photo) {
@@ -186,13 +153,8 @@ class UserController extends AbstractController
     #[Route('/{id}/password', name: 'api_users_update_password', methods: ['PUT'])]
     public function updatePassword(User $user, Request $request): JsonResponse
     {
-        // check autho
-        $this->checkAutho($user);
         // check if old password is correct
-        $oldPassword = json_decode($request->getContent())->old?? null;
-        if (!$oldPassword || !$this->userPasswordHasher->isPasswordValid($user, $oldPassword)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'L\'ancien mot de passe est incorrect');
-        }
+        $this->userService->checkOldPassword($user,json_decode($request->getContent())->old ?? null);
         // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_PASSWORD, $request, User::class);
         $user->setPassword($updatedUser->getPassword());
@@ -212,18 +174,11 @@ class UserController extends AbstractController
     #[Route('/{id}/email', name: 'api_users_update_email', methods: ['PUT'])]
     public function updateEmail(User $user, Request $request): JsonResponse
     {
-        // check autho
-        $this->checkAutho($user);
         // check if old password is correct
-        $oldPassword = json_decode($request->getContent())->old?? null;
-        if (!$oldPassword || !$this->userPasswordHasher->isPasswordValid($user, $oldPassword)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'L\'ancien mot de passe est incorrect');
-        }
-        // deserialize & update
+        $this->userService->checkOldPassword($user,json_decode($request->getContent())->old ?? null);
+        // deserialize check email & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_EMAIL, $request, User::class);
-        if ($user->getEmail() === $updatedUser->getEmail()) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Vous êtes déjà inscrit avec cette adresse email');
-        }
+        $this->userService->checkSameEmail($user, $updatedUser->getEmail());
         $user->setEmail($updatedUser->getEmail());
         $user->setIsVerified(false);
         // check for errors
@@ -241,8 +196,6 @@ class UserController extends AbstractController
     #[Route('/{id}/delete', name: 'api_users_delete', methods: ['DELETE'])]
     public function delete(User $user): JsonResponse
     {
-        // check autho
-        $this->checkAutho($user);
         // delete user
         $this->entityManager->remove($user);
         $this->entityManager->flush();
