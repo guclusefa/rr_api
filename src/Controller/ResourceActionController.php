@@ -4,13 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Resource;
 use App\Entity\User;
-use App\Repository\ResourceRepository;
 use App\Service\ResourceService;
-use App\Service\SerializerService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -19,9 +16,7 @@ class ResourceActionController extends AbstractController
 {
     public function __construct
     (
-        private readonly ResourceService $resourceService,
-        private readonly SerializerService $serializerService,
-        private readonly ResourceRepository $resourceRepository
+        private readonly ResourceService $resourceService
     )
     {
     }
