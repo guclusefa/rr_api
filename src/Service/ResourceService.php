@@ -123,6 +123,15 @@ class ResourceService
         $this->resourceRepository->save($resource, true);
     }
 
+    public function isLiked(Resource $resource, $user): bool
+    {
+        // check if user already liked
+        $like = $resource->getLikes()->filter(function ($like) use ($user) {
+            return $like->getUser() === $user;
+        })->first();
+        return $like != null;
+    }
+
     public function like(Resource $resource, $user): string
     {
         // check if user already liked
@@ -144,6 +153,15 @@ class ResourceService
         $this->resourceRepository->save($resource, true);
         // return message
         return $message;
+    }
+
+    public function isShared(Resource $resource, $user): bool
+    {
+        // check if user already shared
+        $share = $resource->getShares()->filter(function ($share) use ($user) {
+            return $share->getUser() === $user;
+        })->first();
+        return $share != null;
     }
 
     public function share(Resource $resource, $user): string
@@ -169,6 +187,15 @@ class ResourceService
         return $message;
     }
 
+    public function isExploited(Resource $resource, $user): bool
+    {
+        // check if user already exploited
+        $exploit = $resource->getExploits()->filter(function ($exploit) use ($user) {
+            return $exploit->getUser() === $user;
+        })->first();
+        return $exploit != null;
+    }
+
     public function exploit(Resource $resource, $user): string
     {
         // check if user already exploited
@@ -192,6 +219,15 @@ class ResourceService
         return $message;
     }
 
+    public function isSaved(Resource $resource, $user): bool
+    {
+        // check if user already saved
+        $save = $resource->getSaves()->filter(function ($save) use ($user) {
+            return $save->getUser() === $user;
+        })->first();
+        return $save != null;
+    }
+
     public function save(Resource $resource, $user): string
     {
         // check if user already saved
@@ -213,6 +249,15 @@ class ResourceService
         $this->resourceRepository->save($resource, true);
         // return message
         return $message;
+    }
+
+    public function isConsulted(Resource $resource, $user): bool
+    {
+        // check if user already consulted
+        $consult = $resource->getConsults()->filter(function ($consult) use ($user) {
+            return $consult->getUser() === $user;
+        })->first();
+        return $consult != null;
     }
 
     public function consult(Resource $resource, $user): string
