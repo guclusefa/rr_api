@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/users')]
 class UserController extends AbstractController
@@ -51,6 +52,7 @@ class UserController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/me', name: 'api_users_me', methods: ['GET'])]
     public function me(Request $request): JsonResponse
     {
@@ -65,7 +67,6 @@ class UserController extends AbstractController
             true
         );
     }
-
 
     #[Route('/{id}', name: 'api_users_show', methods: ['GET'])]
     public function show(User $user, Request $request): JsonResponse
@@ -89,6 +90,7 @@ class UserController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/{id}', name: 'api_users_update', methods: ['PUT'])]
     public function update(User $user, Request $request): JsonResponse
     {
@@ -104,6 +106,7 @@ class UserController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/{id}/photo', name: 'api_users_update_photo', methods: ['POST'])]
     public function updatePhoto(User $user, Request $request): JsonResponse
     {
@@ -119,6 +122,7 @@ class UserController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/{id}/password', name: 'api_users_update_password', methods: ['PUT'])]
     public function updatePassword(User $user, Request $request): JsonResponse
     {
@@ -135,6 +139,7 @@ class UserController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/{id}/email', name: 'api_users_update_email', methods: ['PUT'])]
     public function updateEmail(User $user, Request $request): JsonResponse
     {
@@ -151,6 +156,7 @@ class UserController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/{id}/delete', name: 'api_users_delete', methods: ['DELETE'])]
     public function delete(User $user): JsonResponse
     {

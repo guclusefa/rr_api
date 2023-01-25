@@ -36,6 +36,27 @@ class ResourceService
     {
     }
 
+    public function checkAccess($resource, $me): void
+    {
+        if (!$this->resourceRepository->isAccesibleToMe($resource, $me)) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à cette ressource');
+        }
+    }
+
+    public function checkCreateAccess($me): void
+    {
+        if (!$me->isIsVerified()) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous devez vérifier votre compte pour pouvoir créer une ressource');
+        }
+    }
+
+    public function checkUpdateAccess($resource, $me): void
+    {
+        if ($resource->getAuthor() !== $me || !$me->isIsVerified()) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à la modification de cette ressource');
+        }
+    }
+
     public function formatResource($resource, $baseUrl): Resource
     {
         if ($resource->getMedia() != null) {
