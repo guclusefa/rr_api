@@ -12,12 +12,10 @@ use App\Entity\ResourceSharedTo;
 use App\Entity\ResourceStats;
 use App\Entity\User;
 use App\Repository\ResourceRepository;
-use App\Repository\ResourceSharedToRepository;
 use App\Repository\ResourceStatsRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 

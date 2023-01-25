@@ -46,16 +46,6 @@ class ResourceRepository extends ServiceEntityRepository
 
     public function isAccesibleToMe($resource, $user): bool
     {
-        // IF resource is mine return true
-        // IF resource is not published or suspended return false
-        if ($user) {
-            $myResources = $resource->getAuthor() == $user;
-            if ($myResources) {
-                return true;
-            } else if (!$resource->isIsPublished() || $resource->isIsSuspended()) {
-                return false;
-            }
-        }
         // public
         if ($resource->getVisibility() == 1) {
             return true;
@@ -67,6 +57,15 @@ class ResourceRepository extends ServiceEntityRepository
                 $sharedToResponsitory = $this->getEntityManager()->getRepository(ResourceSharedTo::class);
                 $sharedToMe = $sharedToResponsitory->findOneBy(['resource' => $resource, 'user' => $user]);
                 if ($sharedToMe) {
+                    return true;
+                }
+            }
+        }
+        // private
+        if ($resource->getVisibility() == 3) {
+            if ($user) {
+                // author me
+                if ($resource->getAuthor() == $user) {
                     return true;
                 }
             }

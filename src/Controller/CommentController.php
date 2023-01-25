@@ -4,8 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Repository\CommentRepository;
+use App\Service\CommentService;
+use App\Service\ResourceService;
 use App\Service\SerializerService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,13 +19,14 @@ class CommentController extends AbstractController
     public function __construct
     (
         private readonly SerializerService $serializerService,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly CommentRepository $commentRepository
+        private readonly CommentRepository $commentRepository,
+        private readonly CommentService $commentService,
+        private readonly ResourceService $resourceService
     )
     {
     }
 
-    // TODO
+    // TODO : check if user is allowed to access resource
     #[Route('', name: 'api_comments', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
@@ -54,6 +56,8 @@ class CommentController extends AbstractController
     #[Route('/{id}', name: 'api_comments_show', methods: ['GET'])]
     public function show(Comment $comment): JsonResponse
     {
+        // check access to resource
+        $this->resourceService->checkAccess($comment->getResource(), $this->getUser());
         // serialize
         $comment = $this->serializerService->serialize(Comment::GROUP_ITEM, $comment);
         return new JsonResponse(
@@ -67,14 +71,10 @@ class CommentController extends AbstractController
     #[Route('', name: 'api_comments_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        // deserialize
+        // deserialize check, & comment
         $comment = $this->serializerService->deserialize(Comment::GROUP_WRITE ,$request, Comment::class);
-        $comment->setAuthor($this->getUser());
-        // check for errors
-        $this->serializerService->checkErrors($comment);
-        // save and persist
-        $this->entityManager->persist($comment);
-        $this->entityManager->flush();
+        $this->resourceService->checkAccess($comment->getResource(), $this->getUser());
+        $this->commentService->comment($comment, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => 'Le commentaire a bien été créé'],
@@ -85,16 +85,11 @@ class CommentController extends AbstractController
     #[Route('/{id}/reply', name: 'api_comments_reply', methods: ['POST'])]
     public function reply(Request $request, Comment $comment): JsonResponse
     {
-        // deserialize
+        // check access to resource
+        $this->resourceService->checkAccess($comment->getResource(), $this->getUser());
+        // deserialize & reply
         $reply = $this->serializerService->deserialize(Comment::GROUP_REPLY ,$request, Comment::class);
-        $reply->setAuthor($this->getUser());
-        $reply->setReplyTo($comment);
-        $reply->setResource($comment->getResource());
-        // check for errors
-        $this->serializerService->checkErrors($reply);
-        // save and persist
-        $this->entityManager->persist($reply);
-        $this->entityManager->flush();
+        $this->commentService->replyTo($comment, $reply, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => 'Le commentaire a bien été créé'],

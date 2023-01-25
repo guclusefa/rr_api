@@ -42,6 +42,12 @@ class CommentRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    // TODO : for each comment, check if the user can see the resource
+    public function findByAccesibility($qb, $user)
+    {
+    }
+
     public function findBySearch($qb, $search)
     {
         if ($search) {
