@@ -3,19 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Resource;
-use App\Entity\ResourceConsult;
-use App\Entity\ResourceExploit;
-use App\Entity\ResourceLike;
-use App\Entity\ResourceSave;
-use App\Entity\ResourceShare;
-use App\Entity\ResourceSharedTo;
-use App\Entity\ResourceStats;
-use App\Entity\User;
 use App\Repository\ResourceRepository;
-use App\Service\FileUploaderService;
 use App\Service\ResourceService;
 use App\Service\SerializerService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,8 +19,6 @@ class ResourceController extends AbstractController
     (
         private readonly ResourceService $resourceService,
         private readonly SerializerService $serializerService,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly FileUploaderService $fileUploaderService,
         private readonly ResourceRepository $resourceRepository
     )
     {
@@ -54,8 +42,9 @@ class ResourceController extends AbstractController
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 10);
 
-        // get, serialize & return
+        // get, format, serialize & return
         $resources = $this->resourceRepository->advanceSearch($this->getUser(), $search, $verified, $visibility, $author, $relation, $category, $order, $direction, $page, $limit);
+        $resources = $this->resourceService->formatResources($resources, $request->getSchemeAndHttpHost());
         $resources = $this->serializerService->serialize(Resource::GROUP_GET, $resources);
         return new JsonResponse(
             $resources,
@@ -66,17 +55,12 @@ class ResourceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_resources_show', methods: ['GET'])]
-    public function show(Resource $resource): JsonResponse
+    public function show(Resource $resource, Request $request): JsonResponse
     {
-        if (!$this->resourceRepository->isAccesibleToMe($resource, $this->getUser())) {
-            return new JsonResponse(
-                ['message' => 'Vous n\'avez pas accès à cette ressource'],
-                Response::HTTP_FORBIDDEN
-            );
-        }
-        // serialize
+        // format resource
+        $this->resourceService->formatResource($resource, $request->getSchemeAndHttpHost());
+        // get, serialize & return
         $resource = $this->serializerService->serialize(Resource::GROUP_ITEM, $resource);
-        // return
         return new JsonResponse(
             $this->serializerService->getSerializedData($resource),
             Response::HTTP_OK,
@@ -88,14 +72,9 @@ class ResourceController extends AbstractController
     #[Route('', name: 'api_resources_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        // deserialize
+        // deserialize & create
         $resource = $this->serializerService->deserialize(Resource::GROUP_WRITE ,$request, Resource::class);
-        $resource->setAuthor($this->getUser());
-        // check for errors
-        $this->serializerService->checkErrors($resource);
-        // save and persist
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        $this->resourceService->create($resource, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => 'La ressource a bien été créée'],
@@ -106,21 +85,9 @@ class ResourceController extends AbstractController
     #[Route('/{id}', name: 'api_resources_update', methods: ['PUT'])]
     public function update(Request $request, Resource $resource): JsonResponse
     {
-        // deserialize
+        // deserialize & update
         $updatedResource = $this->serializerService->deserialize(Resource::GROUP_UPDATE, $request, Resource::class);
-        // update resource
-        $resource->setTitle($updatedResource->getTitle());
-        $resource->setContent($updatedResource->getContent());
-        $resource->setLink($updatedResource->getLink());
-        $resource->setVisibility($updatedResource->getVisibility());
-        $resource->setIsPublished($updatedResource->isIsPublished());
-        $resource->setRelation($updatedResource->getRelation());
-        $resource->updateCategories($updatedResource->getCategories());
-        // check for errors
-        $this->serializerService->checkErrors($resource);
-        // save and persist
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        $this->resourceService->update($resource, $updatedResource);
         // return
         return new JsonResponse(
             ['message' => 'La ressource a bien été modifiée'],
@@ -131,29 +98,9 @@ class ResourceController extends AbstractController
     #[Route('/{id}/media', name: 'api_resources_update_media', methods: ['POST'])]
     public function addMedia(Request $request, Resource $resource): JsonResponse
     {
-        // check & upload media
+        // update media
         $media = $request->files->get('media');
-        if ($media) {
-            // check and upload media
-            $resource->setMedia(
-                $this->fileUploaderService->uploadMedia(
-                    $media,
-                    $resource->getId(),
-                    $this->getParameter("app.resource.media.path")
-                )
-            );
-        } else {
-            // delete file from server if exists
-            $mediaName = $resource->getMedia();
-            if ($mediaName) {
-                $mediaPath = $this->getParameter("app.resource.media.path") . '/' . $mediaName;
-                $this->fileUploaderService->deleteFile($mediaPath);
-            }
-            $resource->setMedia(null);
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        $this->resourceService->updateMedia($resource, $media);
         // return
         return new JsonResponse(
             ['message' => 'Le media de la ressource a bien été modifié'],
@@ -164,24 +111,8 @@ class ResourceController extends AbstractController
     #[Route('/{id}/like', name: 'api_resources_like', methods: ['POST'])]
     public function like(Resource $resource): JsonResponse
     {
-        // check if user already liked
-        $like = $resource->getLikes()->filter(function ($like) {
-            return $like->getUser() === $this->getUser();
-        })->first();
-        if ($like) {
-            $resource->removeLike($like);
-            $this->entityManager->remove($like);
-            $message = 'Vous avez bien retiré votre like';
-        } else {
-            $like = new ResourceLike();
-            $like->setUser($this->getUser());
-            $resource->addLike($like);
-            $this->entityManager->persist($like);
-            $message = 'Vous avez bien liké cette ressource';
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        // like
+        $message = $this->resourceService->like($resource, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => $message],
@@ -192,24 +123,8 @@ class ResourceController extends AbstractController
     #[Route('/{id}/share', name: 'api_resources_share', methods: ['POST'])]
     public function share(Resource $resource): JsonResponse
     {
-        // check if user already shared
-        $share = $resource->getShares()->filter(function ($share) {
-            return $share->getUser() === $this->getUser();
-        })->first();
-        if ($share) {
-            $resource->removeShare($share);
-            $this->entityManager->remove($share);
-            $message = 'Vous avez bien retiré votre partage';
-        } else {
-            $share = new ResourceShare();
-            $share->setUser($this->getUser());
-            $resource->addShare($share);
-            $this->entityManager->persist($share);
-            $message = 'Vous avez bien partagé cette ressource';
-        }
-        // persist & flush
-        $this->entityManager->persist($resource);
-        $this->entityManager->flush();
+        // share
+        $message = $this->resourceService->share($resource, $this->getUser());
         // return
         return new JsonResponse(
             ['message' => $message],

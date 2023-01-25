@@ -5,7 +5,9 @@ namespace App\Service;
 use App\Entity\Resource;
 use App\Entity\ResourceConsult;
 use App\Entity\ResourceExploit;
+use App\Entity\ResourceLike;
 use App\Entity\ResourceSave;
+use App\Entity\ResourceShare;
 use App\Entity\ResourceSharedTo;
 use App\Entity\ResourceStats;
 use App\Entity\User;
@@ -14,6 +16,7 @@ use App\Repository\ResourceSharedToRepository;
 use App\Repository\ResourceStatsRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -25,9 +28,126 @@ class ResourceService
         private readonly ResourceRepository $resourceRepository,
         private readonly ResourceStatsRepository $resourceStatsRepository,
         private readonly UserRepository $userRepository,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ParameterBagInterface $params,
+        private readonly FileUploaderService $fileUploaderService,
+        private readonly SerializerService $serializerService,
     )
     {
+    }
+
+    public function formatResource($resource, $baseUrl): Resource
+    {
+        if ($resource->getMedia() != null) {
+            $resource->setMedia($baseUrl . "/" . $this->params->get("app.resource.media.path") . $resource->getMedia());
+        }
+        return $resource;
+    }
+
+    public function formatResources($resources, $baseUrl): array
+    {
+        foreach ($resources["data"] as $resource) {
+            $this->formatResource($resource, $baseUrl);
+        }
+        return $resources;
+    }
+
+    public function create($resource, $user): void
+    {
+        // create
+        $resource->setAuthor($user);
+        // check for errors
+        $this->serializerService->checkErrors($resource);
+        // check for errors
+        $this->serializerService->checkErrors($resource);
+        // save
+        $this->resourceRepository->save($resource, true);
+    }
+
+    public function update(Resource $resource, $updatedResource): void
+    {
+        // update resource
+        $resource->setTitle($updatedResource->getTitle());
+        $resource->setContent($updatedResource->getContent());
+        $resource->setLink($updatedResource->getLink());
+        $resource->setVisibility($updatedResource->getVisibility());
+        $resource->setIsPublished($updatedResource->isIsPublished());
+        $resource->setRelation($updatedResource->getRelation());
+        $resource->updateCategories($updatedResource->getCategories());
+        // check for errors
+        $this->serializerService->checkErrors($resource);
+        // save
+        $this->resourceRepository->save($resource, true);
+    }
+
+    public function updateMedia(Resource $resource, $media): void
+    {
+        if ($media) {
+            // check and upload media
+            $resource->setMedia(
+                $this->fileUploaderService->uploadMedia(
+                    $media,
+                    $resource->getId(),
+                    $this->params->get("app.resource.media.path")
+                )
+            );
+        } else {
+            // delete file from server if exists
+            $mediaName = $resource->getMedia();
+            if ($mediaName) {
+                $mediaPath = $this->params->get("app.resource.media.path") . '/' . $mediaName;
+                $this->fileUploaderService->deleteFile($mediaPath);
+            }
+            $resource->setMedia(null);
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+    }
+
+    public function like(Resource $resource, $user): string
+    {
+        // check if user already liked
+        $like = $resource->getLikes()->filter(function ($like) use ($user) {
+            return $like->getUser() === $user;
+        })->first();
+        if ($like) {
+            $resource->removeLike($like);
+            $this->entityManager->remove($like);
+            $message = 'Vous avez bien retiré votre like';
+        } else {
+            $like = new ResourceLike();
+            $like->setUser($user);
+            $resource->addLike($like);
+            $this->entityManager->persist($like);
+            $message = 'Vous avez bien liké cette ressource';
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+        // return message
+        return $message;
+    }
+
+    public function share(Resource $resource, $user): string
+    {
+        // check if user already shared
+        $share = $resource->getShares()->filter(function ($share) use ($user) {
+            return $share->getUser() === $user;
+        })->first();
+        if ($share) {
+            $resource->removeShare($share);
+            $this->entityManager->remove($share);
+            $message = 'Vous avez bien retiré votre partage';
+        } else {
+            $share = new ResourceShare();
+            $share->setUser($user);
+            $resource->addShare($share);
+            $this->entityManager->persist($share);
+            $message = 'Vous avez bien partagé cette ressource';
+        }
+        // save
+        $this->resourceRepository->save($resource, true);
+        // return message
+        return $message;
     }
 
     public function exploit(Resource $resource, $user): string

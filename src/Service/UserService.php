@@ -46,11 +46,13 @@ class UserService
 
     public function formatUser($user, $baseUrl) : User
     {
-        $user->setPhoto($baseUrl . "/" . $this->params->get("app.user.images.path") . $user->getPhoto());
+        if ($user->getPhoto() !== null) {
+            $user->setPhoto($baseUrl . "/" . $this->params->get("app.user.images.path") . $user->getPhoto());
+        }
         return $user;
     }
 
-    public function formatsUsers($users, $baseUrl)
+    public function formatsUsers($users, $baseUrl): array
     {
         foreach ($users["data"] as $user) {
             $this->formatUser($user, $baseUrl);
