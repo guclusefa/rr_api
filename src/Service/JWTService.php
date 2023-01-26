@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class JWTService
 {
@@ -15,7 +16,8 @@ class JWTService
     public function __construct
     (
         private readonly ParameterBagInterface $params,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator
     )
     {
         $this->header = ["alg" => "HS256", "typ" => "JWT", "cty" => "JWT"];
@@ -118,7 +120,10 @@ class JWTService
     public function checkToken(string $token): bool
     {
         if (!($this->isValid($token) && $this->checkSignature($token) && !$this->isExpired($token))) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Token invalide');
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                $this->translator->trans('message.jwt.invalid_token')
+            );
         }
         return true;
     }
@@ -132,7 +137,10 @@ class JWTService
         $payload = $this->getPayload($token);
         $user = $this->entityManager->getRepository(User::class)->find($payload['id']);
         // check if user exists
-        if (!$user) throw new HttpException(Response::HTTP_BAD_REQUEST, 'Utilisateur introuvable');
+        if (!$user) throw new HttpException(
+            Response::HTTP_BAD_REQUEST,
+            $this->translator->trans('message.jwt.invalid_user')
+        );
         return $user;
     }
 }
