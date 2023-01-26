@@ -1,0 +1,73 @@
+message:
+  comment:
+    created_success: "Your comment has been added successfully."
+    reply_success: "Your reply has been added successfully."
+  resource:
+    access_denied: "You don't have access to this resource."
+    access_create_denied: "You must verify your account to create a resource."
+    access_update_denied: "You don't have access to the modification of this resource."
+
+    created_success: "Your resource has been added successfully."
+    updated_success: "Your resource has been updated successfully."
+    updated_media_success: "The media of your resource has been updated successfully."
+
+    shared_success: "Your resource has been shared with %count% user(s) successfully."
+    shared_error: "One of the users you want to share your resource with does not exist."
+    unshared_success: "Your resource is no longer shared with %count% user(s) successfully."
+
+    stats_generated_success: "The statistics of your resource have been generated successfully."
+
+    unlike_success: "You no longer like this resource."
+    like_success: "You like this resource with success."
+
+    unshare_success: "You no longer share this resource."
+    share_success: "You share this resource with success."
+
+    unexploit_success: "You no longer exploit this resource."
+    exploit_success: "You exploit this resource with success."
+
+    unsave_success: "You no longer save this resource."
+    save_success: "You save this resource with success."
+
+    consult_success: "You have consulted this resource with success."
+    consult_error: "You have already consulted this resource."
+  security:
+    email:
+      missing_error: "Please fill in your email."
+      send_error: "An error occurred while sending the email."
+
+      welcome_subject: "Welcome to %site_name% !"
+      confirm_subject: "Confirm your account on %site_name%"
+      reset_password_subject: "Reset your password on %site_name%"
+
+    register_success: "Your account has been created with success, please check your emails to confirm your account."
+
+    confirmation_send: "If a user exists with this email address, an email has been sent to confirm your account."
+    confirmation_success: "Your account has been confirmed with success."
+
+    reset_password_send: "If a user exists with this email address, an email has been sent to reset your password."
+    reset_password_success: "Your password has been reset with success."
+
+    banned: "Your account has been banned."
+  user:
+    access_denied: "You don't have access to this profile."
+    access_update_denied: "You don't have access to the modification of this profile."
+
+    old_password_error: "Your old password is not correct."
+    same_email_error: "Your new email address is the same as your current email address."
+    already_verified_error: "Your account is already verified."
+
+    updated_success: "Your profile has been updated with success."
+    updated_photo_success: "Your profile photo has been updated with success."
+    updated_password_success: "Your password has been updated with success."
+    updated_email_success: "Your email address has been updated with success."
+    deleted_success: "Your account has been deleted with success."
+  file_uploader:
+    unvalid_photo: "The photo is not valid"
+    unvalid_photo_size: "The photo cannot exceed %max_size% Mo"
+
+    unvalid_media: "The media is not valid"
+    unvalid_media_size: "The media cannot exceed %max_size% Mo"
+  jwt:
+    invalid_token: "Your token is invalid."
+    invalid_user: "User not found."
