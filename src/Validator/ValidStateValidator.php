@@ -2,11 +2,9 @@
 
 namespace App\Validator;
 
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use App\Repository\StateRepository;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[\Attribute]
 class ValidStateValidator extends ConstraintValidator
