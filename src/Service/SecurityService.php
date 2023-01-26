@@ -36,12 +36,21 @@ class SecurityService
     {
         $payload = ['id' => $user->getId()];
         $token = $this->jwtService->generateToken($payload);
+        // TODO : revoir lien
+        $link = 'http://localhost:8000/api/verify-email/' . $token;
+        if ($template == "forgot-password") $link = 'http://localhost:8000/api/reset-password/' . $token;
         try {
             $this->mailerService->sendEmail(
                 $user->getEmail(),
                 $subject,
                 $template,
-                ['token' => $token, 'validity' => $this->jwtService->getValidityInHours($token)]
+                [
+                    'title' => $subject,
+                    'token' => $token,
+                    'link' => $this->translator->trans('message.security.email.link', ["%link%" => $link]),
+                    'validity' => $this->translator->trans('message.security.email.link_validity', ["%validity%" => $this->jwtService->getValidityInHours($token)]),
+                    'ignore_or_report' => $this->translator->trans('message.security.email.ignore_or_report')
+                ]
             );
         } catch (\Exception $e) {
             throw new HttpException(

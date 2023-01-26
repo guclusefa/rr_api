@@ -40,9 +40,13 @@ message:
       confirm_subject: "Confirm your account on %site_name%"
       reset_password_subject: "Reset your password on %site_name%"
 
+      link: "Click on this link : <br><b><a href='%link%'>%link%</a></b>."
+      link_validity: "This link is valid for <b>%validity%</b> hour(s)."
+      ignore_or_report: "If you are not the author of this action, please ignore this email or contact an administrator."
+
     register_success: "Your account has been created with success, please check your emails to confirm your account."
 
-    confirmation_send: "If a user exists with this email address, an email has been sent to confirm your account."
+    confirmation_send: "If a user exists with this email address and is not already verified, an email has been sent."
     confirmation_success: "Your account has been confirmed with success."
 
     reset_password_send: "If a user exists with this email address, an email has been sent to reset your password."

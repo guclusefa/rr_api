@@ -55,9 +55,12 @@ class SecurityController extends AbstractController
     public function confirmEmail(Request $request): JsonResponse
     {
         // send token if email is valid
-        $this->securityService->sendTokenFromEmail($request,
-            $this->translator->trans('message.security.email.confirm_subject', ["%site_name%" => $this->getParameter("app.site_name")]),
-            'confirmation');
+        $this->securityService->sendTokenFromEmail(
+            $request,
+            $this->translator->trans('message.security.email.confirm_subject',
+                ["%site_name%" => $this->getParameter("app.site_name")]),
+            'confirmation'
+        );
         // return
         return new JsonResponse(
             ['message' => $this->translator->trans('message.security.confirmation_send')],
@@ -83,9 +86,12 @@ class SecurityController extends AbstractController
     public function forgotPassword(Request $request): JsonResponse
     {
         // send token if email is valid
-        $this->securityService->sendTokenFromEmail($request,
-            $this->translator->trans('message.security.email.reset_password_subject', ["%site_name%" => $this->getParameter("app.site_name")]),
-            'forgot-password');
+        $this->securityService->sendTokenFromEmail(
+            $request,
+            $this->translator->trans('message.security.email.reset_password_subject',
+                ["%site_name%" => $this->getParameter("app.site_name")]),
+            'forgot-password'
+        );
         // return
         return new JsonResponse(
             ['message' => $this->translator->trans('message.security.reset_password_send')],

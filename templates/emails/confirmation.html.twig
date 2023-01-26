@@ -1,6 +1,7 @@
-<h1>Confirmation de votre compte</h1>
-<p>Pour confirmez votre compte, veuillez cliquer sur le lien ci-dessous.</p>
-<p>Votre token de confirmation : <b>{{ token }}</b></p>
-<p>Ce token est valable pendant <b>{{ validity }} heure(s)</b>.</p>
+<h1>{{ title | raw }}</h1>
 
-<p>Si vous n'êtes pas à l'origine de cette demande, veuillez contacter un administrateur ou ignorer ce message.</p>
+<p>Token : <b>{{ token }}</b></p>
+<p>{{ link | raw }}</p>
+<p>{{ validity | raw }}</p>
+
+<p>{{ ignore_or_report | raw }}</p>
