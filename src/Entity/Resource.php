@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ResourceRepository::class)]
@@ -34,7 +36,6 @@ class Resource
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['resource:read'])]
     private ?string $media = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -521,4 +522,14 @@ class Resource
 
         return $this;
     }
+    // TODO : a revoir
+    #[VirtualProperty]
+    #[SerializedName('media')]
+    #[Groups(['resource:read'])]
+    public function getMediaPhotoPath(): ?string
+    {
+        if (null === $this->media) return null;
+        return "http://localhost:8000/" . 'uploads/users/images/' . $this->media;
+    }
+
 }

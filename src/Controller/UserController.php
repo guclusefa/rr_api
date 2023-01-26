@@ -42,9 +42,8 @@ class UserController extends AbstractController
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 10);
 
-        // get, format, serialize & return
+        // get, serialize & return
         $users = $this->userRepository->advanceSearch($this->getUser(), $search, $certified, $states, $genders, $order, $direction, $page, $limit);
-        $users = $this->userService->formatsUsers($users, $request->getSchemeAndHttpHost());
         $users = $this->serializerService->serialize(User::GROUP_GET, $users);
         return new JsonResponse(
             $users,
@@ -56,10 +55,8 @@ class UserController extends AbstractController
 
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/me', name: 'api_users_me', methods: ['GET'])]
-    public function me(Request $request): JsonResponse
+    public function me(): JsonResponse
     {
-        // format user
-        $this->userService->formatUser($this->getUser(), $request->getSchemeAndHttpHost());
         // get, serialize & return
         $user = $this->serializerService->serialize(User::GROUP_ITEM_CONFIDENTIAL, $this->getUser());
         return new JsonResponse(
@@ -71,7 +68,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_users_show', methods: ['GET'])]
-    public function show(User $user, Request $request): JsonResponse
+    public function show(User $user): JsonResponse
     {
         // check access
         $this->userService->checkAccess($user, $this->getUser());
@@ -80,8 +77,6 @@ class UserController extends AbstractController
         if ($this->userService->allowedConfidentialFields($user, $this->getUser())) {
             $groups = User::GROUP_ITEM_CONFIDENTIAL;
         }
-        // format user
-        $this->userService->formatUser($this->getUser(), $request->getSchemeAndHttpHost());
         // get, serialize & return
         $user = $this->serializerService->serialize($groups, $user);
         return new JsonResponse(

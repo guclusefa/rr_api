@@ -45,9 +45,8 @@ class ResourceController extends AbstractController
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 10);
 
-        // get, format, serialize & return
+        // get, serialize & return
         $resources = $this->resourceRepository->advanceSearch($this->getUser(), $search, $verified, $visibility, $author, $relation, $category, $order, $direction, $page, $limit);
-        $resources = $this->resourceService->formatResources($resources, $request->getSchemeAndHttpHost());
         $resources = $this->serializerService->serialize(Resource::GROUP_GET, $resources);
         return new JsonResponse(
             $resources,
@@ -58,12 +57,10 @@ class ResourceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_resources_show', methods: ['GET'])]
-    public function show(Resource $resource, Request $request): JsonResponse
+    public function show(Resource $resource): JsonResponse
     {
         // check access
         $this->resourceService->checkAccess($resource, $this->getUser());
-        // format resource
-        $this->resourceService->formatResource($resource, $request->getSchemeAndHttpHost());
         // get, serialize & return
         $resource = $this->serializerService->serialize(Resource::GROUP_ITEM, $resource);
         return new JsonResponse(

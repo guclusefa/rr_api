@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Repository\ResourceRepository;
 use App\Repository\ResourceStatsRepository;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,22 +56,6 @@ class ResourceService
         if ($resource->getAuthor() !== $me || !$me->isIsVerified()) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.resource.access_update_denied'));
         }
-    }
-
-    public function formatResource($resource, $baseUrl): Resource
-    {
-        if ($resource->getMedia() != null) {
-            $resource->setMedia($baseUrl . "/" . $this->params->get("app.resource.media.path") . $resource->getMedia());
-        }
-        return $resource;
-    }
-
-    public function formatResources($resources, $baseUrl): array
-    {
-        foreach ($resources["data"] as $resource) {
-            $this->formatResource($resource, $baseUrl);
-        }
-        return $resources;
     }
 
     public function create($resource, $user): void
@@ -268,7 +253,7 @@ class ResourceService
         $lastConsultation = $resource->getConsults()->filter(function ($consult) use ($user) {
             return $consult->getUser() === $user;
         })->last();
-        if (!$lastConsultation || $lastConsultation->getCreatedAt()->format('Y-m-d') != (new \DateTime())->format('Y-m-d')) {
+        if (!$lastConsultation || $lastConsultation->getCreatedAt()->format('Y-m-d') != (new DateTime())->format('Y-m-d')) {
             $consult = new ResourceConsult();
             $consult->setUser($user);
             $resource->addConsult($consult);

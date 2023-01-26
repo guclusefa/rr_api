@@ -46,22 +46,6 @@ class UserService
         return false;
     }
 
-    public function formatUser($user, $baseUrl) : User
-    {
-        if ($user->getPhoto() !== null) {
-            $user->setPhoto($baseUrl . "/" . $this->params->get("app.user.images.path") . $user->getPhoto());
-        }
-        return $user;
-    }
-
-    public function formatsUsers($users, $baseUrl): array
-    {
-        foreach ($users["data"] as $user) {
-            $this->formatUser($user, $baseUrl);
-        }
-        return $users;
-    }
-
     public function createUser($user): void
     {
         // check for errors
