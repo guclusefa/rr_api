@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/comments')]
 class CommentController extends AbstractController
@@ -21,7 +22,8 @@ class CommentController extends AbstractController
         private readonly SerializerService $serializerService,
         private readonly CommentRepository $commentRepository,
         private readonly CommentService $commentService,
-        private readonly ResourceService $resourceService
+        private readonly ResourceService $resourceService,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -77,7 +79,7 @@ class CommentController extends AbstractController
         $this->commentService->comment($comment, $this->getUser());
         // return
         return new JsonResponse(
-            ['message' => 'Le commentaire a bien été créé'],
+            ['message' => $this->translator->trans('message.comment.created_success')],
             Response::HTTP_CREATED
         );
     }
@@ -92,7 +94,7 @@ class CommentController extends AbstractController
         $this->commentService->replyTo($comment, $reply, $this->getUser());
         // return
         return new JsonResponse(
-            ['message' => 'Le commentaire a bien été créé'],
+            ['message' => $this->translator->trans('message.comment.reply_success')],
             Response::HTTP_CREATED
         );
     }

@@ -18,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResourceService
 {
@@ -30,6 +31,7 @@ class ResourceService
         private readonly ParameterBagInterface $params,
         private readonly FileUploaderService $fileUploaderService,
         private readonly SerializerService $serializerService,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -37,21 +39,21 @@ class ResourceService
     public function checkAccess($resource, $me): void
     {
         if (!$this->resourceRepository->isAccesibleToMe($resource, $me)) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à cette ressource');
+            throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.resource.access_denied'));
         }
     }
 
     public function checkCreateAccess($me): void
     {
         if (!$me->isIsVerified()) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous devez vérifier votre compte pour pouvoir créer une ressource');
+            throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.resource.access_create_denied'));
         }
     }
 
     public function checkUpdateAccess($resource, $me): void
     {
         if ($resource->getAuthor() !== $me || !$me->isIsVerified()) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à la modification de cette ressource');
+            throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.resource.access_update_denied'));
         }
     }
 
@@ -141,13 +143,13 @@ class ResourceService
         if ($like) {
             $resource->removeLike($like);
             $this->entityManager->remove($like);
-            $message = 'Vous avez bien retiré votre like';
+            $message = $this->translator->trans('message.resource.unlike_success');
         } else {
             $like = new ResourceLike();
             $like->setUser($user);
             $resource->addLike($like);
             $this->entityManager->persist($like);
-            $message = 'Vous avez bien liké cette ressource';
+            $message = $this->translator->trans('message.resource.like_success');
         }
         // save
         $this->resourceRepository->save($resource, true);
@@ -173,13 +175,13 @@ class ResourceService
         if ($share) {
             $resource->removeShare($share);
             $this->entityManager->remove($share);
-            $message = 'Vous avez bien retiré votre partage';
+            $message = $this->translator->trans('message.resource.unshare_success');
         } else {
             $share = new ResourceShare();
             $share->setUser($user);
             $resource->addShare($share);
             $this->entityManager->persist($share);
-            $message = 'Vous avez bien partagé cette ressource';
+            $message = $this->translator->trans('message.resource.share_success');
         }
         // save
         $this->resourceRepository->save($resource, true);
@@ -205,13 +207,13 @@ class ResourceService
         if ($exploit) {
             $resource->removeExploit($exploit);
             $this->entityManager->remove($exploit);
-            $message = 'Vous avez bien retiré votre exploitation';
+            $message = $this->translator->trans('message.resource.unexploit_success');
         } else {
             $exploit = new ResourceExploit();
             $exploit->setUser($user);
             $resource->addExploit($exploit);
             $this->entityManager->persist($exploit);
-            $message = 'Vous avez bien exploité cette ressource';
+            $message = $this->translator->trans('message.resource.exploit_success');
         }
         // save
         $this->resourceRepository->save($resource, true);
@@ -237,13 +239,13 @@ class ResourceService
         if ($save) {
             $resource->removeSave($save);
             $this->entityManager->remove($save);
-            $message = 'Vous avez bien retiré votre sauvegarde';
+            $message = $this->translator->trans('message.resource.unsave_success');
         } else {
             $save = new ResourceSave();
             $save->setUser($user);
             $resource->addSave($save);
             $this->entityManager->persist($save);
-            $message = 'Vous avez bien sauvegardé cette ressource';
+            $message = $this->translator->trans('message.resource.save_success');
         }
         // save
         $this->resourceRepository->save($resource, true);
@@ -262,18 +264,18 @@ class ResourceService
 
     public function consult(Resource $resource, $user): string
     {
-        // add consult  if last consultation by me not today
+        // add consult  if latest consult is not today
         $lastConsultation = $resource->getConsults()->filter(function ($consult) use ($user) {
             return $consult->getUser() === $user;
-        })->first();
-        if (!$lastConsultation || $lastConsultation->getCreatedAt()->format('Y-m-d') !== (new \DateTime())->format('Y-m-d')) {
+        })->last();
+        if (!$lastConsultation || $lastConsultation->getCreatedAt()->format('Y-m-d') != (new \DateTime())->format('Y-m-d')) {
             $consult = new ResourceConsult();
             $consult->setUser($user);
             $resource->addConsult($consult);
             $this->entityManager->persist($consult);
-            $message = 'Vous avez bien consulté cette ressource';
+            $message = $this->translator->trans('message.resource.consult_success');
         } else {
-            $message = 'Vous avez déjà consulté cette ressource aujourd\'hui';
+            $message = $this->translator->trans('message.resource.consult_error');
         }
         // save
         $this->resourceRepository->save($resource, true);
@@ -299,7 +301,7 @@ class ResourceService
                     $count++;
                 }
             } else {
-                throw new HttpException(Response::HTTP_NOT_FOUND, 'Un des utilisateurs n\'existe pas');
+                throw new HttpException(Response::HTTP_NOT_FOUND, $this->translator->trans('message.resource.shared_error'));
             }
         }
         // save
@@ -325,7 +327,7 @@ class ResourceService
                     $count++;
                 }
             } else {
-                throw new HttpException(Response::HTTP_NOT_FOUND, 'Un des utilisateurs n\'existe pas');
+                throw new HttpException(Response::HTTP_NOT_FOUND, $this->translator->trans('message.resource.shared_error'));
             }
         }
         // save

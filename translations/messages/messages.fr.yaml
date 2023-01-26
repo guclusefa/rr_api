@@ -1,0 +1,33 @@
+message:
+  comment:
+    created_success: "Votre commentaire a été ajouté avec succès."
+    reply_success: "Votre réponse a été ajoutée avec succès."
+  resource:
+    access_denied: "Vous n'avez pas accès à cette ressource."
+    access_create_denied: "Vous devez vérifier votre compte pour pouvoir créer une ressource."
+    access_update_denied: "Vous n'avez pas accès à la modification de cette ressource."
+
+    created_success: "Votre ressource a été ajoutée avec succès."
+    updated_success: "Votre ressource a été mise à jour avec succès."
+    updated_media_success: "La média de votre ressource a été mise à jour avec succès."
+
+    shared_success: "Votre ressource a été partagée à %count% utilisateur(s) avec succès."
+    shared_error: "Un des utilisateurs n'existe pas"
+    unshared_success: "Votre ressource a retirée de %count% utilisateur(s) partagée avec succès."
+
+    stats_generated_success: "Les statistiques de votre ressource ont été générées avec succès."
+
+    unlike_success: "Vous n'aimez plus cette ressource."
+    like_success: "Vous avez aimez cette ressource avec succès."
+
+    unshare_success: "Vous ne partagez plus cette ressource."
+    share_success: "Vous avez partagez cette ressource avec succès."
+
+    unexploit_success: "Vous n'exploitez plus cette ressource."
+    exploit_success: "Vous avez exploitez cette ressource avec succès."
+
+    unsave_success: "Vous n'enregistrez plus cette ressource."
+    save_success: "Vous avez enregistré cette ressource avec succès."
+
+    consult_success: "Vous avez consulté cette ressource avec succès."
+    consult_error: "Vous avez déjà consulté cette ressource aujourd'hui."

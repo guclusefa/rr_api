@@ -16,7 +16,7 @@ class ResourceActionController extends AbstractController
 {
     public function __construct
     (
-        private readonly ResourceService $resourceService
+        private readonly ResourceService $resourceService,
     )
     {
     }

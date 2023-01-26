@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/resources')]
 class ResourceController extends AbstractController
@@ -20,7 +21,8 @@ class ResourceController extends AbstractController
     (
         private readonly ResourceService $resourceService,
         private readonly SerializerService $serializerService,
-        private readonly ResourceRepository $resourceRepository
+        private readonly ResourceRepository $resourceRepository,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -83,7 +85,7 @@ class ResourceController extends AbstractController
         $this->resourceService->create($resource, $this->getUser());
         // return
         return new JsonResponse(
-            ['message' => 'La ressource a bien été créée'],
+            ['message' => $this->translator->trans('message.resource.created_success')],
             Response::HTTP_CREATED
         );
     }
@@ -99,7 +101,7 @@ class ResourceController extends AbstractController
         $this->resourceService->update($resource, $updatedResource);
         // return
         return new JsonResponse(
-            ['message' => 'La ressource a bien été modifiée'],
+            ['message' => $this->translator->trans('message.resource.updated_success')],
             Response::HTTP_OK
         );
     }
@@ -115,7 +117,7 @@ class ResourceController extends AbstractController
         $this->resourceService->updateMedia($resource, $media);
         // return
         return new JsonResponse(
-            ['message' => 'Le media de la ressource a bien été modifié'],
+            ['message' => $this->translator->trans('message.resource.updated_media_success')],
             Response::HTTP_OK
         );
     }
@@ -208,7 +210,7 @@ class ResourceController extends AbstractController
         $count = $this->resourceService->addSharedTo($resource, $users);
         // return
         return new JsonResponse(
-            ['message' => 'Vous avez bien partagé cette ressource avec ' . $count . ' utilisateur(s)'],
+            ['message' => $this->translator->trans('message.resource.shared_success', ['%count%' => $count])],
             Response::HTTP_OK
         );
     }
@@ -225,7 +227,7 @@ class ResourceController extends AbstractController
         $count = $this->resourceService->removeSharedTo($resource, $users);
         // return
         return new JsonResponse(
-            ['message' => 'Vous avez bien retiré le partage avec ' . $count . ' utilisateur(s)'],
+            ['message' => $this->translator->trans('message.resource.unshared_success', ['%count%' => $count])],
             Response::HTTP_OK
         );
     }
@@ -240,7 +242,7 @@ class ResourceController extends AbstractController
         $this->resourceService->generateStats($resource);
         // return
         return new JsonResponse(
-            ['message' => 'Les statistiques ont bien été générées'],
+            ['message' => $this->translator->trans('message.resource.stats_generated_success')],
             Response::HTTP_OK
         );
     }

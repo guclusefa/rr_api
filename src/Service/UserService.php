@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserService
 {
@@ -17,7 +18,8 @@ class UserService
         private readonly UserRepository $userRepository,
         private readonly FileUploaderService $fileUploaderService,
         private readonly ParameterBagInterface $params,
-        private readonly SerializerService $serializerService
+        private readonly SerializerService $serializerService,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -25,7 +27,7 @@ class UserService
     public function checkAccess($user, $me): void
     {
         if (!$this->userRepository->isAccesibleToMe($user, $me)) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à cet utilisateur');
+            throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.user.access_denied'));
         }
     }
 
