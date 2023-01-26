@@ -49,3 +49,18 @@ message:
 
     reset_password_send: "Si un compte existe avec cette adresse email, un email de réinitialisation de mot de passe vous a été envoyé."
     reset_password_success: "Votre mot de passe a été réinitialisé avec succès."
+
+    banned: "Votre compte a été banni."
+  user:
+    access_denied: "Vous n'avez pas accès à ce profil."
+    access_update_denied: "Vous n'avez pas accès à la modification de ce profil."
+
+    old_password_error: "Votre ancien mot de passe est incorrect."
+    same_email_error: "Votre nouvelle adresse email doit être différente de l'ancienne."
+    already_verified_error: "Votre compte est déjà confirmé."
+
+    updated_success: "Votre profil a été mis à jour avec succès."
+    updated_photo_success: "Votre photo de profil a été mise à jour avec succès."
+    updated_password_success: "Votre mot de passe a été mis à jour avec succès."
+    updated_email_success: "Votre adresse email a été mise à jour avec succès, veuillez vous reconnecter avec votre nouvelle adresse email."
+    deleted_success: "Votre compte a été supprimé avec succès."

@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/users')]
 class UserController extends AbstractController
@@ -21,6 +22,7 @@ class UserController extends AbstractController
         private readonly SerializerService $serializerService,
         private readonly UserRepository $userRepository,
         private readonly UserService $userService,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -101,7 +103,7 @@ class UserController extends AbstractController
         $this->userService->updateUser($user, $updatedUser);
         // return
         return new JsonResponse(
-            ['message' => 'Utilisateur modifié avec succès'],
+            ['message' => $this->translator->trans('message.user.updated_success')],
             Response::HTTP_OK
         );
     }
@@ -117,7 +119,7 @@ class UserController extends AbstractController
         $this->userService->updatePhoto($user, $photo);
         // return
         return new JsonResponse(
-            ['message' => 'Photo modifiée avec succès'],
+            ['message' => $this->translator->trans('message.user.updated_photo_success')],
             Response::HTTP_OK
         );
     }
@@ -134,7 +136,7 @@ class UserController extends AbstractController
         $this->userService->updatePassword($user, $oldPassword, $updatedUser);
         // return
         return new JsonResponse(
-            ['message' => 'Mot de passe modifié avec succès'],
+            ['message' => $this->translator->trans('message.user.updated_password_success')],
             Response::HTTP_OK
         );
     }
@@ -151,7 +153,7 @@ class UserController extends AbstractController
         $this->userService->updateEmail($user, $oldPassword, $updatedUser->getEmail());
         // return
         return new JsonResponse(
-            ['message' => 'Adresse email modifiée avec succès, veuillez vous reconnecter'],
+            ['message' => $this->translator->trans('message.user.updated_email_success')],
             Response::HTTP_OK
         );
     }
@@ -166,7 +168,7 @@ class UserController extends AbstractController
         $this->userRepository->remove($user, true);
         // return
         return new JsonResponse(
-            ['message' => 'Utilisateur supprimé avec succès'],
+            ['message' => $this->translator->trans('message.user.deleted_success')],
             Response::HTTP_OK
         );
     }

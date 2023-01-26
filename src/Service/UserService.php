@@ -34,7 +34,7 @@ class UserService
     public function checkUpdateAccess($user, $me): void
     {
         if ($user !== $me) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'Vous n\'avez pas accès à la modification de cet utilisateur');
+            throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.user.access_update_denied'));
         }
     }
 
@@ -116,7 +116,10 @@ class UserService
     private function checkOldPassword($user, $oldPassword): void
     {
        if (!$oldPassword || !$this->userPasswordHasher->isPasswordValid($user, $oldPassword)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'L\'ancien mot de passe est incorrect');
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                $this->translator->trans('message.user.old_password_error')
+            );
        }
     }
 
@@ -147,7 +150,10 @@ class UserService
     private function checkSameEmail($user, $email): void
     {
         if ($user->getEmail() === $email) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'L\'email est identique à l\'ancien');
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                $this->translator->trans('message.user.same_email_error')
+            );
         }
     }
 
@@ -169,7 +175,10 @@ class UserService
     public function verifyEmail($user): void
     {
         // check if user is already verified
-        if ($user->isIsVerified()) throw new HttpException(Response::HTTP_BAD_REQUEST, 'Votre adresse email est déjà vérifiée');
+        if ($user->isIsVerified()) throw new HttpException(
+            Response::HTTP_BAD_REQUEST,
+            $this->translator->trans('message.user.already_verified_error')
+        );
         // confirm user
         $user->setIsVerified(true);
         // save
