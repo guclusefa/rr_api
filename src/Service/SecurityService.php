@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityService
 {
@@ -14,7 +15,8 @@ class SecurityService
     (
         private readonly JWTService $jwtService,
         private readonly MailerService $mailerService,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -23,7 +25,10 @@ class SecurityService
     {
         $data = json_decode($request->getContent(), true);
         $email = $data['email'] ?? null;
-        if (!$email) throw new HttpException(Response::HTTP_BAD_REQUEST, 'Veuillez renseigner votre adresse email');
+        if (!$email) throw new HttpException(
+            Response::HTTP_BAD_REQUEST,
+            $this->translator->trans('message.security.email.missing_error')
+        );
         return $email;
     }
 
@@ -39,7 +44,10 @@ class SecurityService
                 ['token' => $token, 'validity' => $this->jwtService->getValidityInHours($token)]
             );
         } catch (\Exception $e) {
-            throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Une erreur est survenue lors de l\'envoi du mail');
+            throw new HttpException(
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                $this->translator->trans('message.security.email.send_error')
+            );
         }
     }
 

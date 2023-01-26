@@ -31,3 +31,21 @@ message:
 
     consult_success: "Vous avez consulté cette ressource avec succès."
     consult_error: "Vous avez déjà consulté cette ressource aujourd'hui."
+  security:
+    email:
+      missing_error: "Veuillez renseigner votre adresse email."
+      send_error: "Une erreur est survenue lors de l'envoi de l'email."
+
+      welcome_subject: "Bienvenue sur %site_name% !"
+      confirm_subject: "Confirmez votre compte sur %site_name% !"
+      reset_password_subject: "Réinitialisez votre mot de passe sur %site_name% !"
+
+      ignore_or_report: "Si vous n'êtes pas à l'origine de cette demande, veuillez contacter un administrateur ou ignorer ce message."
+
+    register_success: "Votre compte a été créé avec succès, un email de confirmation vous a été envoyé."
+
+    confirmation_send: "Si un compte existe avec cette adresse email et qu'il n'a pas encore été confirmé, un email de confirmation vous a été envoyé."
+    confirmation_success: "Votre compte a été confirmé avec succès."
+
+    reset_password_send: "Si un compte existe avec cette adresse email, un email de réinitialisation de mot de passe vous a été envoyé."
+    reset_password_success: "Votre mot de passe a été réinitialisé avec succès."

@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Entity\Comment;
 use App\Repository\CommentRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class CommentService
 {

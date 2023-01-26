@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api')]
 class SecurityController extends AbstractController
@@ -22,6 +23,7 @@ class SecurityController extends AbstractController
         private readonly JWTService $jwtService,
         private readonly UserService $userService,
         private readonly SecurityService $securityService,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -38,10 +40,13 @@ class SecurityController extends AbstractController
         $user = $this->serializerService->deserialize(User::GROUP_WRITE ,$request, User::class);
         $this->userService->createUser($user);
         // send mail
-        $this->securityService->sendTokenFromEmail($request, 'Bienvenue', 'welcome');
+        $this->securityService->sendTokenFromEmail($request,
+            $this->translator->trans('message.security.email.welcome_subject', ["%site_name%" => $this->getParameter("app.site_name")]),
+            'welcome'
+        );
         // return
         return new JsonResponse(
-            ['message' => 'Votre compte a bien été créé, un email de confirmation vous a été envoyé'],
+            ['message' => $this->translator->trans('message.security.register_success')],
             Response::HTTP_CREATED
         );
     }
@@ -50,10 +55,12 @@ class SecurityController extends AbstractController
     public function confirmEmail(Request $request): JsonResponse
     {
         // send token if email is valid
-        $this->securityService->sendTokenFromEmail($request, 'Confirmation de votre compte', 'confirmation');
+        $this->securityService->sendTokenFromEmail($request,
+            $this->translator->trans('message.security.email.confirm_subject', ["%site_name%" => $this->getParameter("app.site_name")]),
+            'confirmation');
         // return
         return new JsonResponse(
-            ['message' => 'Si un compte existe avec cette adresse email et qu\'il n\'a pas encore été confirmé, un email de confirmation vous a été envoyé'],
+            ['message' => $this->translator->trans('message.security.confirmation_send')],
             Response::HTTP_OK
         );
     }
@@ -67,7 +74,7 @@ class SecurityController extends AbstractController
         $this->userService->verifyEmail($user);
         // return
         return new JsonResponse(
-            ['message' => 'Votre adresse email a bien été vérifiée'],
+            ['message' => $this->translator->trans('message.security.confirmation_success')],
             Response::HTTP_OK
         );
     }
@@ -76,10 +83,12 @@ class SecurityController extends AbstractController
     public function forgotPassword(Request $request): JsonResponse
     {
         // send token if email is valid
-        $this->securityService->sendTokenFromEmail($request, 'Réinitialisation de votre mot de passe', 'forgot-password');
+        $this->securityService->sendTokenFromEmail($request,
+            $this->translator->trans('message.security.email.reset_password_subject', ["%site_name%" => $this->getParameter("app.site_name")]),
+            'forgot-password');
         // return
         return new JsonResponse(
-            ['message' => 'Si un compte existe avec cette adresse email, un email de réinitialisation vous a été envoyé'],
+            ['message' => $this->translator->trans('message.security.reset_password_send')],
             Response::HTTP_OK
         );
     }
@@ -94,7 +103,7 @@ class SecurityController extends AbstractController
         $this->userService->resetPassword($user, $updatedPassword);
         // return
         return new JsonResponse(
-            ['message' => 'Votre mot de passe a bien été réinitialisé'],
+            ['message' => $this->translator->trans('message.security.reset_password_success')],
             Response::HTTP_OK
         );
     }
