@@ -5,14 +5,19 @@ namespace App\EventListener;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTDecodedEvent;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class JWTDecodedListener
 {
     public function __construct(
         private readonly RequestStack $requestStack,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -24,7 +29,10 @@ class JWTDecodedListener
         // if user is banned
         $user = $this->entityManager->getRepository(User::class)->find($payload['id']);
         if ($user->isIsBanned()) {
-            throw new CustomUserMessageAuthenticationException('Votre compte a été banni');
+            throw new HttpException(
+                Response::HTTP_FORBIDDEN,
+                $this->translator->trans('message.security.banned')
+            );
         }
     }
 }

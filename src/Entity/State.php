@@ -16,6 +16,9 @@ class State
 {
     use TimeStampTrait;
 
+    const GROUP_GET = ['state:read'];
+    const GROUP_ITEM = ['state:read', 'state:item'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
