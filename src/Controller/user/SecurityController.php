@@ -8,12 +8,14 @@ use App\Service\SecurityService;
 use App\Service\SerializerService;
 use App\Service\UserService;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -75,6 +77,21 @@ class SecurityController extends AbstractController
             ],
             Response::HTTP_OK
         );
+    }
+
+    #[Route('/refresh-token', name: 'api_refresh_token', methods: ['GET'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function refreshToken(Request $request, JWTTokenManagerInterface $jwtManager): JsonResponse
+    {
+        $currentUser = $this->getUser();
+        if (!$currentUser instanceof UserInterface) {
+            // to please the ide but this should never happen
+            throw new \LogicException(
+                $this->translator->trans('message.jwt.invalid_user')
+            );
+        }
+        $newToken = $jwtManager->create($currentUser);
+        return new JsonResponse(['token' => $newToken]);
     }
 
     #[Route('/confirm-email', name: 'api_confirm_email', methods: ['POST'])]
