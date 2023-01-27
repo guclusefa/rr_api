@@ -112,7 +112,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isBanned = false;
 
     #[ORM\ManyToOne(targetEntity: State::class, inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[AppAssert\ValidState]
     #[Groups(['user:read', 'user:update'])]
     private ?State $state = null;
