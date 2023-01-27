@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -17,6 +18,7 @@ class JWTCreatedListener
         $payload = $event->getData();
         // user data
         $user = $event->getUser();
+        if (!$user instanceof User) return;
         $payload['id'] = $user->getId();
         $payload['username'] = $user->getUsername();
         $payload['isVerified'] = $user->isIsVerified();

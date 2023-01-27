@@ -73,5 +73,9 @@ message:
     unvalid_media: "Le média n'est pas valide"
     unvalid_media_size: "Le média ne peut pas dépasser %max_size% Mo"
   jwt:
+    invalid_event: "Votre token n'est pas valide."
+    not_found_event: "Votre token n'a pas été trouvé."
+    expired_event: "Votre token a expiré."
+
     invalid_token: "Votre token n'est pas valide."
     invalid_user: "Utilisateur introuvable."
