@@ -18,7 +18,7 @@ class ResourceStats
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'stats')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Resource $resource = null;
 
     #[ORM\Column]

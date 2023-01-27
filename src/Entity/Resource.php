@@ -66,7 +66,7 @@ class Resource
     private ?bool $isSuspended = false;
 
     #[ORM\ManyToOne(inversedBy: 'resources')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank]
     #[Groups(['resource:read', 'resource:write'])]
     private ?User $author = null;
