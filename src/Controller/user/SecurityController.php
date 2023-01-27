@@ -7,11 +7,14 @@ use App\Service\JWTService;
 use App\Service\SecurityService;
 use App\Service\SerializerService;
 use App\Service\UserService;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api')]
@@ -48,6 +51,29 @@ class SecurityController extends AbstractController
         return new JsonResponse(
             ['message' => $this->translator->trans('message.security.register_success')],
             Response::HTTP_CREATED
+        );
+    }
+
+    #[Route('/check-token', name: 'api_check_token', methods: ['GET'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function checkToken(Request $request, JWTEncoderInterface $jwtEncoder): JsonResponse
+    {
+        // get token
+        $token = $request->headers->get('Authorization');
+        $token = str_replace('Bearer ', '', $token);
+        // get payload
+        $payload = $jwtEncoder->decode($token);
+        // get expiration date
+        $expirationDate = new \DateTime();
+        $expirationDate->setTimestamp($payload['exp']);
+         // return
+        return new JsonResponse(
+            [
+                "token" => $token,
+                "payload" => $payload,
+                "expirationDate" => $expirationDate->format("Y-m-d H:i:s")
+            ],
+            Response::HTTP_OK
         );
     }
 
