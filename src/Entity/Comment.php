@@ -19,6 +19,7 @@ class Comment
     const GROUP_GET = ['comment:read', 'resource:identifier', 'user:identifier'];
     const GROUP_ITEM = ['comment:read', 'comment:item', 'resource:identifier', 'user:identifier'];
     const GROUP_WRITE = ['comment:write'];
+    const GROUP_UPDATE = ['comment:update'];
     const GROUP_REPLY = ['comment:reply'];
 
     #[ORM\Id]
@@ -29,7 +30,7 @@ class Comment
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['comment:read', 'comment:write', 'comment:reply'])]
+    #[Groups(['comment:read', 'comment:write', 'comment:reply', 'comment:update'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]

@@ -5,6 +5,8 @@ message:
     created_success: "Your comment has been added successfully."
     reply_success: "Your reply has been added successfully."
     deleted_success: "Your comment has been deleted successfully."
+
+    updated_success: "This comment has been updated successfully."
   resource:
     access_denied: "You don't have access to this resource."
     access_create_denied: "You must verify your account to create a resource."

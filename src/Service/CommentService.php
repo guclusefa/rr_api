@@ -47,4 +47,14 @@ class CommentService
         // save
         $this->commentRepository->save($reply, true);
     }
+
+    public function update(Comment $comment, $updatedComment): void
+    {
+        // update
+        $comment->setContent($updatedComment->getContent());
+        // check for errors
+        $this->serializerService->checkErrors($comment);
+        // save
+        $this->commentRepository->save($comment, true);
+    }
 }
