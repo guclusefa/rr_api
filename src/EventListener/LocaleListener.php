@@ -4,25 +4,13 @@ namespace App\EventListener;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Translation\Translator;
 
 class LocaleListener
 {
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var Translator
-     */
-    private $translator;
-
-    /**
-     * @var ParameterBagInterface
-     */
-    private $params;
+    private RequestStack $requestStack;
+    private Translator $translator;
+    private ParameterBagInterface $params;
 
     public function __construct(RequestStack $requestStack, Translator $translator, ParameterBagInterface $params)
     {
