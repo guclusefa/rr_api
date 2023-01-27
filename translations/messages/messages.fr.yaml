@@ -83,3 +83,7 @@ message:
     created_success: "Ce département a été ajouté avec succès."
     updated_success: "Ce département a été mis à jour avec succès."
     deleted_success: "Ce département a été supprimé avec succès."
+  category:
+    created_success: "Cette catégorie a été ajoutée avec succès."
+    updated_success: "Cette catégorie a été mise à jour avec succès."
+    deleted_success: "Cette catégorie a été supprimée avec succès."

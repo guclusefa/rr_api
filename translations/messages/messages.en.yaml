@@ -83,3 +83,7 @@ message:
     created_success: "This state has been created with success."
     updated_success: "This state has been updated with success."
     deleted_success: "This state has been deleted with success."
+  category:
+    created_success: "This category has been created with success."
+    updated_success: "This category has been updated with success."
+    deleted_success: "This category has been deleted with success."

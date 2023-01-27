@@ -16,6 +16,10 @@ class Category
 {
     use TimeStampTrait;
 
+    const GROUP_GET = ['category:read'];
+    const GROUP_ITEM = ['category:read', 'category:item'];
+    const GROUP_WRITE = ['category:write'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,7 +28,7 @@ class Category
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Groups(['category:read'])]
+    #[Groups(['category:read', 'category:write'])]
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: Resource::class, mappedBy: 'categories')]
