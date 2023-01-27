@@ -2,7 +2,6 @@
 
 namespace App\Controller\admin;
 
-use App\Entity\Resource;
 use App\Entity\State;
 use App\Repository\StateRepository;
 use App\Service\SerializerService;
@@ -12,11 +11,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/admin/states')]
-#[IsGranted('ROLE_ADMIN')]
 class StateController extends AbstractController
 {
     public function __construct
