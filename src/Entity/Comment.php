@@ -43,6 +43,7 @@ class Comment
     private ?User $author = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     #[Groups(['comment:read','comment:reply'])]
     private ?self $replyTo = null;
 
