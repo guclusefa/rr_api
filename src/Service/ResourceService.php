@@ -64,8 +64,6 @@ class ResourceService
         $resource->setAuthor($user);
         // check for errors
         $this->serializerService->checkErrors($resource);
-        // check for errors
-        $this->serializerService->checkErrors($resource);
         // save
         $this->resourceRepository->save($resource, true);
     }

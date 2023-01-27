@@ -18,6 +18,7 @@ class State
 
     const GROUP_GET = ['state:read'];
     const GROUP_ITEM = ['state:read', 'state:item'];
+    const GROUP_WRITE = ['state:write'];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -27,12 +28,12 @@ class State
 
     #[ORM\Column(length: 10)]
     #[Assert\NotBlank]
-    #[Groups(['state:read'])]
+    #[Groups(['state:read', 'state:write'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Groups(['state:read'])]
+    #[Groups(['state:read', 'state:write'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'state', targetEntity: User::class, cascade: ['persist'])]

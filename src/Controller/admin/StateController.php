@@ -2,15 +2,18 @@
 
 namespace App\Controller\admin;
 
+use App\Entity\Resource;
 use App\Entity\State;
 use App\Repository\StateRepository;
 use App\Service\SerializerService;
+use App\Service\StateService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/admin/states')]
 #[IsGranted('ROLE_ADMIN')]
@@ -19,7 +22,9 @@ class StateController extends AbstractController
     public function __construct
     (
         private readonly StateRepository $stateRepository,
-        private readonly SerializerService $serializerService
+        private readonly SerializerService $serializerService,
+        private readonly StateService $stateService,
+        private readonly TranslatorInterface $translator
     )
     {
     }
@@ -50,27 +55,30 @@ class StateController extends AbstractController
             true
         );
     }
-    // TODO
+
     #[Route('', name: 'api_admin_states_create', methods: ['POST'])]
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse
     {
-        // create & return
-        $state = new State();
-        $this->stateRepository->save($state, true);
+        // deserialize, create
+        $state = $this->serializerService->deserialize(State::GROUP_WRITE ,$request, State::class);
+        $this->stateService->create($state);
+        // return
         return new JsonResponse(
-            null,
+            ['message' => $this->translator->trans('message.state.created_success')],
             Response::HTTP_CREATED
         );
     }
 
     #[Route('/{id}', name: 'api_admin_states_update', methods: ['PUT'])]
-    public function update(State $state): JsonResponse
+    public function update(Request $request, State $state): JsonResponse
     {
-        // update & return
-        $this->stateRepository->save($state, true);
+        // deserialize & update
+        $updatedState = $this->serializerService->deserialize(State::GROUP_WRITE, $request, State::class);
+        $this->stateService->update($state, $updatedState);
+        // return
         return new JsonResponse(
-            null,
-            Response::HTTP_NO_CONTENT
+            ['message' => $this->translator->trans('message.state.updated_success')],
+            Response::HTTP_OK
         );
     }
 
@@ -80,8 +88,8 @@ class StateController extends AbstractController
         // delete & return
         $this->stateRepository->remove($state, true);
         return new JsonResponse(
-            null,
-            Response::HTTP_NO_CONTENT
+            ['message' => $this->translator->trans('message.state.deleted_success')],
+            Response::HTTP_OK
         );
     }
 }

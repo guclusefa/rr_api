@@ -79,3 +79,7 @@ message:
 
     invalid_token: "Votre token n'est pas valide."
     invalid_user: "Utilisateur introuvable."
+  state:
+    created_success: "Ce département a été ajouté avec succès."
+    updated_success: "Ce département a été mis à jour avec succès."
+    deleted_success: "Ce département a été supprimé avec succès."

@@ -79,3 +79,7 @@ message:
 
     invalid_token: "Your token is invalid."
     invalid_user: "User not found."
+  state:
+    created_success: "This state has been created with success."
+    updated_success: "This state has been updated with success."
+    deleted_success: "This state has been deleted with success."
