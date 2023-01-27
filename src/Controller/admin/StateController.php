@@ -7,6 +7,7 @@ use App\Repository\StateRepository;
 use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -24,7 +25,7 @@ class StateController extends AbstractController
     }
 
     #[Route('', name: 'api_admin_states', methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         // get, serialize & return
         $states = $this->stateRepository->findAll();
@@ -49,7 +50,7 @@ class StateController extends AbstractController
             true
         );
     }
-
+    // TODO
     #[Route('', name: 'api_admin_states_create', methods: ['POST'])]
     public function create(): JsonResponse
     {

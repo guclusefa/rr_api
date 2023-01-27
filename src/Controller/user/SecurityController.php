@@ -90,6 +90,7 @@ class SecurityController extends AbstractController
                 $this->translator->trans('message.jwt.invalid_user')
             );
         }
+        // get new token
         $newToken = $jwtManager->create($currentUser);
         return new JsonResponse(['token' => $newToken]);
     }
