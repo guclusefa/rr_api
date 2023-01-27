@@ -243,4 +243,19 @@ class ResourceController extends AbstractController
             Response::HTTP_OK
         );
     }
+
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/{id}', name: 'api_resources_delete', methods: ['DELETE'])]
+    public function delete(Resource $resource): JsonResponse
+    {
+        // check access
+        $this->resourceService->checkUpdateAccess($resource, $this->getUser());
+        // delete
+        $this->resourceRepository->remove($resource, true);
+        // return
+        return new JsonResponse(
+            ['message' => $this->translator->trans('message.resource.deleted_success')],
+            Response::HTTP_OK
+        );
+    }
 }

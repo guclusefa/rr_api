@@ -1,7 +1,10 @@
 message:
   comment:
+    access_update_denied: "You don't have access to the deletion of this comment."
+
     created_success: "Your comment has been added successfully."
     reply_success: "Your reply has been added successfully."
+    deleted_success: "Your comment has been deleted successfully."
   resource:
     access_denied: "You don't have access to this resource."
     access_create_denied: "You must verify your account to create a resource."
@@ -10,6 +13,7 @@ message:
     created_success: "Your resource has been added successfully."
     updated_success: "Your resource has been updated successfully."
     updated_media_success: "The media of your resource has been updated successfully."
+    deleted_success: "Your resource has been deleted successfully."
 
     shared_success: "Your resource has been shared with %count% user(s) successfully."
     shared_error: "One of the users you want to share your resource with does not exist."

@@ -72,6 +72,7 @@ class Resource
     private ?User $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'resources')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private ?Relation $relation = null;
 

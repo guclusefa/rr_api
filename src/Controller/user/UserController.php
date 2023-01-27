@@ -154,7 +154,7 @@ class UserController extends AbstractController
     }
 
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    #[Route('/{id}/delete', name: 'api_users_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'api_users_delete', methods: ['DELETE'])]
     public function delete(User $user): JsonResponse
     {
         // check access

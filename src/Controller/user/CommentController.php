@@ -3,6 +3,7 @@
 namespace App\Controller\user;
 
 use App\Entity\Comment;
+use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Service\CommentService;
 use App\Service\ResourceService;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/comments')]
@@ -96,6 +98,21 @@ class CommentController extends AbstractController
         return new JsonResponse(
             ['message' => $this->translator->trans('message.comment.reply_success')],
             Response::HTTP_CREATED
+        );
+    }
+
+    #[Route('/{id}', name: 'api_comments_delete', methods: ['DELETE'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function delete(Comment $comment): JsonResponse
+    {
+        // check access
+        $this->commentService->checkUpdateAccess($comment, $this->getUser());
+        // delete user
+        $this->commentRepository->remove($comment, true);
+        // return
+        return new JsonResponse(
+            ['message' => $this->translator->trans('message.comment.deleted_success')],
+            Response::HTTP_OK
         );
     }
 }
