@@ -35,6 +35,9 @@ message:
 
     consult_success: "You have consulted this resource with success."
     consult_error: "You have already consulted this resource."
+
+    verify_success: "This resource has been verified with success."
+    unverify_success: "This resource has been unverified with success."
   security:
     email:
       missing_error: "Please fill in your email."

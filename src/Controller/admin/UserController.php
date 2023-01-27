@@ -4,8 +4,6 @@ namespace App\Controller\admin;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Service\SerializerService;
-use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,15 +16,13 @@ class UserController extends AbstractController
 {
     public function __construct
     (
-        private readonly SerializerService $serializerService,
         private readonly UserRepository $userRepository,
-        private readonly UserService $userService,
         private readonly TranslatorInterface $translator
     )
     {
     }
 
-    #[Route('/{id}/certify', name: 'api_admin_users_certify', methods: ['POST'])]
+    #[Route('/{id}/certify', name: 'api_admin_users_certify', methods: ['PUT'])]
     public function certify(User $user): JsonResponse
     {
         // certify
@@ -45,7 +41,7 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/{id}/ban', name: 'api_admin_users_ban', methods: ['POST'])]
+    #[Route('/{id}/ban', name: 'api_admin_users_ban', methods: ['PUT'])]
     public function ban(User $user): JsonResponse
     {
         // ban
@@ -64,7 +60,7 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/{id}/upgrade/{role}', name: 'api_admin_users_upgrade', methods: ['POST'])]
+    #[Route('/{id}/upgrade/{role}', name: 'api_admin_users_upgrade', methods: ['PUT'])]
     #[IsGranted('ROLE_SUPER_ADMIN')]
     public function upgrade(User $user, $role): JsonResponse
     {
