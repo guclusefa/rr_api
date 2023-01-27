@@ -73,6 +73,11 @@ message:
 
     uncertify_success: "Ce compte a été décertifié avec succès."
     certify_success: "Ce compte a été certifié avec succès."
+
+    unban_success: "Ce compte a été débanni avec succès."
+    ban_success: "Ce compte a été banni avec succès."
+
+    upgrade_success: "Ce compte a été promu avec succès."
   file_uploader:
     unvalid_photo: "La photo n'est pas valide"
     unvalid_photo_size: "La photo ne peut pas dépasser %max_size% Mo"
