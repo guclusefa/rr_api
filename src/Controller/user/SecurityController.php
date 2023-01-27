@@ -112,7 +112,7 @@ class SecurityController extends AbstractController
         );
     }
 
-    #[Route('/verify-email/{token}', name: 'api_verify_email', methods: ['GET'])]
+    #[Route('/verify-email/{token}', name: 'api_verify_email', methods: ['PUT'])]
     public function verifyEmail(string $token): JsonResponse
     {
         // check token and get user
@@ -143,7 +143,7 @@ class SecurityController extends AbstractController
         );
     }
 
-    #[Route('/reset-password/{token}', name: 'api_reset_password', methods: ['POST'])]
+    #[Route('/reset-password/{token}', name: 'api_reset_password', methods: ['PUT'])]
     public function resetPassword(Request $request, String $token): JsonResponse
     {
         // check token and get user
