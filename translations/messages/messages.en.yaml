@@ -70,6 +70,9 @@ message:
     updated_password_success: "Your password has been updated with success."
     updated_email_success: "Your email address has been updated with success."
     deleted_success: "Your account has been deleted with success."
+
+    uncertify_success: "This account has been uncertified with success."
+    certify_success: "This account has been certified with success."
   file_uploader:
     unvalid_photo: "The photo is not valid"
     unvalid_photo_size: "The photo cannot exceed %max_size% Mo"

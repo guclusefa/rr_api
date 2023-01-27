@@ -26,7 +26,7 @@ class JWTDecodedListener
 
         // if user is banned
         $user = $this->entityManager->getRepository(User::class)->find($payload['id']);
-        if ($user->isIsBanned()) {
+        if ($user !== null && $user->isIsBanned()) {
             throw new HttpException(
                 Response::HTTP_FORBIDDEN,
                 $this->translator->trans('message.security.banned')
