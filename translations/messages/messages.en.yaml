@@ -87,3 +87,7 @@ message:
     created_success: "This category has been created with success."
     updated_success: "This category has been updated with success."
     deleted_success: "This category has been deleted with success."
+  relation:
+    created_success: "This relation has been created with success."
+    updated_success: "This relation has been updated with success."
+    deleted_success: "This relation has been deleted with success."

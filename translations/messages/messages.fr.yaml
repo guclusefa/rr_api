@@ -87,3 +87,7 @@ message:
     created_success: "Cette catégorie a été ajoutée avec succès."
     updated_success: "Cette catégorie a été mise à jour avec succès."
     deleted_success: "Cette catégorie a été supprimée avec succès."
+  relation:
+    created_success: "Cette relation a été ajoutée avec succès."
+    updated_success: "Cette relation a été mise à jour avec succès."
+    deleted_success: "Cette relation a été supprimée avec succès."

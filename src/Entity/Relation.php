@@ -16,6 +16,10 @@ class Relation
 {
     use TimeStampTrait;
 
+    const GROUP_GET = ['relation:read'];
+    const GROUP_ITEM = ['relation:read', 'relation:item'];
+    const GROUP_WRITE = ['relation:write'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
