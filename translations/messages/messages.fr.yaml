@@ -1,5 +1,6 @@
 message:
   comment:
+    access_denied: "Vous n'avez pas accès à ce commentaire."
     access_update_denied: "Vous n'avez pas accès à la suppression de ce commentaire."
 
     created_success: "Votre commentaire a été ajouté avec succès."

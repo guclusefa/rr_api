@@ -46,11 +46,10 @@ class Comment
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
-    #[Groups(['comment:item','comment:reply'])]
+    #[Groups(['comment:reply'])]
     private ?self $replyTo = null;
 
     #[ORM\OneToMany(mappedBy: 'replyTo', targetEntity: self::class)]
-    #[Groups(['comment:item'])]
     private Collection $replies;
 
     public function __construct()

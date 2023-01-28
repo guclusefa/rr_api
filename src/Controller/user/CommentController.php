@@ -23,7 +23,6 @@ class CommentController extends AbstractController
         private readonly SerializerService $serializerService,
         private readonly CommentRepository $commentRepository,
         private readonly CommentService $commentService,
-        private readonly ResourceService $resourceService,
         private readonly TranslatorInterface $translator
     )
     {
@@ -58,8 +57,8 @@ class CommentController extends AbstractController
     #[Route('/{id}', name: 'api_comments_show', methods: ['GET'])]
     public function show(Comment $comment): JsonResponse
     {
-        // check access to resource
-        $this->resourceService->checkAccess($comment->getResource(), $this->getUser());
+        // check access
+        $this->commentService->checkAccess($comment->getResource(), $this->getUser());
         // serialize
         $comment = $this->serializerService->serialize(Comment::GROUP_ITEM, $comment);
         return new JsonResponse(
@@ -75,7 +74,7 @@ class CommentController extends AbstractController
     {
         // deserialize check, & comment
         $comment = $this->serializerService->deserialize(Comment::GROUP_WRITE ,$request, Comment::class);
-        $this->resourceService->checkAccess($comment->getResource(), $this->getUser());
+        $this->commentService->checkAccess($comment->getResource(), $this->getUser());
         $this->commentService->comment($comment, $this->getUser());
         // return
         return new JsonResponse(
@@ -87,8 +86,8 @@ class CommentController extends AbstractController
     #[Route('/{id}/reply', name: 'api_comments_reply', methods: ['POST'])]
     public function reply(Request $request, Comment $comment): JsonResponse
     {
-        // check access to resource
-        $this->resourceService->checkAccess($comment->getResource(), $this->getUser());
+        // check access
+        $this->commentService->checkAccess($comment->getResource(), $this->getUser());
         // deserialize & reply
         $reply = $this->serializerService->deserialize(Comment::GROUP_REPLY ,$request, Comment::class);
         $this->commentService->replyTo($comment, $reply, $this->getUser());

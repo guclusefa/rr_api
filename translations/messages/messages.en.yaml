@@ -1,5 +1,6 @@
 message:
   comment:
+    access_denied: "You don't have access to this comment."
     access_update_denied: "You don't have access to the deletion of this comment."
 
     created_success: "Your comment has been added successfully."
