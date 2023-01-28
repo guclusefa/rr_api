@@ -68,7 +68,6 @@ class UserService
         $user->setBirthDate($updatedUser->getBirthDate());
         $user->setBio($updatedUser->getBio());
         $user->setState($updatedUser->getState());
-        $user->setIsActive($updatedUser->isIsActive());
         // check for errors
         $this->serializerService->checkErrors($user);
         // save
@@ -173,7 +172,7 @@ class UserService
 
     public function ban($user, $userBan): void
     {
-        if ($this->userBanRepository->isBanned($user)){
+        if ($this->userRepository->isBanned($user)){
             throw new HttpException(
                 Response::HTTP_BAD_REQUEST,
                 $this->translator->trans('message.user.already_banned_error')
