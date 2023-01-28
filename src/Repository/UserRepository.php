@@ -171,42 +171,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function advanceSearch($search, $certified, $states, $genders, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('u');
+
         $this->findNonBannedUsers($qb);
+
         $this->findBySearch($qb, $search);
         $this->findByCertified($qb, $certified);
         $this->findByStates($qb, $states);
         $this->findByGenders($qb, $genders);
+
         $this->orderBy($qb, $order, $direction);
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);
         $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
+
         return [
             'data' => $qb->getQuery()->getResult(),
             'meta' => $metadata,
         ];
     }
-
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }
