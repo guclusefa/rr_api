@@ -29,7 +29,6 @@ class CommentController extends AbstractController
     {
     }
 
-    // TODO : check if user is allowed to access resource
     #[Route('', name: 'api_comments', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {

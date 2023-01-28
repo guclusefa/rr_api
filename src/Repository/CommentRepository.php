@@ -57,8 +57,13 @@ class CommentRepository extends ServiceEntityRepository
             )
             ->getDQL();
 
-        $qb->join('c.author', 'a')
-            ->having($qb->expr()->eq(0, "($subquery)"))
+        // FIND all with author not banned
+        // FIND all author annonymous (author = null)
+        $qb->leftJoin('c.author', 'a')
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('a'),
+                $qb->expr()->eq(0, "($subquery)")
+            ))
             ->setParameter('now', new \DateTime());
     }
 
@@ -67,6 +72,13 @@ class CommentRepository extends ServiceEntityRepository
         // FIND all with resource visibility 1
         // OR FIND all with resource visibility 2 & sharedTo me
         // OR FIND all with resource visibility 3 & author me
+
+        // if not logged in then only find public
+        if (!$user) {
+            $qb->join('c.resource', 'r')
+                ->andWhere('r.visibility = 1');
+            return;
+        }
         $qb->join('c.resource', 'r')
             ->andWhere(
                 $qb->expr()->orX(
@@ -139,6 +151,7 @@ class CommentRepository extends ServiceEntityRepository
         $this->orderBy($qb, $order, $direction);
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);
         $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
+
         return [
             'data' => $paginator->getQuery()->getResult(),
             'meta' => $metadata,

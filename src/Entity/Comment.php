@@ -40,7 +40,7 @@ class Comment
     private ?Resource $resource = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     #[Groups(['comment:read'])]
     private ?User $author = null;
 
