@@ -81,6 +81,7 @@ message:
 
     unban_success: "This account has been unbanned with success."
     ban_success: "This account has been banned with success."
+    already_banned_error: "This account is already banned."
 
     upgraded_success: "This account has been upgraded with success."
   file_uploader:

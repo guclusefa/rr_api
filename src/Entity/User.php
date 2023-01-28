@@ -13,12 +13,9 @@ use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Contracts\Service\Attribute\Required;
-
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -103,14 +100,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private ?bool $isVerified = false;
 
-    #[ORM\Column]
-    #[Groups(['user:read', 'user:update'])]
-    private ?bool $isActive = true;
-
-    #[ORM\Column]
-    #[Groups(['user:read'])]
-    private ?bool $isBanned = false;
-
     #[ORM\ManyToOne(targetEntity: State::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[AppAssert\ValidState]
@@ -149,6 +138,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:item'])]
     private Collection $sharesTo;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserBan::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
+    private Collection $bans;
+
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: UserBan::class, orphanRemoval: true)]
+    #[Groups(['user:item'])]
+    private Collection $bannings;
+
     public function __construct()
     {
         $this->resources = new ArrayCollection();
@@ -159,6 +156,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->saves = new ArrayCollection();
         $this->consults = new ArrayCollection();
         $this->sharesTo = new ArrayCollection();
+        $this->bans = new ArrayCollection();
+        $this->bannings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -335,30 +334,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-    public function isIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    public function isIsBanned(): ?bool
-    {
-        return $this->isBanned;
-    }
-
-    public function setIsBanned(bool $isBanned): self
-    {
-        $this->isBanned = $isBanned;
 
         return $this;
     }
@@ -623,5 +598,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (null === $this->photo) return null;
         return "http://localhost:8000/" . 'uploads/users/images/' . $this->photo;
+    }
+
+    /**
+     * @return Collection<int, UserBan>
+     */
+    public function getBans(): Collection
+    {
+        return $this->bans;
+    }
+
+    public function addBan(UserBan $ban): self
+    {
+        if (!$this->bans->contains($ban)) {
+            $this->bans->add($ban);
+            $ban->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBan(UserBan $ban): self
+    {
+        if ($this->bans->removeElement($ban)) {
+            // set the owning side to null (unless already changed)
+            if ($ban->getUser() === $this) {
+                $ban->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserBan>
+     */
+    public function getBannings(): Collection
+    {
+        return $this->bannings;
+    }
+
+    public function addBanning(UserBan $banning): self
+    {
+        if (!$this->bannings->contains($banning)) {
+            $this->bannings->add($banning);
+            $banning->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBanning(UserBan $banning): self
+    {
+        if ($this->bannings->removeElement($banning)) {
+            // set the owning side to null (unless already changed)
+            if ($banning->getAuthor() === $this) {
+                $banning->setAuthor(null);
+            }
+        }
+
+        return $this;
     }
 }

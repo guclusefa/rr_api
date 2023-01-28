@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Entity\UserBan;
 use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -77,25 +79,46 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
 
+    public function isBanned($user): bool
+    {
+        // for each bans check if endDate is null or endDate is in the future
+        foreach ($user->getBans() as $ban) {
+            if ($ban->getEndDate() === null || $ban->getEndDate() > new \DateTime()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function isAccesibleToMe($user, $me): bool
     {
-        // IF BANNED AND NOT ME RETURN FALSE
-        if ($user->isIsBanned() && $user->getId() !== $me->getId()) {
+        // IF BANNED
+        if ($this->isBanned($user)) {
             return false;
         }
-
         return true;
     }
 
-    public function findByBanned($qb, $user)
+    public function findBannedUsers($qb)
     {
-        // find all the users that are not banned or the user is me
-        $qb->andWhere('u.isBanned = :isBanned')
-            ->setParameter('isBanned', false);
-        if ($user) {
-            $qb->orWhere('u.id = :id')
-                ->setParameter('id', $user->getId());
-        }
+        // If user.bans is not empty and if one of the UserBan.endDate is null or in the future then the user is banned
+        $qb->join(UserBan::class, 'ub', Join::WITH, 'ub.user = u')
+            ->where($qb->expr()->orX(
+                $qb->expr()->isNull('ub.endDate'),
+                $qb->expr()->gte('ub.endDate', ':now')
+            ))
+            ->setParameter('now', new \DateTime());
+    }
+
+    public function findNonBannedUsers($qb)
+    {
+        // If user.bans is empty then the user is not banned
+        // IF UserBan.endDate is not null or UserBan.endDate is in the past then the user is not banned
+        $qb->where('NOT EXISTS (
+                SELECT b FROM App\Entity\UserBan b 
+                WHERE b.user = u 
+                AND (b.endDate IS NULL OR b.endDate >= CURRENT_DATE())
+            )');
     }
 
     public function findBySearch($qb, $search)
@@ -139,10 +162,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
     }
 
-    public function advanceSearch($user, $search, $certified, $states, $genders, $order, $direction, $page, $limit): array
+    public function advanceSearch($search, $certified, $states, $genders, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('u');
-        $this->findByBanned($qb, $user);
+        $this->findNonBannedUsers($qb);
         $this->findBySearch($qb, $search);
         $this->findByCertified($qb, $certified);
         $this->findByStates($qb, $states);

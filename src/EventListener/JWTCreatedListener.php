@@ -3,6 +3,7 @@
 namespace App\EventListener;
 
 use App\Entity\User;
+use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -13,6 +14,9 @@ class JWTCreatedListener
     {
     }
 
+    /**
+     * @throws Exception
+     */
     public function onJWTCreated(JWTCreatedEvent $event): void
     {
         $payload = $event->getData();
@@ -21,9 +25,6 @@ class JWTCreatedListener
         if (!$user instanceof User) return;
         $payload['id'] = $user->getId();
         $payload['username'] = $user->getUsername();
-        $payload['isVerified'] = $user->isIsVerified();
-        $payload['isActive'] = $user->isIsActive();
-        $payload['isBanned'] = $user->isIsBanned();
         // remember me
         $request = $this->requestStack->getCurrentRequest();
         $content = json_decode($request->getContent(), true);

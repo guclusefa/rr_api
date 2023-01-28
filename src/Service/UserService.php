@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Repository\UserBanRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,8 @@ class UserService
         private readonly FileUploaderService $fileUploaderService,
         private readonly ParameterBagInterface $params,
         private readonly SerializerService $serializerService,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
+        private readonly UserBanRepository $userBanRepository
     )
     {
     }
@@ -167,5 +169,22 @@ class UserService
         $user->setIsVerified(true);
         // save
         $this->userRepository->save($user, true);
+    }
+
+    public function ban($user, $userBan): void
+    {
+        if ($this->userBanRepository->isBanned($user)){
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                $this->translator->trans('message.user.already_banned_error')
+            );
+        }
+        // date, author and user
+        $userBan->setUser($user);
+        $userBan->setAuthor($user);
+        // check for errors
+        $this->serializerService->checkErrors($userBan);
+        // save
+        $this->userBanRepository->save($userBan, true);
     }
 }

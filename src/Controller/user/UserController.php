@@ -43,7 +43,7 @@ class UserController extends AbstractController
         $limit = $request->query->get('limit', 10);
 
         // get, serialize & return
-        $users = $this->userRepository->advanceSearch($this->getUser(), $search, $certified, $states, $genders, $order, $direction, $page, $limit);
+        $users = $this->userRepository->advanceSearch($search, $certified, $states, $genders, $order, $direction, $page, $limit);
         $users = $this->serializerService->serialize(User::GROUP_GET, $users);
         return new JsonResponse(
             $users,

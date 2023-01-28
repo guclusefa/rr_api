@@ -3,9 +3,13 @@
 namespace App\Controller\admin;
 
 use App\Entity\User;
+use App\Entity\UserBan;
 use App\Repository\UserRepository;
+use App\Service\SerializerService;
+use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -17,7 +21,9 @@ class UserController extends AbstractController
     public function __construct
     (
         private readonly UserRepository $userRepository,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
+        private readonly SerializerService $serializerService,
+        private readonly UserService $userService
     )
     {
     }
@@ -41,21 +47,15 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/{id}/ban', name: 'api_admin_users_ban', methods: ['PUT'])]
-    public function ban(User $user): JsonResponse
+    #[Route('/{id}/ban', name: 'api_admin_users_ban', methods: ['POST'])]
+    public function ban(Request $request, User $user): JsonResponse
     {
-        // ban
-        $isBanned = $user->isIsBanned();
-        $user->setIsBanned(!$isBanned);
-        if ($isBanned) {
-            $message = $this->translator->trans('message.user.unban_success');
-        } else {
-            $message = $this->translator->trans('message.user.ban_success');
-        }
-        $this->userRepository->save($user, true);
+        // deserialize check, & comment
+        $userBan = $this->serializerService->deserialize(UserBan::GROUP_WRITE ,$request, UserBan::class);
+        $this->userService->ban($user, $userBan);
         // return
         return new JsonResponse(
-            ['message' => $message],
+            ['message' => $this->translator->trans('message.user.ban_success')],
             Response::HTTP_OK
         );
     }

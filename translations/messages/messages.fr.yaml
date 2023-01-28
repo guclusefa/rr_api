@@ -78,6 +78,7 @@ message:
 
     uncertify_success: "Ce compte a été décertifié avec succès."
     certify_success: "Ce compte a été certifié avec succès."
+    already_banned_error: "Ce compte est déjà banni."
 
     unban_success: "Ce compte a été débanni avec succès."
     ban_success: "Ce compte a été banni avec succès."
