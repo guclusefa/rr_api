@@ -31,9 +31,20 @@ class JWTDecodedListener
         // if user is banned
         $user = $this->entityManager->getRepository(User::class)->find($payload['id']);
         if ($user !== null && $this->userRepository->isBanned($user)) {
+            // get ban reason and end date
+            $ban = $this->userRepository->getMostCurrentBan($user);
+            $endDate = $ban->getEndDate();
+            $endDate = $endDate?->format('Y-m-d');
+            $reason = $ban->getReason();
+            // throw exception with the corresponding message
+            if ($endDate == null) {
+                $message = $this->translator->trans('message.security.banned_perm', ['%reason%' => $reason]);
+            } else {
+                $message = $this->translator->trans('message.security.banned', ['%reason%' => $reason, '%date%' => $endDate]);
+            }
             throw new HttpException(
                 Response::HTTP_FORBIDDEN,
-                $this->translator->trans('message.security.banned')
+                $message
             );
         }
     }

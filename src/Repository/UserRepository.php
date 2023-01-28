@@ -95,6 +95,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return count($bans) > 0;
     }
 
+    public function getMostCurrentBan(User $user): ?UserBan
+    {
+        $bans = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('b')
+            ->from(UserBan::class, 'b')
+            ->where('b.user = :user')
+            ->andWhere('b.endDate IS NULL OR b.endDate > :now')
+            ->setParameter('user', $user)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('b.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return count($bans) > 0 ? $bans[0] : null;
+    }
+
     public function isAccesibleToMe($user): bool
     {
         // IF BANNED

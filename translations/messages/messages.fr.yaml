@@ -62,7 +62,8 @@ message:
     reset_password_send: "Si un compte existe avec cette adresse email, un email de réinitialisation de mot de passe vous a été envoyé."
     reset_password_success: "Votre mot de passe a été réinitialisé avec succès."
 
-    banned: "Votre compte a été banni."
+    banned: "Votre compte a été banni jusqu'au %date% pour la raison suivante : %reason%"
+    banned_perm: "Votre compte a été banni définitivement pour la raison suivante : %reason%"
   user:
     access_denied: "Vous n'avez pas accès à ce profil."
     access_update_denied: "Vous n'avez pas accès à la modification de ce profil."
