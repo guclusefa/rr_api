@@ -71,7 +71,7 @@ class UserController extends AbstractController
     public function show(User $user): JsonResponse
     {
         // check access
-        $this->userService->checkAccess($user, $this->getUser());
+        $this->userService->checkAccess($user);
         // get groups
         $groups = User::GROUP_ITEM;
         if ($this->userService->allowedConfidentialFields($user, $this->getUser())) {

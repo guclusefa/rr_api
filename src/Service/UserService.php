@@ -26,9 +26,9 @@ class UserService
     {
     }
 
-    public function checkAccess($user, $me): void
+    public function checkAccess($user): void
     {
-        if (!$this->userRepository->isAccesibleToMe($user, $me)) {
+        if (!$this->userRepository->isAccesibleToMe($user)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.user.access_denied'));
         }
     }

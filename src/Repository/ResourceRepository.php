@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Entity\Resource;
 use App\Entity\ResourceSharedTo;
+use App\Entity\UserBan;
 use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,7 +22,8 @@ class ResourceRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-        private readonly PaginatorService $paginatorService
+        private readonly PaginatorService $paginatorService,
+        private readonly UserRepository $userRepository
     )
     {
         parent::__construct($registry, Resource::class);
@@ -46,6 +49,10 @@ class ResourceRepository extends ServiceEntityRepository
 
     public function isAccesibleToMe($resource, $user): bool
     {
+        // if author is banned
+        if ($this->userRepository->isBanned($resource->getAuthor())) {
+            return false;
+        }
         // public
         if ($resource->getVisibility() == 1) {
             return true;
@@ -72,6 +79,25 @@ class ResourceRepository extends ServiceEntityRepository
         }
 
         return false;
+    }
+
+    public function findByNonBannedAuthors($qb)
+    {
+        $subquery = $qb->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(ub.id)')
+            ->from('App\Entity\UserBan', 'ub')
+            ->where('ub.user = a')
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->isNull('ub.endDate'),
+                    $qb->expr()->gt('ub.endDate', ':now')
+                )
+            )
+            ->getDQL();
+
+        $qb->join('r.author', 'a')
+            ->having($qb->expr()->eq(0, "($subquery)"))
+            ->setParameter('now', new \DateTime());
     }
 
     public function findByAccesibility($qb, $user)
@@ -237,6 +263,7 @@ class ResourceRepository extends ServiceEntityRepository
     public function advanceSearch($user, $search, $verified, $visibility, $authors, $relations, $categories, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('r');
+        $this->findByNonBannedAuthors($qb);
         $this->findByAccesibility($qb, $user);
         $this->findByStatus($qb, $user);
         $this->findBySearch($qb, $search);

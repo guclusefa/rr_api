@@ -79,18 +79,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
 
-    public function isBanned($user): bool
+    public function isBanned(User $user): bool
     {
-        // for each bans check if endDate is null or endDate is in the future
-        foreach ($user->getBans() as $ban) {
-            if ($ban->getEndDate() === null || $ban->getEndDate() > new \DateTime()) {
-                return true;
-            }
-        }
-        return false;
+        $bans = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('b')
+            ->from(UserBan::class, 'b')
+            ->where('b.user = :user')
+            ->andWhere('b.endDate IS NULL OR b.endDate > :now')
+            ->setParameter('user', $user)
+            ->setParameter('now', new \DateTime())
+            ->getQuery()
+            ->getResult();
+
+        return count($bans) > 0;
     }
 
-    public function isAccesibleToMe($user, $me): bool
+    public function isAccesibleToMe($user): bool
     {
         // IF BANNED
         if ($this->isBanned($user)) {
@@ -117,8 +122,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $qb->where('NOT EXISTS (
                 SELECT b FROM App\Entity\UserBan b 
                 WHERE b.user = u 
-                AND (b.endDate IS NULL OR b.endDate >= CURRENT_DATE())
-            )');
+                AND (b.endDate IS NULL OR b.endDate >= :now)
+            )')
+            ->setParameter('now', new \DateTime());
     }
 
     public function findBySearch($qb, $search)
