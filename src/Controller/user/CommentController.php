@@ -3,7 +3,6 @@
 namespace App\Controller\user;
 
 use App\Entity\Comment;
-use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Service\CommentService;
 use App\Service\ResourceService;

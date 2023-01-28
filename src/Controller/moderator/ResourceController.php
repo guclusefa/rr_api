@@ -4,8 +4,6 @@ namespace App\Controller\moderator;
 
 use App\Entity\Resource;
 use App\Repository\ResourceRepository;
-use App\Service\ResourceService;
-use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,8 +15,6 @@ class ResourceController extends AbstractController
 {
     public function __construct
     (
-        private readonly ResourceService $resourceService,
-        private readonly SerializerService $serializerService,
         private readonly ResourceRepository $resourceRepository,
         private readonly TranslatorInterface $translator
     )

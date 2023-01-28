@@ -3,9 +3,7 @@
 namespace App\Controller\moderator;
 
 use App\Entity\Comment;
-use App\Repository\ResourceRepository;
 use App\Service\CommentService;
-use App\Service\ResourceService;
 use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
