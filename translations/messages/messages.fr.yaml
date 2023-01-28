@@ -1,3 +1,7 @@
+values:
+  locale: "fr_FR"
+  date:
+    datetime_format: "EEEE d MMMM y 'à' HH:mm"
 message:
   comment:
     access_denied: "Vous n'avez pas accès à ce commentaire."

@@ -36,6 +36,7 @@ class UserBan
     private ?User $author = null;
 
     #[ORM\Column(length: 255)]
+    #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
     #[Groups(['user_ban:read', 'user_ban:write'])]

@@ -10,7 +10,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Translation\Translator;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class JWTDecodedListener
@@ -42,9 +41,12 @@ class JWTDecodedListener
         if ($user !== null && $this->userRepository->isBanned($user)) {
             // get ban reason and end date
             $ban = $this->userRepository->getMostCurrentBan($user);
-            $endDate = $ban->getEndDate();
-            $endDate = $endDate?->format('Y-m-d');
             $reason = $ban->getReason();
+            $endDate = $ban->getEndDate();
+            // format date
+            $formatter = new \IntlDateFormatter($this->translator->trans('values.locale'), \IntlDateFormatter::FULL, \IntlDateFormatter::FULL);
+            $formatter->setPattern($this->translator->trans('values.date.datetime_format'));
+            $endDate = $formatter->format($endDate);
             // throw exception with the corresponding message
             if ($endDate == null) {
                 $message = 'message.security.banned_perm';

@@ -1,3 +1,7 @@
+values:
+  locale: "en_US"
+  date:
+    datetime_format: "EEEE d MMMM y 'at' HH:mm"
 message:
   comment:
     access_denied: "You don't have access to this comment."
