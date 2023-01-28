@@ -46,7 +46,7 @@ class Comment
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
-    #[Groups(['comment:read','comment:reply'])]
+    #[Groups(['comment:item','comment:reply'])]
     private ?self $replyTo = null;
 
     #[ORM\OneToMany(mappedBy: 'replyTo', targetEntity: self::class)]

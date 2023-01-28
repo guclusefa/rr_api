@@ -64,7 +64,25 @@ class CommentRepository extends ServiceEntityRepository
 
     public function findByAccesibility($qb, $user)
     {
-        // todo
+        // FIND all with resource visibility 1
+        // OR FIND all with resource visibility 2 & sharedTo me
+        // OR FIND all with resource visibility 3 & author me
+        $qb->join('c.resource', 'r')
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('r.visibility', 1),
+                    $qb->expr()->andX(
+                        $qb->expr()->eq('r.visibility', 2),
+                        $qb->expr()->in('r.id', ':sharedToMe')
+                    ),
+                    $qb->expr()->andX(
+                        $qb->expr()->eq('r.visibility', 3),
+                        $qb->expr()->eq('r.author', ':author')
+                    )
+                )
+            )
+            ->setParameter('sharedToMe', $user->getSharesTo())
+            ->setParameter('author', $user);
     }
 
     public function findBySearch($qb, $search)
@@ -109,12 +127,15 @@ class CommentRepository extends ServiceEntityRepository
     public function advanceSearch($user, $seach, $authors, $resources, $replyTo, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('c');
+
         $this->findByNonBannedAuthors($qb);
         $this->findByAccesibility($qb, $user);
+
         $this->findBySearch($qb, $seach);
         $this->findByAuthors($qb, $authors);
         $this->findByResources($qb, $resources);
         $this->findByReplyTo($qb, $replyTo);
+
         $this->orderBy($qb, $order, $direction);
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);
         $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
@@ -123,29 +144,4 @@ class CommentRepository extends ServiceEntityRepository
             'meta' => $metadata,
         ];
     }
-
-//    /**
-//     * @return Comment[] Returns an array of Comment objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Comment
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }
