@@ -81,4 +81,16 @@ class ResourceActionController extends AbstractController
             Response::HTTP_OK,
         );
     }
+
+    #[Route('/{ressourceId}/shareto/{userId}', name: 'api_resources_is_shared_to', methods: ['GET'])]
+    #[ParamConverter('resource', options: ['id' => 'ressourceId'])]
+    #[ParamConverter('user', options: ['id' => 'userId'])]
+    public function isSharedTo(Resource $resource, User $user): JsonResponse
+    {
+        $isSharedTo = $this->resourceService->isSharedTo($resource, $user);
+        return new JsonResponse(
+            $isSharedTo,
+            Response::HTTP_OK,
+        );
+    }
 }

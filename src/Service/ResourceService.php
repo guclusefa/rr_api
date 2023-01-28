@@ -266,6 +266,15 @@ class ResourceService
         return $message;
     }
 
+    public function isSharedTo(Resource $resource, $user): bool
+    {
+        // check if user already shared
+        $share = $resource->getSharesTo()->filter(function ($share) use ($user) {
+            return $share->getUser() === $user;
+        })->first();
+        return $share != null;
+    }
+
     public function addSharedTo(Resource $resource, $users): int
     {
         $count = 0;
