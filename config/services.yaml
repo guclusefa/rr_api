@@ -30,6 +30,11 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     # config/services.yaml
+    acme_api.event.locale_listener:
+        class: App\EventListener\LocaleListener
+        arguments: [ "@request_stack", "@translator.default" ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     acme_api.event.jwt_created_listener:
         class: App\EventListener\JWTCreatedListener
         arguments: [ '@request_stack' ]
@@ -47,8 +52,3 @@ services:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_invalid, method: onJWTInvalid }
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_not_found, method: onJWTNotFound }
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_expired, method: onJWTExpired }
-    acme_api.event.locale_listener:
-        class: App\EventListener\LocaleListener
-        arguments: ["@request_stack", "@translator.default"]
-        tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
