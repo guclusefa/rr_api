@@ -4,10 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Resource;
 use App\Entity\ResourceSharedTo;
-use App\Entity\UserBan;
 use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -79,45 +77,6 @@ class ResourceRepository extends ServiceEntityRepository
         }
 
         return false;
-    }
-
-    public function findByNonBannedAuthors($qb)
-    {
-        $subquery = $qb->getEntityManager()->createQueryBuilder()
-            ->select('COUNT(ub.id)')
-            ->from('App\Entity\UserBan', 'ub')
-            ->where('ub.user = a')
-            ->andWhere(
-                $qb->expr()->orX(
-                    $qb->expr()->isNull('ub.endDate'),
-                    $qb->expr()->gt('ub.endDate', ':now')
-                )
-            )
-            ->getDQL();
-
-        $qb->join('r.author', 'a')
-            ->having($qb->expr()->eq(0, "($subquery)"))
-            ->setParameter('now', new \DateTime());
-    }
-
-    public function findByAccesibility($qb, $user)
-    {
-        // FIND all with visibility 1
-        // OR FIND all with visibility 2 and sharedTo me
-        // OR FIND all with visibility 3 and author me
-        $qb->andWhere('r.visibility = 1')
-            ->orWhere('r.visibility = 2 AND EXISTS (SELECT rst FROM App\Entity\ResourceSharedTo rst WHERE rst.resource = r AND rst.user = :user)')
-            ->orWhere('r.visibility = 3 AND r.author = :user')
-            ->setParameter('user', $user);
-    }
-
-    public function findByStatus($qb, $user)
-    {
-        // FIND all with author me
-        // OR FIND all with isPublished 1 & isSuspended 0
-        $qb->andWhere('r.author = :user')
-            ->orWhere('r.isPublished = 1 AND r.isSuspended = 0')
-            ->setParameter('user', $user);
     }
 
     public function findBySearch($qb, $search)
@@ -260,18 +219,65 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
+    // TODO FROM HERE
+    public function findByNonBannedAuthors($qb)
+    {
+//        $subquery = $qb->getEntityManager()->createQueryBuilder()
+//            ->select('COUNT(ub.id)')
+//            ->from('App\Entity\UserBan', 'ub')
+//            ->where('ub.user = a')
+//            ->andWhere(
+//                $qb->expr()->orX(
+//                    $qb->expr()->isNull('ub.endDate'),
+//                    $qb->expr()->gt('ub.endDate', ':now')
+//                )
+//            )
+//            ->getDQL();
+//
+//        $qb->join('r.author', 'a')
+//            ->having($qb->expr()->eq(0, "($subquery)"))
+//            ->setParameter('now', new \DateTime());
+    }
+
+    public function findByAccesibility($qb, $user)
+    {
+        // FIND all with visibility 1
+        // OR FIND all with visibility 2 & sharedTo me
+        // OR FIND all with visibility 3 & author me
+//        $qb->andWhere('r.visibility = 1')
+//            ->orWhere('r.visibility = 2 AND EXISTS (
+//                SELECT rst.id
+//                FROM App\Entity\ResourceSharedTo rst
+//                WHERE rst.resource = r.id AND rst.user = :user
+//            )')
+//            ->orWhere('r.visibility = 3 AND r.author = :user')
+//            ->setParameter('user', $user);
+    }
+
+    public function findByStatus($qb, $user)
+    {
+        // FIND all with author me
+        // OR FIND all with isPublished 1 & isSuspended 0
+//        $qb->andWhere('r.author = :user')
+//            ->orWhere('r.isPublished = 1 AND r.isSuspended = 0')
+//            ->setParameter('user', $user);
+    }
+
     public function advanceSearch($user, $search, $verified, $visibility, $authors, $relations, $categories, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('r');
-        $this->findByNonBannedAuthors($qb);
-        $this->findByAccesibility($qb, $user);
-        $this->findByStatus($qb, $user);
+
+//        $this->findByNonBannedAuthors($qb);
+//        $this->findByAccesibility($qb, $user);
+//        $this->findByStatus($qb, $user);
+
         $this->findBySearch($qb, $search);
         $this->findByVerified($qb, $verified);
         $this->findByVisibility($qb, $visibility);
         $this->findByAuthors($qb, $authors);
         $this->findByRelations($qb, $relations);
         $this->findByCategories($qb, $categories);
+
         $this->orderBy($qb, $order, $direction);
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);
         $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
@@ -280,29 +286,4 @@ class ResourceRepository extends ServiceEntityRepository
             'meta' => $metadata,
         ];
     }
-
-//    /**
-//     * @return Resource[] Returns an array of Resource objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Resource
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

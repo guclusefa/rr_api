@@ -81,35 +81,35 @@ class Resource
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: Comment::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $comments;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceLike::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $likes;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceShare::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $shares;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceExploit::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $exploits;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceSave::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $saves;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceConsult::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $consults;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceSharedTo::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $sharesTo;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceStats::class, orphanRemoval: true)]
-    #[Groups(['resource:read'])]
+    #[Groups(['resource:item'])]
     private Collection $stats;
 
     public function __construct()

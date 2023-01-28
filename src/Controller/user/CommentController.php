@@ -46,7 +46,7 @@ class CommentController extends AbstractController
         $limit = $request->query->get('limit', 10);
 
         // get, serialize & return
-        $comments = $this->commentRepository->advanceSearch($search, $author, $resource, $replyto, $order, $direction, $page, $limit);
+        $comments = $this->commentRepository->advanceSearch($this->getUser(), $search, $author, $resource, $replyto, $order, $direction, $page, $limit);
         $comments = $this->serializerService->serialize(Comment::GROUP_GET, $comments);
         return new JsonResponse(
             $comments,

@@ -43,9 +43,28 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-    // TODO : for each comment, check if the user can see the resource
+    public function findByNonBannedAuthors($qb)
+    {
+        $subquery = $qb->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(ub.id)')
+            ->from('App\Entity\UserBan', 'ub')
+            ->where('ub.user = a')
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->isNull('ub.endDate'),
+                    $qb->expr()->gt('ub.endDate', ':now')
+                )
+            )
+            ->getDQL();
+
+        $qb->join('c.author', 'a')
+            ->having($qb->expr()->eq(0, "($subquery)"))
+            ->setParameter('now', new \DateTime());
+    }
+
     public function findByAccesibility($qb, $user)
     {
+        // todo
     }
 
     public function findBySearch($qb, $search)
@@ -87,9 +106,11 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-    public function advanceSearch($seach, $authors, $resources, $replyTo, $order, $direction, $page, $limit): array
+    public function advanceSearch($user, $seach, $authors, $resources, $replyTo, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('c');
+        $this->findByNonBannedAuthors($qb);
+        $this->findByAccesibility($qb, $user);
         $this->findBySearch($qb, $seach);
         $this->findByAuthors($qb, $authors);
         $this->findByResources($qb, $resources);
