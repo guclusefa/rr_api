@@ -17,12 +17,14 @@ class PaginatorService
     public function getMetadata($paginator, $page, $limit): array
     {
         return [
-            'page' => (int) $page,
-            'limit' => (int) $limit,
-            'pages' => (int) ceil($paginator->count() / $limit),
             'total' => $paginator->count(),
-            'start' => ($page - 1) * $limit + 1,
-            'end' => $page * $limit,
+            'page' => (int) $page,
+            'pages' => (int) ceil($paginator->count() / $limit),
+            'limit' => (int) $limit,
+            'start' => min(($page - 1) * $limit + 1, $paginator->count()),
+            'end' => min($page * $limit, $paginator->count()),
+            'next' => $page * $limit < $paginator->count(),
+            'previous' => $page > 1,
         ];
     }
 }
