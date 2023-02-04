@@ -157,7 +157,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findByCertified($qb, $certified)
     {
         if ($certified) {
-            $qb->andWhere('u.isVerified = :certified')
+            $qb->andWhere('u.isCertified = :certified')
                 ->setParameter('certified', $certified);
         }
     }

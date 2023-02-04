@@ -18,6 +18,7 @@ class PaginatorService
     {
         return [
             'total' => $paginator->count(),
+            'count' => $paginator->count() ? count($paginator->getIterator()) : 0,
             'page' => (int) $page,
             'pages' => (int) ceil($paginator->count() / $limit),
             'limit' => (int) $limit,
