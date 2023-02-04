@@ -147,6 +147,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findBySearch($qb, $search)
     {
         if ($search) {
+            // trime the spaces at the beginning and the end of the string
+            $search = trim($search);
             $qb->andWhere('u.username LIKE :search')
                 ->orWhere('u.firstName LIKE :search')
                 ->orWhere('u.lastName LIKE :search')
