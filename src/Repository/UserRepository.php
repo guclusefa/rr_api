@@ -164,6 +164,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
     }
 
+    public function findByRoles($qb, $roles)
+    {
+        if ($roles) {
+            // TODO : fix maybe ?
+            // roles is an array of roles
+            // u.roles is json
+            // u.roles LIKE '%ROLE_ADMIN%' OR u.roles LIKE '%ROLE_USER%'
+            $qb->andWhere('u.roles LIKE :roles')
+                ->setParameter('roles', '%' . implode('%', $roles) . '%');
+        }
+    }
+
     public function findByStates($qb, $states)
     {
         if ($states) {
@@ -187,7 +199,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
     }
 
-    public function advanceSearch($search, $certified, $states, $genders, $order, $direction, $page, $limit): array
+    public function advanceSearch($search, $certified, $roles, $states, $genders, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -195,6 +207,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $this->findBySearch($qb, $search);
         $this->findByCertified($qb, $certified);
+
+        $this->findByRoles($qb, $roles);
         $this->findByStates($qb, $states);
         $this->findByGenders($qb, $genders);
 
