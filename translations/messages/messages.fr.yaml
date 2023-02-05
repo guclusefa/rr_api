@@ -58,6 +58,8 @@ message:
       link_validity: "Ce lien est valide pendant <b>%validity%</b> heure(s)."
       ignore_or_report: "Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email ou contacter un administrateur."
 
+    login_error: "Votre identifiant ou votre mot de passe est incorrect."
+
     register_success: "Votre compte a été créé avec succès, un email de confirmation vous a été envoyé."
 
     confirmation_send: "Si un compte existe avec cette adresse email et qu'il n'a pas encore été confirmé, un email de confirmation vous a été envoyé."

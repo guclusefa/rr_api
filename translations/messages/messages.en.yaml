@@ -58,6 +58,8 @@ message:
       link_validity: "This link is valid for <b>%validity%</b> hour(s)."
       ignore_or_report: "If you are not the author of this action, please ignore this email or contact an administrator."
 
+    login_error: "Your identifier or your password is incorrect."
+
     register_success: "Your account has been created with success, please check your emails to confirm your account."
 
     confirmation_send: "If a user exists with this email address and is not already verified, an email has been sent."
