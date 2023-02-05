@@ -52,6 +52,7 @@ class UserFixture extends Fixture implements OrderedFixtureInterface
             $user->setBio("bio ${i}");
             $user->setBirthDate($faker->dateTimeBetween('-50 years', '-18 years'));
             $user->setState($states[array_rand($states)]);
+            $user->setRoles(['ROLE_USER']);
             $manager->persist($user);
         }
         // flush

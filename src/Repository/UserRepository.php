@@ -167,14 +167,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findByRoles($qb, $roles)
     {
         if ($roles) {
-            // TODO : fix maybe ?
-            // roles is an array of roles
-            // u.roles is json
-            // u.roles LIKE '%ROLE_ADMIN%' OR u.roles LIKE '%ROLE_USER%'
-            $qb->andWhere('u.roles LIKE :roles')
-                ->setParameter('roles', '%' . implode('%', $roles) . '%');
+            // roles is  something like ['ROLE_USER', 'ROLE_ADMIN']
+            // u.roles is something like ['ROLE_USER']
+            // u.roles is a json array
+            for ($i = 0; $i < count($roles); $i++) {
+                if ($i == 0) {
+                    $qb->andWhere('u.roles LIKE :role'.$i);
+                } else {
+                    $qb->orWhere('u.roles LIKE :role'.$i);
+                }
+                $qb->setParameter('role'.$i, '%'.$roles[$i].'%');
+            }
         }
     }
+
 
     public function findByStates($qb, $states)
     {

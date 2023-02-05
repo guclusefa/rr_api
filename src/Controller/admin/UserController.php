@@ -69,7 +69,7 @@ class UserController extends AbstractController
             '1' => ['ROLE_MODERATOR'],
             '2' => ['ROLE_ADMIN'],
             '3' => ['ROLE_SUPER_ADMIN'],
-            default => [],
+            default => ['ROLE_USER'],
         };
         // upgrade
         $user->setRoles($role);
