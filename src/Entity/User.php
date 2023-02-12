@@ -107,43 +107,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?State $state = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Resource::class)]
-    #[Groups(['user:item'])]
     private Collection $resources;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class)]
-    #[Groups(['user:item'])]
     private Collection $comments;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceLike::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $likes;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceShare::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $shares;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceExploit::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $exploits;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceSave::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $saves;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceConsult::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $consults;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ResourceSharedTo::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $sharesTo;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserBan::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $bans;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: UserBan::class, orphanRemoval: true)]
-    #[Groups(['user:item'])]
     private Collection $bannings;
 
     public function __construct()
