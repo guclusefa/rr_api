@@ -40,6 +40,11 @@ services:
         arguments: [ "@request_stack", "@translator.default" ]
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_failure, method: onAuthenticationFailure }
+    acme.api.event.authentication_success_listener:
+        class: App\EventListener\AuthenticationSuccessListener
+        arguments: []
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
     acme_api.event.jwt_created_listener:
         class: App\EventListener\JWTCreatedListener
         arguments: [ '@request_stack' ]
