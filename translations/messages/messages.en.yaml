@@ -99,6 +99,8 @@ message:
     unvalid_media: "The media is not valid"
     unvalid_media_size: "The media cannot exceed %max_size% Mo"
   jwt:
+    valid_event: "Your token is valid."
+
     invalid_event: "Your authentication token is invalid."
     not_found_event: "Your authentication token has not been found."
     expired_event: "Your authentication token has expired."
