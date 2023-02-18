@@ -51,7 +51,7 @@ class AuthenticationSuccessListener
             );
         }
         $user = $this->serializerService->serialize(User::GROUP_ITEM_CONFIDENTIAL, $user);
-        // Expiration
+        // get the token expiration date
         $expirationDate = new \DateTime();
         $expirationDate->setTimestamp($payload['exp']);
         $event->setData([

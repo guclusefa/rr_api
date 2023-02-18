@@ -7,6 +7,8 @@ parameters:
     app.site_name: '(RE)SOURCES RELATIONNELLES'
     app.supported_locales: ['fr', 'en']
 
+    app.timezone: '%env(APP_TIMEZONE)%'
+
     app.jwtsecret: '%env(JWT_PASSPHRASE)%'
 
     app.mailer.sender: 'ressources_r@cesi.fr'
