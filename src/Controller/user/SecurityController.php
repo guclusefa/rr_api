@@ -80,7 +80,7 @@ class SecurityController extends AbstractController
 
     #[Route('/refresh-token', name: 'api_refresh_token', methods: ['GET'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function refreshToken(Request $request, JWTTokenManagerInterface $jwtManager): JsonResponse
+    public function refreshToken(Request $request, JWTTokenManagerInterface $jwtManager, JWTEncoderInterface $jwtEncoder): JsonResponse
     {
         $currentUser = $this->getUser();
         if (!$currentUser instanceof UserInterface) {
@@ -91,7 +91,15 @@ class SecurityController extends AbstractController
         }
         // get new token
         $newToken = $jwtManager->create($currentUser);
-        return new JsonResponse(['token' => $newToken]);
+        // get payload
+        $payload = $jwtEncoder->decode($newToken);
+        // get expiration date
+        $expirationDate = new \DateTime();
+        $expirationDate->setTimestamp($payload['exp']);
+        return new JsonResponse([
+            'token' => $newToken,
+            "expirationDate" => $expirationDate->format("Y-m-d H:i:s")
+        ]);
     }
 
     #[Route('/confirm-email', name: 'api_confirm_email', methods: ['POST'])]
