@@ -27,7 +27,7 @@ class FileUploaderService
         }
         // check if photo is too big
         $size = $photo->getSize();
-        $maxSize = 1000000;
+        $maxSize = 5000000;
         if ($size > $maxSize) {
             throw new HttpException(
                 Response::HTTP_BAD_REQUEST,
@@ -52,6 +52,7 @@ class FileUploaderService
         }
         // check if media is too big
         $size = $media->getSize();
+        // 10MB
         $maxSize = 10000000;
         if ($size > $maxSize) {
             throw new HttpException(

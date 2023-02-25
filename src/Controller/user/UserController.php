@@ -146,7 +146,7 @@ class UserController extends AbstractController
         // deserialize & update
         $updatedUser = $this->serializerService->deserialize(User::GROUP_UPDATE_EMAIL, $request, User::class);
         $oldPassword = json_decode($request->getContent())->old ?? null;
-        $this->userService->updateEmail($user, $oldPassword, $updatedUser->getEmail());
+        $this->userService->updateEmail($user, $oldPassword, $updatedUser);
         // return
         return new JsonResponse(
             ['message' => $this->translator->trans('message.user.updated_email_success')],
