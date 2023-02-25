@@ -4,6 +4,8 @@ namespace App\Controller\user;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\JWTService;
+use App\Service\SecurityService;
 use App\Service\SerializerService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +24,9 @@ class UserController extends AbstractController
         private readonly SerializerService $serializerService,
         private readonly UserRepository $userRepository,
         private readonly UserService $userService,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
+        private readonly SecurityService $securityService,
+        private readonly JWTService $jwtService
     )
     {
     }
@@ -150,6 +154,38 @@ class UserController extends AbstractController
         // return
         return new JsonResponse(
             ['message' => $this->translator->trans('message.user.updated_email_success')],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/{id}/confirm-email', name: 'api_users_confirm_email', methods: ['PUT'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function confirmEmail(User $user): JsonResponse
+    {
+        // send token if email is valid
+        $this->securityService->sendTokenFromUser(
+            $user,
+            $this->translator->trans('message.security.email.confirm_subject',
+                ["%site_name%" => $this->getParameter("app.site_name")]),
+            'confirmation'
+        );
+        // return
+        return new JsonResponse(
+            ['message' => $this->translator->trans('message.security.confirmation_send')],
+            Response::HTTP_OK
+        );
+    }
+
+    #[Route('/verify-email/{token}', name: 'api_users_verify_email', methods: ['GET'])]
+    public function verifyEmail(string $token): JsonResponse
+    {
+        // check token and get user
+        $user = $this->jwtService->getUserFromToken($token);
+        // verify user
+        $this->userService->verifyEmail($user);
+        // return
+        return new JsonResponse(
+            ['message' => $this->translator->trans('message.security.confirmation_success')],
             Response::HTTP_OK
         );
     }

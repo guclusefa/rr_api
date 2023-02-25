@@ -96,39 +96,6 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/confirm-email', name: 'api_confirm_email', methods: ['POST'])]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function confirmEmail(Request $request): JsonResponse
-    {
-        // send token if email is valid
-        $this->securityService->sendTokenFromEmail(
-            $request,
-            $this->translator->trans('message.security.email.confirm_subject',
-                ["%site_name%" => $this->getParameter("app.site_name")]),
-            'confirmation'
-        );
-        // return
-        return new JsonResponse(
-            ['message' => $this->translator->trans('message.security.confirmation_send')],
-            Response::HTTP_OK
-        );
-    }
-
-    #[Route('/verify-email/{token}', name: 'api_verify_email', methods: ['PUT'])]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function verifyEmail(string $token): JsonResponse
-    {
-        // check token and get user
-        $user = $this->jwtService->getUserFromToken($token);
-        // verify user
-        $this->userService->verifyEmail($user);
-        // return
-        return new JsonResponse(
-            ['message' => $this->translator->trans('message.security.confirmation_success')],
-            Response::HTTP_OK
-        );
-    }
-
     #[Route('/forgot-password', name: 'api_forgot_password', methods: ['POST'])]
     public function forgotPassword(Request $request): JsonResponse
     {

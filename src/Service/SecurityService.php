@@ -37,7 +37,7 @@ class SecurityService
         $payload = ['id' => $user->getId()];
         $token = $this->jwtService->generateToken($payload);
         // TODO : revoir lien
-        $link = 'http://localhost:8000/api/verify-email/' . $token;
+        $link = 'http://localhost:8000/api/users/verify-email/' . $token;
         if ($template == "forgot-password") $link = 'http://localhost:8000/api/reset-password/' . $token;
         try {
             $this->mailerService->sendEmail(
@@ -67,10 +67,18 @@ class SecurityService
         // get user from email and check if user exists
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
         if ($user) {
-            if ($template == "confirmation" && $user->isIsVerified()){
-                return;
-            }
             $this->sendMail($user, $subject, $template);
         }
+    }
+
+    public function sendTokenFromUser(User $user, $subject, $template): void
+    {
+        if ($template == "confirmation" && $user->isIsVerified()){
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                $this->translator->trans('message.security.confirmation_error')
+            );
+        }
+        $this->sendMail($user, $subject, $template);
     }
 }
