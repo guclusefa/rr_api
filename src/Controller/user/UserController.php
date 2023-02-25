@@ -176,7 +176,7 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/verify-email/{token}', name: 'api_users_verify_email', methods: ['GET'])]
+    #[Route('/verify-email/{token}', name: 'api_users_verify_email', methods: ['PUT'])]
     public function verifyEmail(string $token): JsonResponse
     {
         // check token and get user
