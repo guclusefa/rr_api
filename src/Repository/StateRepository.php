@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\State;
+use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,7 +17,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class StateRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct
+    (
+        ManagerRegistry $registry,
+        private readonly PaginatorService $paginatorService
+    )
     {
         parent::__construct($registry, State::class);
     }
@@ -63,4 +68,36 @@ class StateRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    public function findBySearch($qb, $search)
+    {
+        if ($search) {
+            // trime the spaces at the beginning and the end of the string
+            $search = trim($search);
+            $qb->andWhere('s.name LIKE :search')
+                ->orWhere('s.code LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+    }
+
+    public function orderBy($qb, $order, $direction)
+    {
+        $qb->orderBy('s.' . $order, $direction);
+    }
+
+    public function advanceSearch($search, $order, $direction, $page, $limit): array
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $this->findBySearch($qb, $search);
+
+        $this->orderBy($qb, $order, $direction);
+        $paginator = $this->paginatorService->paginate($qb, $page, $limit);
+        $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
+
+        return [
+            'data' => $qb->getQuery()->getResult(),
+            'meta' => $metadata,
+        ];
+    }
 }

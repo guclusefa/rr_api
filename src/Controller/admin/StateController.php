@@ -26,33 +26,6 @@ class StateController extends AbstractController
     {
     }
 
-    #[Route('', name: 'api_admin_states', methods: ['GET'])]
-    public function index(Request $request): JsonResponse
-    {
-        // get, serialize & return
-        $states = $this->stateRepository->findAll();
-        $states = $this->serializerService->serialize(State::GROUP_GET, $states);
-        return new JsonResponse(
-            $states,
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
-    #[Route('/{id}', name: 'api_admin_states_show', methods: ['GET'])]
-    public function show(State $state): JsonResponse
-    {
-        // get, serialize & return
-        $state = $this->serializerService->serialize(State::GROUP_ITEM, $state);
-        return new JsonResponse(
-            $state,
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
     #[Route('', name: 'api_admin_states_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {

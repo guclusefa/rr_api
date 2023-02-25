@@ -97,6 +97,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/confirm-email', name: 'api_confirm_email', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function confirmEmail(Request $request): JsonResponse
     {
         // send token if email is valid
@@ -114,6 +115,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/verify-email/{token}', name: 'api_verify_email', methods: ['PUT'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function verifyEmail(string $token): JsonResponse
     {
         // check token and get user
