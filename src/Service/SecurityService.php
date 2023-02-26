@@ -41,7 +41,7 @@ class SecurityService
         $url = $this->params->get('app.webapp.url');
         $link = "/profile/verify/" . $token;
         if ($template == "forgot-password") {
-            $link = '/forgot-password/:token' . $token;
+            $link = '/forgot-password/' . $token;
         }
         try {
             $this->mailerService->sendEmail(
