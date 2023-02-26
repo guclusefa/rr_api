@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -16,7 +17,8 @@ class SecurityService
         private readonly JWTService $jwtService,
         private readonly MailerService $mailerService,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
+        private readonly ParameterBagInterface $params
     )
     {
     }
@@ -36,9 +38,11 @@ class SecurityService
     {
         $payload = ['id' => $user->getId()];
         $token = $this->jwtService->generateToken($payload);
-        // TODO : revoir lien
-        $link = 'http://localhost:8000/api/users/verify-email/' . $token;
-        if ($template == "forgot-password") $link = 'http://localhost:8000/api/reset-password/' . $token;
+        $url = $this->params->get('app.webapp.url');
+        $link = "/profile/verify/" . $token;
+        if ($template == "forgot-password") {
+            $link = '/forgot-password/:token' . $token;
+        }
         try {
             $this->mailerService->sendEmail(
                 $user->getEmail(),
@@ -47,7 +51,7 @@ class SecurityService
                 [
                     'title' => $subject,
                     'token' => $token,
-                    'link' => $this->translator->trans('message.security.email.link', ["%link%" => $link]),
+                    'link' => $this->translator->trans('message.security.email.link', ["%link%" => $url . $link]),
                     'validity' => $this->translator->trans('message.security.email.link_validity', ["%validity%" => $this->jwtService->getValidityInHours($token)]),
                     'ignore_or_report' => $this->translator->trans('message.security.email.ignore_or_report')
                 ]

@@ -580,16 +580,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // TODO : a revoir
-    #[VirtualProperty]
-    #[SerializedName('photo')]
-    #[Groups(['user:read', 'user:identifier'])]
-    public function getFullPhotoPath(): ?string
-    {
-        if (null === $this->photo) return null;
-        return "http://localhost:8000/" . 'uploads/users/images/' . $this->photo;
-    }
-
     /**
      * @return Collection<int, UserBan>
      */
@@ -648,5 +638,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    // TODO : a revoir
+    #[VirtualProperty]
+    #[SerializedName('photo')]
+    #[Groups(['user:read', 'user:identifier'])]
+    public function getFullPhotoPath(): ?string
+    {
+        if (null === $this->photo) return null;
+        return "http://localhost:8000/" . 'uploads/users/images/' . $this->photo;
     }
 }

@@ -4,16 +4,18 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    # Urls
+    app.api.url: 'http://localhost:8000/api'
+    app.webapp.url: 'http://localhost:8080'
+    # App configuration
     app.site_name: '(RE)SOURCES RELATIONNELLES'
     app.supported_locales: ['fr', 'en']
-
     app.timezone: '%env(APP_TIMEZONE)%'
-
     app.jwtsecret: '%env(JWT_PASSPHRASE)%'
-
+    # Mailer configuration
     app.mailer.sender: 'ressources_r@cesi.fr'
     app.mailer.name: 'RR-CESI'
-
+    # Uploads configuration
     app.user.images.path: 'uploads/users/images/'
     app.resource.media.path: 'uploads/resources/media/'
 services:

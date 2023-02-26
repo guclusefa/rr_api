@@ -523,6 +523,7 @@ class Resource
 
         return $this;
     }
+
     // TODO : a revoir
     #[VirtualProperty]
     #[SerializedName('media')]
