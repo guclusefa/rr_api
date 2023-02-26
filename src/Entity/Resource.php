@@ -81,31 +81,24 @@ class Resource
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: Comment::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
     private Collection $comments;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceLike::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
     private Collection $likes;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceShare::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
     private Collection $shares;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceExploit::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
     private Collection $exploits;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceSave::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
     private Collection $saves;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceConsult::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
     private Collection $consults;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceSharedTo::class, orphanRemoval: true)]
-    #[Groups(['resource:item'])]
     private Collection $sharesTo;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceStats::class, orphanRemoval: true)]
@@ -534,4 +527,59 @@ class Resource
         return "http://localhost:8000/" . 'uploads/users/images/' . $this->media;
     }
 
+    #[VirtualProperty]
+    #[SerializedName('likes')]
+    #[Groups(['resource:read'])]
+    public function getLikesCount(): int
+    {
+        return $this->likes->count();
+    }
+
+    #[VirtualProperty]
+    #[SerializedName('comments')]
+    #[Groups(['resource:read'])]
+    public function getCommentsCount(): int
+    {
+        return $this->comments->count();
+    }
+
+    #[VirtualProperty]
+    #[SerializedName('shares')]
+    #[Groups(['resource:read'])]
+    public function getSharesCount(): int
+    {
+        return $this->shares->count();
+    }
+
+    #[VirtualProperty]
+    #[SerializedName('exploits')]
+    #[Groups(['resource:read'])]
+    public function getExploitsCount(): int
+    {
+        return $this->exploits->count();
+    }
+
+    #[VirtualProperty]
+    #[SerializedName('saves')]
+    #[Groups(['resource:read'])]
+    public function getSavesCount(): int
+    {
+        return $this->saves->count();
+    }
+
+    #[VirtualProperty]
+    #[SerializedName('consults')]
+    #[Groups(['resource:read'])]
+    public function getConsultsCount(): int
+    {
+        return $this->consults->count();
+    }
+
+//    #[VirtualProperty]
+//    #[SerializedName('sharesTo')]
+//    #[Groups(['resource:read'])]
+//    public function getSharesToCount(): int
+//    {
+//        return $this->sharesTo->count();
+//    }
 }

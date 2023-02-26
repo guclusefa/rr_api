@@ -53,6 +53,7 @@ class UserService
         // check for errors
         $this->serializerService->checkErrors($user);
         // hash password
+        $user->setRoles(['ROLE_USER']);
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
         // save
         $this->userRepository->save($user, true);

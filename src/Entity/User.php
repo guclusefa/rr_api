@@ -59,7 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $username = null;
 
     #[ORM\Column]
-    #[Groups(['user:item'])]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     #[ORM\Column(length: 20, nullable: true)]
