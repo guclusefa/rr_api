@@ -26,33 +26,6 @@ class CategoryController extends AbstractController
     {
     }
 
-    #[Route('', name: 'api_admin_categories', methods: ['GET'])]
-    public function index(Request $request): JsonResponse
-    {
-        // get, serialize & return
-        $categories = $this->categoryRepository->findAll();
-        $categories = $this->serializerService->serialize(Category::GROUP_GET, $categories);
-        return new JsonResponse(
-            $categories,
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
-    #[Route('/{id}', name: 'api_admin_categories_show', methods: ['GET'])]
-    public function show(Category $category): JsonResponse
-    {
-        // get, serialize & return
-        $category = $this->serializerService->serialize(Category::GROUP_ITEM, $category);
-        return new JsonResponse(
-            $category,
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
     #[Route('', name: 'api_admin_categories_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {

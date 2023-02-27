@@ -96,17 +96,14 @@ class ResourceRepository extends ServiceEntityRepository
             ->setParameter('count', 0);
     }
 
+    // TODO : visibility 2 does not work
     public function findByAccesibility($qb, $user)
     {
         // FIND all with visibility 1
-        // OR FIND all with visibility 2 & sharedTo me
+        // OR FIND all with visibility 2 & sharedTo me (a line exists in ResourceSharedTo with the resource and the user)
         // OR FIND all with visibility 3 & author me
         $qb->andWhere('r.visibility = 1')
-            ->orWhere('r.visibility = 2 AND EXISTS (
-                SELECT rst.id
-                FROM App\Entity\ResourceSharedTo rst
-                WHERE rst.resource = r.id AND rst.user = :user
-            )')
+            ->orWhere('r.visibility = 2 AND (r.author = :user OR EXISTS (SELECT rst FROM App\Entity\ResourceSharedTo rst WHERE rst.resource = r AND rst.user = :user))')
             ->orWhere('r.visibility = 3 AND r.author = :user')
             ->setParameter('user', $user);
     }
@@ -265,8 +262,8 @@ class ResourceRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r');
 
         $this->findByNonBannedAuthors($qb);
-
         $this->findByAccesibility($qb, $user);
+
         $this->findByStatus($qb, $user);
 
         $this->findBySearch($qb, $search);

@@ -26,33 +26,6 @@ class RelationController extends AbstractController
     {
     }
 
-    #[Route('', name: 'api_admin_relations', methods: ['GET'])]
-    public function index(Request $request): JsonResponse
-    {
-        // get, serialize & return
-        $relations = $this->relationRepository->findAll();
-        $relations = $this->serializerService->serialize(Relation::GROUP_GET, $relations);
-        return new JsonResponse(
-            $relations,
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
-    #[Route('/{id}', name: 'api_admin_relations_show', methods: ['GET'])]
-    public function show(Relation $relation): JsonResponse
-    {
-        // get, serialize & return
-        $relation = $this->serializerService->serialize(Relation::GROUP_ITEM, $relation);
-        return new JsonResponse(
-            $relation,
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-
     #[Route('', name: 'api_admin_relations_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
