@@ -6,6 +6,7 @@ use App\Entity\Resource;
 use App\Entity\ResourceSharedTo;
 use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -79,23 +80,20 @@ class ResourceRepository extends ServiceEntityRepository
         return false;
     }
 
+    // hot fix a revoir TODO
     public function findByNonBannedAuthors($qb)
     {
-        $subquery = $qb->getEntityManager()->createQueryBuilder()
-            ->select('COUNT(ub.id)')
-            ->from('App\Entity\UserBan', 'ub')
-            ->where('ub.user = a')
-            ->andWhere(
+        $qb->join('r.author', 'a')
+            ->leftJoin('a.bans', 'ub', Join::WITH,
                 $qb->expr()->orX(
                     $qb->expr()->isNull('ub.endDate'),
                     $qb->expr()->gt('ub.endDate', ':now')
                 )
             )
-            ->getDQL();
-
-        $qb->join('r.author', 'a')
-            ->having($qb->expr()->eq(0, "($subquery)"))
-            ->setParameter('now', new \DateTime());
+            ->groupBy('r')
+            ->having($qb->expr()->eq('COUNT(ub)', ':count'))
+            ->setParameter('now', new \DateTime())
+            ->setParameter('count', 0);
     }
 
     public function findByAccesibility($qb, $user)
@@ -226,10 +224,10 @@ class ResourceRepository extends ServiceEntityRepository
     public function orderByConsults($qb, $direction)
     {
         if ($direction) {
-            $qb->addSelect('COUNT(rc.id) AS HIDDEN consults')
-                ->leftJoin('r.consults', 'rc')
+            $qb->addSelect('COUNT(rs.id) AS HIDDEN saves')
+                ->leftJoin('r.saves', 'rs')
                 ->groupBy('r.id')
-                ->orderBy('consults', $direction);
+                ->orderBy('saves', $direction);
         }
     }
 
@@ -267,6 +265,7 @@ class ResourceRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r');
 
         $this->findByNonBannedAuthors($qb);
+
         $this->findByAccesibility($qb, $user);
         $this->findByStatus($qb, $user);
 
@@ -278,6 +277,7 @@ class ResourceRepository extends ServiceEntityRepository
         $this->findByCategories($qb, $categories);
 
         $this->orderBy($qb, $order, $direction);
+
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);
         $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
 
