@@ -167,6 +167,15 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByLikedBy($qb, $likedBy)
+    {
+        if ($likedBy) {
+            $qb->join('r.likes', 'l')
+                ->andWhere('l.user = :likedBy')
+                ->setParameter('likedBy', $likedBy);
+        }
+    }
+
     public function findByAuthors($qb, $authors)
     {
         if ($authors) {
@@ -281,7 +290,12 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
-    public function advanceSearch($user, $search, $verified, $visibility, $authors, $relations, $categories, $order, $direction, $page, $limit): array
+    public function advanceSearch(
+        $user,
+        $search, $verified, $visibility, $likedBy,
+        $authors, $relations, $categories,
+        $order, $direction, $page, $limit
+    ): array
     {
         $qb = $this->createQueryBuilder('r');
 
@@ -293,6 +307,9 @@ class ResourceRepository extends ServiceEntityRepository
         $this->findBySearch($qb, $search);
         $this->findByVerified($qb, $verified);
         $this->findByVisibility($qb, $visibility);
+
+        $this->findByLikedBy($qb, $likedBy);
+
         $this->findByAuthors($qb, $authors);
         $this->findByRelations($qb, $relations);
         $this->findByCategories($qb, $categories);

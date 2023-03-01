@@ -35,6 +35,7 @@ class ResourceController extends AbstractController
         $search = $request->query->get('search');
         $verified = $request->query->get('verified');
         $visibility = $request->query->get('visibility');
+        $likedBy = $request->query->get('likedBy');
         // array of criterias
         $author = $request->query->all('author');
         $relation = $request->query->all('relation');
@@ -46,7 +47,11 @@ class ResourceController extends AbstractController
         $limit = $request->query->get('limit', 10);
 
         // get, format serialize & return
-        $resources = $this->resourceRepository->advanceSearch($this->getUser(), $search, $verified, $visibility, $author, $relation, $category, $order, $direction, $page, $limit);
+        $resources = $this->resourceRepository->advanceSearch($this->getUser(),
+            $search, $verified, $visibility, $likedBy,
+            $author, $relation, $category,
+            $order, $direction, $page, $limit
+        );
         $resources = $this->resourceService->formatResources($resources, $this->getUser());
         $resources = $this->serializerService->serialize(Resource::GROUP_GET, $resources);
         return new JsonResponse(
