@@ -62,8 +62,10 @@ class ResourceController extends AbstractController
     {
         // check access
         $this->resourceService->checkAccess($resource, $this->getUser());
-        // consult
-        $this->resourceService->consult($resource, $this->getUser());
+        // consult if user is connected
+        if ($this->getUser()) {
+            $this->resourceService->consult($resource, $this->getUser());
+        }
         // get, format serialize & return
         $resource = $this->resourceService->formatResource($resource, $this->getUser());
         $resource = $this->serializerService->serialize(Resource::GROUP_ITEM, $resource);
