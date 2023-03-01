@@ -62,7 +62,7 @@ class CommentController extends AbstractController
         // serialize
         $comment = $this->serializerService->serialize(Comment::GROUP_ITEM, $comment);
         return new JsonResponse(
-            $comment,
+            $this->serializerService->getSerializedData($comment),
             Response::HTTP_OK,
             [],
             true
