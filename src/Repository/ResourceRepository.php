@@ -59,6 +59,10 @@ class ResourceRepository extends ServiceEntityRepository
         // shared
         if ($resource->getVisibility() == 2) {
             if ($user) {
+                // author me
+                if ($resource->getAuthor() == $user) {
+                    return true;
+                }
                 // sharedTo me
                 $sharedToResponsitory = $this->getEntityManager()->getRepository(ResourceSharedTo::class);
                 $sharedToMe = $sharedToResponsitory->findOneBy(['resource' => $resource, 'user' => $user]);
@@ -102,10 +106,20 @@ class ResourceRepository extends ServiceEntityRepository
         // FIND all with visibility 1
         // OR FIND all with visibility 2 & sharedTo me (a line exists in ResourceSharedTo with the resource and the user)
         // OR FIND all with visibility 3 & author me
-        $qb->andWhere('r.visibility = 1')
-            ->orWhere('r.visibility = 2 AND (r.author = :user OR EXISTS (SELECT rst FROM App\Entity\ResourceSharedTo rst WHERE rst.resource = r AND rst.user = :user))')
-            ->orWhere('r.visibility = 3 AND r.author = :user')
-            ->setParameter('user', $user);
+        // sql : SELECT *
+        //FROM resource
+        //WHERE visibility = 1
+        //   OR (visibility = 2 AND id IN (SELECT resource_shared_to.resource_id FROM resource_shared_to WHERE user_id = 1))
+        //   OR (visibility = 3 AND author_id = 1);
+        $qb->andWhere('r.visibility = 1');
+        if ($user) {
+            $qb
+                // if users is in sharesTo of resource entity for visibility 2
+                ->orWhere('r.visibility = 2 AND r.id IN (SELECT IDENTITY(rst.resource) FROM App\Entity\ResourceSharedTo rst WHERE rst.user = :user)')
+                ->orWhere('r.visibility = 3 AND r.author = :user')
+                ->setParameter('user', $user);
+        }
+
     }
 
     public function findByStatus($qb, $user)
@@ -262,9 +276,9 @@ class ResourceRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r');
 
         $this->findByNonBannedAuthors($qb);
-        $this->findByAccesibility($qb, $user);
 
         $this->findByStatus($qb, $user);
+        $this->findByAccesibility($qb, $user);
 
         $this->findBySearch($qb, $search);
         $this->findByVerified($qb, $verified);

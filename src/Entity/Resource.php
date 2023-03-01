@@ -524,7 +524,7 @@ class Resource
     public function getMediaPhotoPath(): ?string
     {
         if (null === $this->media) return null;
-        return "http://localhost:8000/" . 'uploads/users/images/' . $this->media;
+        return "http://localhost:8000/" . 'uploads/resources/media/' . $this->media;
     }
 
     #[VirtualProperty]
