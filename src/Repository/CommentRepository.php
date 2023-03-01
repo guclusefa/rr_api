@@ -67,6 +67,7 @@ class CommentRepository extends ServiceEntityRepository
             ->setParameter('now', new \DateTime());
     }
 
+    // NOT WORKING NEEDS TO BE FIXED TODO
     public function findByAccesibility($qb, $user)
     {
         // FIND all with resource visibility 1
@@ -141,7 +142,8 @@ class CommentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('c');
 
         $this->findByNonBannedAuthors($qb);
-        $this->findByAccesibility($qb, $user);
+        // TODO
+//        $this->findByAccesibility($qb, $user);
 
         $this->findBySearch($qb, $seach);
         $this->findByAuthors($qb, $authors);

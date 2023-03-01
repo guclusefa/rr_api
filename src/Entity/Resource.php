@@ -106,6 +106,8 @@ class Resource
     private Collection $stats;
 
     #[Groups(['resource:read'])]
+    private bool $isCommented = false;
+    #[Groups(['resource:read'])]
     private bool $isLiked = false;
     #[Groups(['resource:read'])]
     private bool $isShared = false;
@@ -527,6 +529,12 @@ class Resource
             }
         }
 
+        return $this;
+    }
+
+    public function setIsCommented(bool $isCommented): self
+    {
+        $this->isCommented = $isCommented;
         return $this;
     }
 

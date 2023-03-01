@@ -68,6 +68,8 @@ class ResourceService
 
     public function formatResource($resource, $me): Resource
     {
+        // is commented
+        $resource->setIsCommented($this->isCommented($resource, $me));
         $resource->setIsLiked($this->isLiked($resource, $me));
         $resource->setIsShared($this->isShared($resource, $me));
         $resource->setIsExploited($this->isExploited($resource, $me));
@@ -125,6 +127,15 @@ class ResourceService
         }
         // save
         $this->resourceRepository->save($resource, true);
+    }
+
+    public function isCommented(Resource $resource, $user): bool
+    {
+        // check if user already commented
+        $comment = $resource->getComments()->filter(function ($comment) use ($user) {
+            return $comment->getAuthor() != null && $comment->getAuthor() === $user;
+        })->first();
+        return $comment != null;
     }
 
     public function isLiked(Resource $resource, $user): bool
