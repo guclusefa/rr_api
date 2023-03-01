@@ -54,7 +54,7 @@ class Resource
     private ?int $visibility = null;
 
     #[ORM\Column]
-    #[Groups(['resource:item', 'resource:write', 'resource:update'])]
+    #[Groups(['resource:read', 'resource:write', 'resource:update'])]
     private ?bool $isPublished = true;
 
     #[ORM\Column]

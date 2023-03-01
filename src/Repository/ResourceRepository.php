@@ -52,6 +52,17 @@ class ResourceRepository extends ServiceEntityRepository
         if ($this->userRepository->isBanned($resource->getAuthor())) {
             return false;
         }
+        // if resource is suspended or not published
+        if ($resource->isIsSuspended() || !$resource->isIsPublished()) {
+            if ($user) {
+                // author me
+                if ($resource->getAuthor() == $user) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
         // public
         if ($resource->getVisibility() == 1) {
             return true;
@@ -119,7 +130,6 @@ class ResourceRepository extends ServiceEntityRepository
                 ->orWhere('r.author = :user')
                 ->setParameter('user', $user);
         }
-
     }
 
     public function findByStatus($qb, $user)
