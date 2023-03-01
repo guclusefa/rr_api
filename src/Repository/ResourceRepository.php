@@ -167,12 +167,47 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
+    public function findBySharedBy($qb, $sharedBy)
+    {
+        if ($sharedBy) {
+            $qb->join('r.shares', 's')
+                ->andWhere('s.user = :sharedBy')
+                ->setParameter('sharedBy', $sharedBy);
+        }
+    }
+
     public function findByLikedBy($qb, $likedBy)
     {
         if ($likedBy) {
             $qb->join('r.likes', 'l')
                 ->andWhere('l.user = :likedBy')
                 ->setParameter('likedBy', $likedBy);
+        }
+    }
+
+    public function findByExploitedBy($qb, $exploitedBy)
+    {
+        if ($exploitedBy) {
+            $qb->join('r.exploits', 'e')
+                ->andWhere('e.user = :exploitedBy')
+                ->setParameter('exploitedBy', $exploitedBy);
+        }
+    }
+
+    public function findBySavedBy($qb, $savedBy)
+    {
+        if ($savedBy) {
+            $qb->join('r.saves', 'sv')
+                ->andWhere('sv.user = :savedBy')
+                ->setParameter('savedBy', $savedBy);
+        }
+    }
+
+    public function findByIsPublished($qb, $isPublished)
+    {
+        if ($isPublished) {
+            $qb->andWhere('r.isPublished = :isPublished')
+                ->setParameter('isPublished', $isPublished);
         }
     }
 
@@ -292,7 +327,8 @@ class ResourceRepository extends ServiceEntityRepository
 
     public function advanceSearch(
         $user,
-        $search, $verified, $visibility, $likedBy,
+        $search, $verified, $visibility,
+        $sharedBy, $likedBy, $exploitedBy, $savedBy, $isPublished,
         $authors, $relations, $categories,
         $order, $direction, $page, $limit
     ): array
@@ -308,7 +344,11 @@ class ResourceRepository extends ServiceEntityRepository
         $this->findByVerified($qb, $verified);
         $this->findByVisibility($qb, $visibility);
 
+        $this->findBySharedBy($qb, $sharedBy);
         $this->findByLikedBy($qb, $likedBy);
+        $this->findByExploitedBy($qb, $exploitedBy);
+        $this->findBySavedBy($qb, $savedBy);
+        $this->findByIsPublished($qb, $isPublished);
 
         $this->findByAuthors($qb, $authors);
         $this->findByRelations($qb, $relations);
