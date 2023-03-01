@@ -105,6 +105,19 @@ class Resource
     #[Groups(['resource:item'])]
     private Collection $stats;
 
+    #[Groups(['resource:read'])]
+    private bool $isLiked = false;
+    #[Groups(['resource:read'])]
+    private bool $isShared = false;
+    #[Groups(['resource:read'])]
+    private bool $isExploited = false;
+    #[Groups(['resource:read'])]
+    private bool $isSaved = false;
+    #[Groups(['resource:read'])]
+    private bool $isConsulted = false;
+    #[Groups(['resource:read'])]
+    private bool $isSharedTo = false;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -514,6 +527,42 @@ class Resource
             }
         }
 
+        return $this;
+    }
+
+    public function setIsLiked(bool $isLiked): self
+    {
+        $this->isLiked = $isLiked;
+        return $this;
+    }
+
+    public function setIsShared(bool $isShared): self
+    {
+        $this->isShared = $isShared;
+        return $this;
+    }
+
+    public function setIsExploited(bool $isExploited): self
+    {
+        $this->isExploited = $isExploited;
+        return $this;
+    }
+
+    public function setIsSaved(bool $isSaved): self
+    {
+        $this->isSaved = $isSaved;
+        return $this;
+    }
+
+    public function setIsConsulted(bool $isConsulted): self
+    {
+        $this->isConsulted = $isConsulted;
+        return $this;
+    }
+
+    public function setIsSharedTo(bool $isSharedTo): self
+    {
+        $this->isSharedTo = $isSharedTo;
         return $this;
     }
 

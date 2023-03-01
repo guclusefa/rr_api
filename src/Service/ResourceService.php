@@ -58,6 +58,25 @@ class ResourceService
         }
     }
 
+    public function formatResources($resources, $me): array
+    {
+        foreach ($resources["data"] as $resource) {
+            $this->formatResource($resource, $me);
+        }
+        return $resources;
+    }
+
+    public function formatResource($resource, $me): Resource
+    {
+        $resource->setIsLiked($this->isLiked($resource, $me));
+        $resource->setIsShared($this->isShared($resource, $me));
+        $resource->setIsExploited($this->isExploited($resource, $me));
+        $resource->setIsSaved($this->isSaved($resource, $me));
+        $resource->setIsConsulted($this->isConsulted($resource, $me));
+        $resource->setIsSharedTo($this->isSharedTo($resource, $me));
+        return $resource;
+    }
+
     public function create($resource, $user): void
     {
         // create

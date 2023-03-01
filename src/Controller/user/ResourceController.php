@@ -45,8 +45,9 @@ class ResourceController extends AbstractController
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 10);
 
-        // get, serialize & return
+        // get, format serialize & return
         $resources = $this->resourceRepository->advanceSearch($this->getUser(), $search, $verified, $visibility, $author, $relation, $category, $order, $direction, $page, $limit);
+        $resources = $this->resourceService->formatResources($resources, $this->getUser());
         $resources = $this->serializerService->serialize(Resource::GROUP_GET, $resources);
         return new JsonResponse(
             $resources,
@@ -61,7 +62,8 @@ class ResourceController extends AbstractController
     {
         // check access
         $this->resourceService->checkAccess($resource, $this->getUser());
-        // get, serialize & return
+        // get, format serialize & return
+        $resource = $this->resourceService->formatResource($resource, $this->getUser());
         $resource = $this->serializerService->serialize(Resource::GROUP_ITEM, $resource);
         return new JsonResponse(
             $this->serializerService->getSerializedData($resource),
