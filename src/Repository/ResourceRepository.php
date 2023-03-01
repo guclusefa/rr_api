@@ -100,7 +100,6 @@ class ResourceRepository extends ServiceEntityRepository
             ->setParameter('count', 0);
     }
 
-    // TODO : visibility 2 does not work
     public function findByAccesibility($qb, $user)
     {
         // FIND all with visibility 1
@@ -114,9 +113,10 @@ class ResourceRepository extends ServiceEntityRepository
         $qb->andWhere('r.visibility = 1');
         if ($user) {
             $qb
-                // if users is in sharesTo of resource entity for visibility 2
+                // if users is in sharesTo of resource entity for visibility 2 or if author is me for visibility 3
                 ->orWhere('r.visibility = 2 AND r.id IN (SELECT IDENTITY(rst.resource) FROM App\Entity\ResourceSharedTo rst WHERE rst.user = :user)')
                 ->orWhere('r.visibility = 3 AND r.author = :user')
+                ->orWhere('r.author = :user')
                 ->setParameter('user', $user);
         }
 
