@@ -289,10 +289,10 @@ class ResourceRepository extends ServiceEntityRepository
     public function orderByConsults($qb, $direction)
     {
         if ($direction) {
-            $qb->addSelect('COUNT(rs.id) AS HIDDEN saves')
-                ->leftJoin('r.saves', 'rs')
+            $qb->addSelect('COUNT(rs.id) AS HIDDEN consults')
+                ->leftJoin('r.consults', 'rs')
                 ->groupBy('r.id')
-                ->orderBy('saves', $direction);
+                ->orderBy('consults', $direction);
         }
     }
 
