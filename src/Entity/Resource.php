@@ -20,7 +20,7 @@ class Resource
     use ResourceTimeStampTrait;
 
     const GROUP_GET = ['resource:read', 'category:read', 'relation:read', 'user:identifier'];
-    const GROUP_ITEM = ['resource:read', 'resource:item', 'category:read', 'relation:read', 'user:identifier'];
+    const GROUP_ITEM = ['resource:read', 'resource:item', 'category:read', 'relation:read', 'shareTo:read', 'user:identifier'];
     const GROUP_WRITE = ['resource:write'];
     const GROUP_UPDATE = ['resource:update'];
 
@@ -99,6 +99,7 @@ class Resource
     private Collection $consults;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceSharedTo::class, orphanRemoval: true)]
+    #[Groups(['resource:item'])]
     private Collection $sharesTo;
 
     #[ORM\OneToMany(mappedBy: 'resource', targetEntity: ResourceStats::class, orphanRemoval: true)]

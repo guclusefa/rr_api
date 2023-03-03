@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Entity\Trait\TimeStampTrait;
 use App\Repository\ResourceSharedToRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ResourceSharedToRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -22,6 +23,7 @@ class ResourceSharedTo
 
     #[ORM\ManyToOne(inversedBy: 'sharesTo')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['shareTo:read'])]
     private ?User $user = null;
 
     public function getId(): ?int
