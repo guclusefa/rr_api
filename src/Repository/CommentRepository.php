@@ -130,6 +130,13 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByIsNotReply($qb, $isnotreply)
+    {
+        if ($isnotreply) {
+            $qb->andWhere('c.replyTo IS NULL');
+        }
+    }
+
     public function orderBy($qb, $order, $direction)
     {
         if ($order && $direction) {
@@ -137,7 +144,7 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-    public function advanceSearch($user, $seach, $authors, $resources, $replyTo, $order, $direction, $page, $limit): array
+    public function advanceSearch($user, $seach, $authors, $resources, $replyTo, $isnotreply, $order, $direction, $page, $limit): array
     {
         $qb = $this->createQueryBuilder('c');
 
@@ -149,6 +156,7 @@ class CommentRepository extends ServiceEntityRepository
         $this->findByAuthors($qb, $authors);
         $this->findByResources($qb, $resources);
         $this->findByReplyTo($qb, $replyTo);
+        $this->findByIsNotReply($qb, $isnotreply);
 
         $this->orderBy($qb, $order, $direction);
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);

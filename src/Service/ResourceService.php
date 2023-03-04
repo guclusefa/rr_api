@@ -17,6 +17,7 @@ use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -358,19 +359,19 @@ class ResourceService
         return $count;
     }
 
+    public function checkGenerateStats(Resource $resource): bool
+    {
+        // check if stats already exist today
+        $stats = $resource->getStats()->filter(function ($stat) {
+            return $stat->getCreatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
+        })->first();
+        return $stats == null;
+    }
+
     public function generateStats(Resource $resource): void
     {
-        //        // check if stats already exist today
-//        $stats = $resource->getStats()->filter(function ($stat) {
-//            return $stat->getCreatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
-//        })->first();
-//        if ($stats) {
-//            return new JsonResponse(
-//                ['message' => 'Les statistiques de cette ressource ont déjà été générées aujourd\'hui'],
-//                Response::HTTP_OK
-//            );
-//        }
         // get all the stats
+        $comments = $resource->getComments()->count();
         $consults = $resource->getConsults()->count();
         $exploits = $resource->getExploits()->count();
         $likes = $resource->getLikes()->count();
@@ -379,12 +380,13 @@ class ResourceService
         // add to db
         $resourceStats = new ResourceStats();
         $resourceStats->setResource($resource);
+        $resourceStats->setNbComments($comments);
         $resourceStats->setNbConsults($consults);
         $resourceStats->setNbExploits($exploits);
         $resourceStats->setNbLikes($likes);
         $resourceStats->setNbSaves($saves);
         $resourceStats->setNbShares($shares);
         // save
-        $this->resourceStatsRepository->save($resourceStats);
+        $this->resourceStatsRepository->save($resourceStats, true);
     }
 }

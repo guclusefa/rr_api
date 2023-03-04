@@ -27,6 +27,7 @@ message:
     unshared_success: "Votre ressource a retirée de %count% utilisateur(s) partagée avec succès."
 
     stats_generated_success: "Les statistiques de votre ressource ont été générées avec succès."
+    stats_generated_error: "Les statistiques de cette ressource ont déjà été générées aujourd'hui."
 
     unlike_success: "Vous n'aimez plus cette ressource."
     like_success: "Vous avez aimez cette ressource avec succès."

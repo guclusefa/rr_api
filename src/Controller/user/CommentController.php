@@ -37,6 +37,7 @@ class CommentController extends AbstractController
         $author = $request->query->all('author');
         $resource = $request->query->all('resource');
         $replyto = $request->query->all('replyto');
+        $isnotreply = $request->query->get('isnotreply');
         // pagination
         $order = $request->query->get('order', 'id');
         $direction = $request->query->get('direction', 'ASC');
@@ -44,7 +45,12 @@ class CommentController extends AbstractController
         $limit = $request->query->get('limit', 10);
 
         // get, serialize & return
-        $comments = $this->commentRepository->advanceSearch($this->getUser(), $search, $author, $resource, $replyto, $order, $direction, $page, $limit);
+        $comments = $this->commentRepository->advanceSearch(
+            $this->getUser(),
+            $search,
+            $author, $resource, $replyto, $isnotreply,
+            $order, $direction, $page, $limit
+        );
         $comments = $this->serializerService->serialize(Comment::GROUP_GET, $comments);
         return new JsonResponse(
             $comments,

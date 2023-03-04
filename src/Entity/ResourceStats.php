@@ -2,39 +2,53 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\ResourceStatsTimeStampTrait;
 use App\Repository\ResourceStatsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ResourceStatsRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ResourceStats
 {
-    use TimeStampTrait;
+    const GROUP_GET = ['resourceStats:read'];
+
+    use ResourceStatsTimeStampTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['resourceStats:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'stats')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceStats:item'])]
     private ?Resource $resource = null;
 
     #[ORM\Column]
+    #[Groups(['resourceStats:read'])]
     private ?int $nbConsults = null;
 
     #[ORM\Column]
+    #[Groups(['resourceStats:read'])]
     private ?int $nbExploits = null;
 
     #[ORM\Column]
+    #[Groups(['resourceStats:read'])]
     private ?int $nbLikes = null;
 
     #[ORM\Column]
+    #[Groups(['resourceStats:read'])]
     private ?int $nbSaves = null;
 
     #[ORM\Column]
+    #[Groups(['resourceStats:read'])]
     private ?int $nbShares = null;
+
+    #[ORM\Column]
+    #[Groups(['resourceStats:read'])]
+    private ?int $nbComments = null;
 
     public function getId(): ?int
     {
@@ -109,6 +123,18 @@ class ResourceStats
     public function setNbShares(int $nbShares): self
     {
         $this->nbShares = $nbShares;
+
+        return $this;
+    }
+
+    public function getNbComments(): ?int
+    {
+        return $this->nbComments;
+    }
+
+    public function setNbComments(int $nbComments): self
+    {
+        $this->nbComments = $nbComments;
 
         return $this;
     }

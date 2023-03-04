@@ -3,6 +3,7 @@
 namespace App\Controller\user;
 
 use App\Entity\Resource;
+use App\Entity\ResourceStats;
 use App\Repository\ResourceRepository;
 use App\Service\ResourceService;
 use App\Service\SerializerService;
@@ -253,12 +254,37 @@ class ResourceController extends AbstractController
     {
         // check access
         $this->resourceService->checkUpdateAccess($resource, $this->getUser());
+        // check generate stats
+        if (!$this->resourceService->checkGenerateStats($resource)) {
+            // return
+            return new JsonResponse(
+                ['message' => $this->translator->trans('message.resource.stats_generated_error')],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
         // generate stats
         $this->resourceService->generateStats($resource);
         // return
         return new JsonResponse(
             ['message' => $this->translator->trans('message.resource.stats_generated_success')],
             Response::HTTP_OK
+        );
+    }
+
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/{id}/stats', name: 'api_resources_stats', methods: ['GET'])]
+    public function stats(Resource $resource): JsonResponse
+    {
+        // check access
+        $this->resourceService->checkUpdateAccess($resource, $this->getUser());
+        // get stats
+        $stats = $this->serializerService->serialize(ResourceStats::GROUP_GET, $resource->getStats());
+        // return
+        return new JsonResponse(
+            $this->serializerService->getSerializedData($stats),
+            Response::HTTP_OK,
+            [],
+            true
         );
     }
 
