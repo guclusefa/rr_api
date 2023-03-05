@@ -2,27 +2,33 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\ResourceShareTimeStampTrait;
 use App\Repository\ResourceShareRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ResourceShareRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ResourceShare
 {
-    use TimeStampTrait;
+    const GROUP_GET = ['resourceShare:read', 'resource:identifier', 'user:identifier'];
+
+    use ResourceShareTimeStampTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['resourceShare:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'shares')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceShare:read'])]
     private ?Resource $resource = null;
 
     #[ORM\ManyToOne(inversedBy: 'shares')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceShare:read'])]
     private ?User $user = null;
 
     public function getId(): ?int

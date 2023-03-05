@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ResourceConsult;
+use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,7 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ResourceConsultRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorService $paginatorService)
     {
         parent::__construct($registry, ResourceConsult::class);
     }
@@ -37,6 +38,24 @@ class ResourceConsultRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function advanceSearch($resource, $page, $limit
+    ): array
+    {
+        $qb = $this->createQueryBuilder('rC');
+        if ($resource) {
+            $qb->andWhere('rC.resource = :resource')
+                ->setParameter('resource', $resource);
+        }
+
+        $paginator = $this->paginatorService->paginate($qb, $page, $limit);
+        $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
+
+        return [
+            'data' => $qb->getQuery()->getResult(),
+            'meta' => $metadata,
+        ];
     }
 
 //    /**

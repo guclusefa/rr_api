@@ -2,27 +2,33 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\ResourceSaveTimeStampTrait;
 use App\Repository\ResourceSaveRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ResourceSaveRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ResourceSave
 {
-    use TimeStampTrait;
+    const GROUP_GET = ['resourceSave:read', 'resource:identifier', 'user:identifier'];
+
+    use ResourceSaveTimeStampTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['resourceSave:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'saves')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceSave:read'])]
     private ?Resource $resource = null;
 
     #[ORM\ManyToOne(inversedBy: 'saves')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceSave:read'])]
     private ?User $user = null;
 
     public function getId(): ?int

@@ -2,26 +2,33 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\ResourceConsultTimeStampTrait;
 use App\Repository\ResourceConsultRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ResourceConsultRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ResourceConsult
 {
-    use TimeStampTrait;
+    const GROUP_GET = ['resourceConsult:read', 'resource:identifier', 'user:identifier'];
+
+    use ResourceConsultTimeStampTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['resourceConsult:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'consults')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceConsult:read'])]
     private ?Resource $resource = null;
 
     #[ORM\ManyToOne(inversedBy: 'consults')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceConsult:read'])]
     private ?User $user = null;
 
     public function getId(): ?int
