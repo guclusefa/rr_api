@@ -41,6 +41,7 @@ class ResourceController extends AbstractController
         $likedBy = $request->query->get('likedBy');
         $exploitedBy = $request->query->get('exploitedBy');
         $savedBy = $request->query->get('savedBy');
+        $sharedTo = $request->query->get('sharedTo');
         $isPublished = $request->query->get('isPublished', true);
 
         // array of criterias
@@ -56,7 +57,7 @@ class ResourceController extends AbstractController
         // get, format serialize & return
         $resources = $this->resourceRepository->advanceSearch($this->getUser(),
             $search, $verified, $visibility,
-            $sharedBy, $likedBy, $exploitedBy, $savedBy, $isPublished,
+            $sharedBy, $likedBy, $exploitedBy, $savedBy, $sharedTo, $isPublished,
             $author, $relation, $category,
             $order, $direction, $page, $limit
         );

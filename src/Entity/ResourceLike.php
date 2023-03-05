@@ -2,27 +2,33 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\ResourceLikeTimeStampTrait;
 use App\Repository\ResourceLikeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ResourceLikeRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ResourceLike
 {
-    use TimeStampTrait;
+    const GROUP_GET = ['resourceLike:read', 'resource:identifier', 'user:identifier'];
+
+    use ResourceLikeTimeStampTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['resourceLike:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'likes')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceLike:read'])]
     private ?Resource $resource = null;
 
     #[ORM\ManyToOne(inversedBy: 'likes')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['resourceLike:read'])]
     private ?User $user = null;
 
     public function getId(): ?int

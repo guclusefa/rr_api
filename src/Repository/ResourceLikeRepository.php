@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ResourceLike;
+use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,7 +17,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ResourceLikeRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct
+    (
+        ManagerRegistry $registry,
+        private readonly PaginatorService $paginatorService,
+    )
     {
         parent::__construct($registry, ResourceLike::class);
     }
@@ -38,6 +43,25 @@ class ResourceLikeRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function advanceSearch($resource, $page, $limit
+    ): array
+    {
+        $qb = $this->createQueryBuilder('rL');
+        if ($resource) {
+            $qb->andWhere('rL.resource = :resource')
+                ->setParameter('resource', $resource);
+        }
+
+        $paginator = $this->paginatorService->paginate($qb, $page, $limit);
+        $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
+
+        return [
+            'data' => $qb->getQuery()->getResult(),
+            'meta' => $metadata,
+        ];
+    }
+
 
 //    /**
 //     * @return ResourceLike[] Returns an array of ResourceLike objects

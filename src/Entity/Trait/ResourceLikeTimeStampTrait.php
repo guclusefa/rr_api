@@ -4,13 +4,15 @@ namespace App\Entity\Trait;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
-trait TimeStampTrait {
+trait ResourceLikeTimeStampTrait {
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-
+    #[Groups(['resourceLike:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['resourceLike:read'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     public function getCreatedAt(): ?\DateTimeImmutable

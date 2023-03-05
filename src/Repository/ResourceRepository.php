@@ -203,6 +203,15 @@ class ResourceRepository extends ServiceEntityRepository
         }
     }
 
+    public function findBySharedTo($qb, $sharedTo)
+    {
+        if ($sharedTo) {
+            $qb->join('r.sharesTo', 's')
+                ->andWhere('s.user = :sharedTo')
+                ->setParameter('sharedTo', $sharedTo);
+        }
+    }
+
     public function findByIsPublished($qb, $isPublished)
     {
         if ($isPublished) {
@@ -328,7 +337,7 @@ class ResourceRepository extends ServiceEntityRepository
     public function advanceSearch(
         $user,
         $search, $verified, $visibility,
-        $sharedBy, $likedBy, $exploitedBy, $savedBy, $isPublished,
+        $sharedBy, $likedBy, $exploitedBy, $savedBy, $shareToMe, $isPublished,
         $authors, $relations, $categories,
         $order, $direction, $page, $limit
     ): array
@@ -348,6 +357,8 @@ class ResourceRepository extends ServiceEntityRepository
         $this->findByLikedBy($qb, $likedBy);
         $this->findByExploitedBy($qb, $exploitedBy);
         $this->findBySavedBy($qb, $savedBy);
+        $this->findBySharedTo($qb, $shareToMe);
+
         $this->findByIsPublished($qb, $isPublished);
 
         $this->findByAuthors($qb, $authors);
