@@ -49,6 +49,9 @@ class ResourceSaveRepository extends ServiceEntityRepository
                 ->setParameter('resource', $resource);
         }
 
+        // order by createdAt most recent first
+        $qb->orderBy('rS.createdAt', 'DESC');
+
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);
         $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
 

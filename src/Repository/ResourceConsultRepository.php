@@ -49,6 +49,9 @@ class ResourceConsultRepository extends ServiceEntityRepository
                 ->setParameter('resource', $resource);
         }
 
+        // order by createdAt most recent first
+        $qb->orderBy('rC.createdAt', 'DESC');
+
         $paginator = $this->paginatorService->paginate($qb, $page, $limit);
         $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
 
