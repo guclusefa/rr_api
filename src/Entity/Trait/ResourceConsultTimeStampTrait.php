@@ -8,11 +8,11 @@ use JMS\Serializer\Annotation\Groups;
 
 trait ResourceConsultTimeStampTrait {
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['resourceConsut:read'])]
+    #[Groups(['resourceConsult:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['resourceConsut:read'])]
+    #[Groups(['resourceConsult:read'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     public function getCreatedAt(): ?\DateTimeImmutable

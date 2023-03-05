@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation\Groups;
 
 trait ResourceSharedToTimeStampTrait {
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['resourcesharedTo:read'])]
+    #[Groups(['resourceSharedTo:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
