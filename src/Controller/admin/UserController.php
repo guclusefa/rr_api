@@ -47,6 +47,7 @@ class UserController extends AbstractController
         );
     }
 
+
     #[Route('/{id}/ban', name: 'api_admin_users_ban', methods: ['POST'])]
     public function ban(Request $request, User $user): JsonResponse
     {

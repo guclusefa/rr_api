@@ -121,3 +121,6 @@ message:
     created_success: "This relation has been created with success."
     updated_success: "This relation has been updated with success."
     deleted_success: "This relation has been deleted with success."
+  userban:
+    updated_success: "This ban has been updated with success."
+    deleted_success: "This ban has been deleted with success."

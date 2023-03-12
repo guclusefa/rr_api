@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use App\Entity\UserBan;
+use App\Service\PaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,7 +18,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class UserBanRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct
+    (
+        ManagerRegistry $registry,
+        private readonly PaginatorService $paginatorService
+    )
     {
         parent::__construct($registry, UserBan::class);
     }
@@ -38,6 +43,37 @@ class UserBanRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findBySearch($qb, $search)
+    {
+        if ($search) {
+            // trime the spaces at the beginning and the end of the string
+            $search = trim($search);
+            $qb->andWhere('ub.reason LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+    }
+
+    public function orderBy($qb, $order, $direction)
+    {
+        $qb->orderBy('ub.' . $order, $direction);
+    }
+
+    public function advanceSearch($search, $order, $direction, $page, $limit): array
+    {
+        $qb = $this->createQueryBuilder('ub');
+
+        $this->findBySearch($qb, $search);
+
+        $this->orderBy($qb, $order, $direction);
+        $paginator = $this->paginatorService->paginate($qb, $page, $limit);
+        $metadata = $this->paginatorService->getMetadata($paginator, $page, $limit);
+
+        return [
+            'data' => $qb->getQuery()->getResult(),
+            'meta' => $metadata,
+        ];
     }
 
 //    /**

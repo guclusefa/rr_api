@@ -121,3 +121,6 @@ message:
     created_success: "Cette relation a été ajoutée avec succès."
     updated_success: "Cette relation a été mise à jour avec succès."
     deleted_success: "Cette relation a été supprimée avec succès."
+  userban:
+    updated_success: "Ce bannissement a été mis à jour avec succès."
+    deleted_success: "Ce bannissement a été supprimé avec succès."

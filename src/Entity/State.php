@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\StateTimeStampTrait;
 use App\Repository\StateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class State
 {
-    use TimeStampTrait;
+    use StateTimeStampTrait;
 
     const GROUP_GET = ['state:read'];
     const GROUP_ITEM = ['state:read', 'state:item'];

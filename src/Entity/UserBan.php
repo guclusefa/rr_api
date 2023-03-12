@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\UserTimeStampTrait;
+use App\Entity\Trait\UserBanTimeStampTrait;
 use App\Repository\UserBanRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,10 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class UserBan
 {
-    use UserTimeStampTrait;
+    use UserBanTimeStampTrait;
 
-    const GROUP_READ = ['user_ban:read'];
-    const GROUP_ITEM = ['user_ban:read','user_ban:item'];
+    const GROUP_GET = ['user_ban:read', 'user:identifier'];
+    const GROUP_ITEM = ['user_ban:read','user_ban:item', 'user:identifier'];
     const GROUP_WRITE = ['user_ban:write'];
 
     #[ORM\Id]
