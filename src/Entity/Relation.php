@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\RelationTimeStampTrait;
 use App\Repository\RelationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Relation
 {
-    use TimeStampTrait;
+    use RelationTimeStampTrait;
 
     const GROUP_GET = ['relation:read'];
     const GROUP_ITEM = ['relation:read', 'relation:item'];
@@ -28,7 +28,7 @@ class Relation
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Groups(['relation:read'])]
+    #[Groups(['relation:read', 'relation:write'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'relation', targetEntity: Resource::class)]

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\TimeStampTrait;
+use App\Entity\Trait\CategoryTimeStampTrait;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Category
 {
-    use TimeStampTrait;
+    use CategoryTimeStampTrait;
 
     const GROUP_GET = ['category:read'];
     const GROUP_ITEM = ['category:read', 'category:item'];

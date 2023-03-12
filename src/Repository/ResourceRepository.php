@@ -153,7 +153,7 @@ class ResourceRepository extends ServiceEntityRepository
 
     public function findByVerified($qb, $verified)
     {
-        if ($verified) {
+        if ($verified || $verified === '0') {
             $qb->andWhere('r.isVerified = :verified')
                 ->setParameter('verified', $verified);
         }
