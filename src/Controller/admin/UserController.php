@@ -53,7 +53,7 @@ class UserController extends AbstractController
     {
         // deserialize check, & comment
         $userBan = $this->serializerService->deserialize(UserBan::GROUP_WRITE ,$request, UserBan::class);
-        $this->userService->ban($user, $userBan);
+        $this->userService->ban($this->getUser(), $user, $userBan);
         // return
         return new JsonResponse(
             ['message' => $this->translator->trans('message.user.ban_success')],

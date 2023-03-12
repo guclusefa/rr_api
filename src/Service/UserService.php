@@ -28,6 +28,10 @@ class UserService
 
     public function checkAccess($user): void
     {
+        // if user is ROLE_ADMIN, allow access
+        if ($user->getRoles()[0] === 'ROLE_MODERATOR' || $user->getRoles()[0] === 'ROLE_ADMIN' || $user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+            return;
+        }
         if (!$this->userRepository->isAccesibleToMe($user)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.user.access_denied'));
         }
@@ -35,6 +39,10 @@ class UserService
 
     public function checkUpdateAccess($user, $me): void
     {
+        // if user is ROLE_ADMIN, allow access
+        if ($user->getRoles()[0] === 'ROLE_MODERATOR' || $user->getRoles()[0] === 'ROLE_ADMIN' || $user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+            return;
+        }
         if ($user !== $me) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.user.access_update_denied'));
         }
@@ -171,7 +179,7 @@ class UserService
         $this->userRepository->save($user, true);
     }
 
-    public function ban($user, $userBan): void
+    public function ban($me, $user, $userBan): void
     {
         if ($this->userRepository->isBanned($user)){
             throw new HttpException(
@@ -181,7 +189,7 @@ class UserService
         }
         // date, author and user
         $userBan->setUser($user);
-        $userBan->setAuthor($user);
+        $userBan->setAuthor($me);
         // check for errors
         $this->serializerService->checkErrors($userBan);
         // save
