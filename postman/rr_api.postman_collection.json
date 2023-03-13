@@ -1,0 +1,3009 @@
+{
+	"info": {
+		"_postman_id": "57c85a1a-3186-499d-ac5e-075ca1550910",
+		"name": "rr_api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24751847"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "security",
+					"item": [
+						{
+							"name": "login",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"admin@gmail.com\",\r\n    \"password\": \"password\",\r\n    \"remember_me\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "register",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "bearer test",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Accept-Language",
+										"value": "fr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"sefabcilefsfdfsfeee\",\r\n    \"email\": \"fksbhjdfsdhjk@gmail.com\",\r\n    \"password\": \"password\",\r\n    \"firstName\": \"Sefa\",\r\n    \"lastName\": \"GUCLU\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/register",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "forgot password",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"admin@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/forgot-password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"forgot-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "reset password",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\": \"sefaleplusfort\",\r\n    \"passsword\": \"test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6MzIsImlhdCI6MTY3NjgxODM5MSwiZXhwIjoxNjc2ODIxOTkxfQ.LSUXzzj9dBS0As18wUMBmhZyv1juvwhBdbMlW8bHQXA",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"reset-password",
+										"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6MzIsImlhdCI6MTY3NjgxODM5MSwiZXhwIjoxNjc2ODIxOTkxfQ.LSUXzzj9dBS0As18wUMBmhZyv1juvwhBdbMlW8bHQXA"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "refresh token",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"remember_me\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/refresh-token",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"refresh-token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check token",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/check-token/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjc2NzM4MTMwLCJleHAiOjE2NzY3NDE3MzB9.IoI42otf9ztYNpQf2y52QoEXdweSvGSK48huaJGHg2E",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"check-token",
+										"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjc2NzM4MTMwLCJleHAiOjE2NzY3NDE3MzB9.IoI42otf9ztYNpQf2y52QoEXdweSvGSK48huaJGHg2E"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "users",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/users?certified=0",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "ID48TEST",
+											"disabled": true
+										},
+										{
+											"key": "certified",
+											"value": "0"
+										},
+										{
+											"key": "role[]",
+											"value": "ROLE_USER",
+											"disabled": true
+										},
+										{
+											"key": "role[]",
+											"value": "ROLE_SUPER_ADMIN",
+											"disabled": true
+										},
+										{
+											"key": "state[]",
+											"value": "302",
+											"disabled": true
+										},
+										{
+											"key": "state[]",
+											"value": "307",
+											"disabled": true
+										},
+										{
+											"key": "gender[]",
+											"value": "O",
+											"disabled": true
+										},
+										{
+											"key": "gender[]",
+											"value": "M",
+											"disabled": true
+										},
+										{
+											"key": "order",
+											"value": "createdAt",
+											"disabled": true
+										},
+										{
+											"key": "direction",
+											"value": "DESC",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "10",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "50",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "me",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/users/me",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"me"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "id",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"monusername\",\r\n    \"firstName\": \"sefa\",\r\n    \"lastName\": \"sefa\",\r\n    \"gender\": \"O\",\r\n    \"birthDate\": \"2002-12-24T20:48:25+00:00\",\r\n    \"bio\": \"ma bio\",\r\n    \"state\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update photo",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "/C:/Users/sefaa/OneDrive/Images/Captures d’écran/2020-02-21 (1).png"
+										},
+										{
+											"key": "photo",
+											"type": "file",
+											"src": [],
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/users/1/photo",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1",
+										"photo"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update password",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"old\": \"password\",\r\n    \"password\": \"password\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/318/password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"318",
+										"password"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update email",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"old\": \"password\",\r\n    \"email\": \"id2dqsdqd8@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/1/email",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1",
+										"email"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirm email",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/1/confirm-email",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1",
+										"confirm-email"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjc3MzQ0MzA1LCJleHAiOjE2NzczNDc5MDV9.el-YnvpUbwyRvVuW5yzm09g4UlystG3izHkY_BaKUEM",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"verify-email",
+										"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjc3MzQ0MzA1LCJleHAiOjE2NzczNDc5MDV9.el-YnvpUbwyRvVuW5yzm09g4UlystG3izHkY_BaKUEM"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/users/2",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"2"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "resources",
+					"item": [
+						{
+							"name": "resources",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImN0eSI6IkpXVCJ9.eyJpYXQiOjE2NzI0ODE5NDYsImV4cCI6MTY3MjU4MTk0NSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImVtYWlsIjoic2VmYWFAZ21haWwuY29tIiwidXNlcm5hbWUiOiJzZWZhYTEyMyIsImlzVmVyaWZpZWQiOmZhbHNlLCJpc0FjdGl2ZSI6dHJ1ZSwiaXNCYW5uZWQiOmZhbHNlfQ.PWW3S-TeZ1Ok7aOt8ITCYdvReL5pB8-xqffmHfP9t6GrclMNATG9Mo1FoOcB4UoSizrMGxXJlgbUY2nAYZzkzvs595yEA1lhYch6r7lwu2FPcB-k3E5fa2lGdwYaiXdw_g65l_mHphTTDi01kvshIoi1A_vy2iPGj4pS1uzQMYNvtbJwkJgBTnldetFFPzH-IbLDZsV9Cv5e39Pjbaj0d9qWTMV_xNahwWHKJhVEZf-5Kt9lXACxJxkPXXY8aCc3gviInTWcyrOGwVaQQZSNw3BFCFFOQ8iV0h7iErpLbNBJTlPYQ7YKDfzkS6TmFbh9syav7eK_sc7aeCiaG5MjPTKuvwV81vci7TkKWloIzLVH9bN7D_HVONYkmdAhqRHYIrTphwOJ7LIvGLjiL7ma20TphiZv-cG9II5qY51xIvk6Aqe8JDvqUmT51anDQP9D6fYmrkaKLe_zz2nc-PSTdrvz9B7jyrlXnzX3A6Nbw2FyRwpa3g6RRWtsQkqiZNa7xU58w6BfbJALvnZBXJP5oIHfOknBxJf-JdXH9f-CSS3x6juPd_NtTW75KDEc3WIBs33VLFeuJ3y4VFsz9sMmybfFwz-iFKW-VrmavJM4Qjgfbq2UrID3Z68Wurlkrdjb138YsTN7Gb97c0CA-kAaJTe_ECRvXVJMi2c1eLHdCRM",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/resources?sharedTo=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "Contenu 1",
+											"disabled": true
+										},
+										{
+											"key": "verified",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "visibility",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "author[]",
+											"value": "14",
+											"disabled": true
+										},
+										{
+											"key": "author[]",
+											"value": "323",
+											"disabled": true
+										},
+										{
+											"key": "relation[]",
+											"value": "247",
+											"disabled": true
+										},
+										{
+											"key": "relation[]",
+											"value": "244",
+											"disabled": true
+										},
+										{
+											"key": "category[]",
+											"value": "245",
+											"disabled": true
+										},
+										{
+											"key": "category[]",
+											"value": "254",
+											"disabled": true
+										},
+										{
+											"key": "order",
+											"value": "createdAt",
+											"disabled": true
+										},
+										{
+											"key": "direction",
+											"value": "DESC",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "5",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "sharedBy",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "likedBy",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "exploitedBy",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "savedBy",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sharedTo",
+											"value": "1"
+										},
+										{
+											"key": "isPublished",
+											"value": "false",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/resources/70",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"70"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"tittgjgjre\",\r\n    \"content\": \"mon content\",\r\n    \"link\": \"https://twitter.com/home\",\r\n    \"visibility\": 1,\r\n    \"isPublished\": 1,\r\n    \"relation\": 241,\r\n    \"categories\": [\r\n        241,\r\n        242\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/resources",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"tittreeeazeaee\",\r\n    \"content\": \"mon condqdqdsqdtent\",\r\n    \"link\": \"https://twitter.com/home\",\r\n    \"visibility\": 1,\r\n    \"isPublished\": 1,\r\n    \"relation\": 1,\r\n    \"categories\": [\r\n        1\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/resources/42",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"42"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update media",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ auth_token }}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "media",
+											"type": "file",
+											"src": "/C:/Users/sefaa/Downloads/that 1 unemployed friend.mp4"
+										},
+										{
+											"key": "media",
+											"type": "file",
+											"src": [],
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/resources/63/media",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"63",
+										"media"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "generatestats",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/59/generatestats",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"59",
+										"generatestats"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "shareto",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [\r\n         { \"id\": 317 },\r\n         { \"id\" : 318 }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/resources/48/shareto",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"48",
+										"shareto"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "shareto delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [\r\n         { \"id\": 1 },\r\n         { \"id\" : 1 }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/resources/48/shareto",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"48",
+										"shareto"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "stats",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/59/stats",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"59",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"1"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "resource stats",
+					"item": [
+						{
+							"name": "shares",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shares?resource=15",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shares"
+									],
+									"query": [
+										{
+											"key": "resource",
+											"value": "15"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "likes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/likes?resource=15",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"likes"
+									],
+									"query": [
+										{
+											"key": "resource",
+											"value": "15"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "exploits",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/exploits?resource=15",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"exploits"
+									],
+									"query": [
+										{
+											"key": "resource",
+											"value": "15"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "saves",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/saves",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"saves"
+									],
+									"query": [
+										{
+											"key": "resource",
+											"value": "15",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "consults",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/consults",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"consults"
+									],
+									"query": [
+										{
+											"key": "resource",
+											"value": "59",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "sharesto",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/sharesto",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"sharesto"
+									],
+									"query": [
+										{
+											"key": "resource",
+											"value": "59",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "resources action",
+					"item": [
+						{
+							"name": "is liked",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/resources/60/like/317",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"like",
+										"317"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "like",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/60/like",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"like"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "is shared",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/resources/60/share/317",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"share",
+										"317"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "share",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/60/share",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"share"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "is exploited",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/resources/60/exploit/317",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"exploit",
+										"317"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "exploit",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/60/exploit",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"exploit"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "is saved",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/resources/60/save/317",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"save",
+										"317"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "save",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/60/save",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"save"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "is consulted",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/resources/60/consult/317",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"consult",
+										"317"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "consult",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/60/consult",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"60",
+										"consult"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "is shared to",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/resources/1/shareto/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"resources",
+										"1",
+										"shareto",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "comments",
+					"item": [
+						{
+							"name": "comments",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImN0eSI6IkpXVCJ9.eyJpYXQiOjE2NzI0ODE5NDYsImV4cCI6MTY3MjU4MTk0NSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImVtYWlsIjoic2VmYWFAZ21haWwuY29tIiwidXNlcm5hbWUiOiJzZWZhYTEyMyIsImlzVmVyaWZpZWQiOmZhbHNlLCJpc0FjdGl2ZSI6dHJ1ZSwiaXNCYW5uZWQiOmZhbHNlfQ.PWW3S-TeZ1Ok7aOt8ITCYdvReL5pB8-xqffmHfP9t6GrclMNATG9Mo1FoOcB4UoSizrMGxXJlgbUY2nAYZzkzvs595yEA1lhYch6r7lwu2FPcB-k3E5fa2lGdwYaiXdw_g65l_mHphTTDi01kvshIoi1A_vy2iPGj4pS1uzQMYNvtbJwkJgBTnldetFFPzH-IbLDZsV9Cv5e39Pjbaj0d9qWTMV_xNahwWHKJhVEZf-5Kt9lXACxJxkPXXY8aCc3gviInTWcyrOGwVaQQZSNw3BFCFFOQ8iV0h7iErpLbNBJTlPYQ7YKDfzkS6TmFbh9syav7eK_sc7aeCiaG5MjPTKuvwV81vci7TkKWloIzLVH9bN7D_HVONYkmdAhqRHYIrTphwOJ7LIvGLjiL7ma20TphiZv-cG9II5qY51xIvk6Aqe8JDvqUmT51anDQP9D6fYmrkaKLe_zz2nc-PSTdrvz9B7jyrlXnzX3A6Nbw2FyRwpa3g6RRWtsQkqiZNa7xU58w6BfbJALvnZBXJP5oIHfOknBxJf-JdXH9f-CSS3x6juPd_NtTW75KDEc3WIBs33VLFeuJ3y4VFsz9sMmybfFwz-iFKW-VrmavJM4Qjgfbq2UrID3Z68Wurlkrdjb138YsTN7Gb97c0CA-kAaJTe_ECRvXVJMi2c1eLHdCRM",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/comments?isnotreply=true",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"comments"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "commentaire 0",
+											"disabled": true
+										},
+										{
+											"key": "author[]",
+											"value": "14",
+											"disabled": true
+										},
+										{
+											"key": "author[]",
+											"value": "325",
+											"disabled": true
+										},
+										{
+											"key": "resource[]",
+											"value": "64",
+											"disabled": true
+										},
+										{
+											"key": "resource[]",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "order",
+											"value": "createdAt",
+											"disabled": true
+										},
+										{
+											"key": "direction",
+											"value": "DESC",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "10",
+											"disabled": true
+										},
+										{
+											"key": "replyto[]",
+											"value": "70",
+											"disabled": true
+										},
+										{
+											"key": "isnotreply",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "id",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/comments/104",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"comments",
+										"104"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"mon content\",\r\n    \"resource\": 6\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/comments",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"comments"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "reply",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"mon content\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/comments/4/reply",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"comments",
+										"4",
+										"reply"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/comments/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"comments",
+										"1"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "states",
+					"item": [
+						{
+							"name": "states",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/states?search=tempora",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"states"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "tempora"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/states/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"states",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "categories",
+					"item": [
+						{
+							"name": "categories",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/categories?page=2&order=createdAt",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"categories"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										},
+										{
+											"key": "order",
+											"value": "createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/categories/8",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"categories",
+										"8"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "relations",
+					"item": [
+						{
+							"name": "relations",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/relations",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"relations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/relations/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"relations",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "moderator",
+			"item": [
+				{
+					"name": "resource",
+					"item": [
+						{
+							"name": "verify",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/moderator/resources/1/verify",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"moderator",
+										"resources",
+										"1",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "comments",
+					"item": [
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"le nouveau content\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/moderator/comments/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"moderator",
+										"comments",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "states",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"15\",\r\n    \"name\": \"fontaine\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/states",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"states"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"15\",\r\n    \"name\": \"DQSDSQ\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/states/323",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"states",
+										"323"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/states/301",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"states",
+										"301"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "categories",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"dqsdq\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/categories",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"testbkjzrfhkjhskjfhsdkfjsdhfksjhfk\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/categories/244",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"categories",
+										"244"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/categories/241",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"categories",
+										"241"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "relations",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"dqsdq\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/relations",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"relations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"testbkjzrfhkjhskjfhsdkfjsdhfksjhfk\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/relations/244",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"relations",
+										"244"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/relations/243",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"relations",
+										"243"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "certify",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/users/1/certify",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"1",
+										"certify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ban",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"reason\": \"la raison\",\r\n    \"endDate\": \"2024-12-24T20:48:25+00:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/users/3/ban",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"3",
+										"ban"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upgrade user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/users/2/upgrade/0",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"2",
+										"upgrade",
+										"0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upgrade moderator",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/users/2/upgrade/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"2",
+										"upgrade",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upgrade admin",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/users/2/upgrade/2",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"2",
+										"upgrade",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upgrade super admin",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/users/4/upgrade/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"4",
+										"upgrade",
+										"3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "bans",
+					"item": [
+						{
+							"name": "bans",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/bans",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"bans"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/bans/10",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"bans",
+										"10"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"reason\": \"la nouvelle raisonssss\",\r\n    \"endDate\": \"2028-12-24T20:48:25+00:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/bans/10",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"bans",
+										"10"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/admin/bans/10",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"bans",
+										"10"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:8000/api/",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImN0eSI6IkpXVCJ9.eyJpYXQiOjE2NzM3NzU0OTgsImV4cCI6MTY3NjM2NzQ5Nywicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlkIjozMTcsInVzZXJuYW1lIjoiYWRtaW4iLCJpc1ZlcmlmaWVkIjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsImlzQmFubmVkIjpmYWxzZX0.Hi1tZ2An6KFjnKTUYTakqfTDXx5cTxFSWPRq-oGMgU4kqJ1fiNg572wpoBeumoCjjygicnt6gjtOhM1ezTsLiZp4Kc7RoAcrsL1lA-SQtpq7EWgWA2mjkiBULjcvWZ029Px52fnBSROGbM6g27PhoCuF1Cg5TZ-jMuIcFRROaOCI_hVY4QF1JAXsnPcn_5ek81BstPjmb0VVYa7AbcpA76eEmB7osgTSl-Yw9Uzf_XvtzgOvyXkd1LvM7xjephHLW9Y0z7o24PEWLDEt0hmDjg0mb6A6yoF3q8yOeuzUINO1zI52R3mb8_lkbn_ov9q7Rcb_FnHruI0g7claZRg_I-ENZJSjjMKZwahn0j36zvDPbOhTRsHpgD0U7a6EOp6YXQXrdB9pDV81XVSXM9eFRjys-hZtnoybXcwpNVKqXWRneaUX2TojxwOxDBhhLWDIvQiHvrNwRysoe4tJ53irwmi7_qI3sWDfs8kNdPUchCHMORWGcMEWcXfNd9ZOeLqS87N1vggs66qb5AKrZFX2H8-y5AtcWBEe0V7w2CUBcZBoPFTX5ZWs2S3Oj1G1MEWh-WSNAuIMZ14XFG21JJ426YV3UPjek2syRnSDJudoLOPzTMQ_k8BixMn9ZZxi85gegWXVifeBqPg6auR87OXrMJLVMcAQjofUd7xT6HhXZ5A"
+		}
+	]
+}
