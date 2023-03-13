@@ -97,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isCertified = false;
 
     #[ORM\Column]
-    #[Groups(['user:item'])]
+    #[Groups(['user:read'])]
     private ?bool $isVerified = false;
 
     #[ORM\ManyToOne(targetEntity: State::class, inversedBy: 'users')]
