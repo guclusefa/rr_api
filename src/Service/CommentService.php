@@ -24,8 +24,10 @@ class CommentService
     public function checkAccess($resource, $me): void
     {
         // if user is ROLE_ADMIN, allow access
-        if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
-            return;
+        if ($me) {
+            if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                return;
+            }
         }
         if (!$this->resourceRepository->isAccesibleToMe($resource, $me)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.comment.access_denied'));
@@ -35,8 +37,10 @@ class CommentService
     public function checkUpdateAccess($comment, $me): void
     {
         // if user is ROLE_ADMIN, allow access
-        if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
-            return;
+        if ($me) {
+            if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                return;
+            }
         }
         if ($comment->getAuthor() !== $me) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.comment.access_update_denied'));

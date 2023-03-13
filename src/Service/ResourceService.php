@@ -41,9 +41,12 @@ class ResourceService
     public function checkAccess($resource, $me): void
     {
         // if user is ROLE_ADMIN, allow access
-        if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
-            return;
+        if ($me) {
+            if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                return;
+            }
         }
+
         if (!$this->resourceRepository->isAccesibleToMe($resource, $me)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.resource.access_denied'));
         }
@@ -52,8 +55,10 @@ class ResourceService
     public function checkCreateAccess($me): void
     {
         // if user is ROLE_ADMIN, allow access
-        if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
-            return;
+        if ($me) {
+            if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                return;
+            }
         }
         if (!$me->isIsVerified()) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.resource.access_create_denied'));
@@ -63,8 +68,10 @@ class ResourceService
     public function checkUpdateAccess($resource, $me): void
     {
         // if user is ROLE_ADMIN, allow access
-        if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
-            return;
+        if ($me) {
+            if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                return;
+            }
         }
         if ($resource->getAuthor() !== $me || !$me->isIsVerified()) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.resource.access_update_denied'));

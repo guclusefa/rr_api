@@ -52,6 +52,15 @@ class ResourceRepository extends ServiceEntityRepository
         if ($this->userRepository->isBanned($resource->getAuthor())) {
             return false;
         }
+        // if useer is null and resource visibility is 1
+        if (!$user && $resource->getVisibility() == 1) {
+            return true;
+        } else {
+            // if user is null and resource visibility is not 1
+            if (!$user) {
+                return false;
+            }
+        }
         // if resource is suspended or not published
         if ($resource->isIsSuspended() || !$resource->isIsPublished()) {
             if ($user) {

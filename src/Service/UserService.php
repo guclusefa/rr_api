@@ -29,8 +29,10 @@ class UserService
     public function checkAccess($user): void
     {
         // if user is ROLE_ADMIN, allow access
-        if ($user->getRoles()[0] === 'ROLE_MODERATOR' || $user->getRoles()[0] === 'ROLE_ADMIN' || $user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
-            return;
+        if ($user) {
+            if ($user->getRoles()[0] === 'ROLE_MODERATOR' || $user->getRoles()[0] === 'ROLE_ADMIN' || $user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                return;
+            }
         }
         if (!$this->userRepository->isAccesibleToMe($user)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.user.access_denied'));
@@ -40,8 +42,10 @@ class UserService
     public function checkUpdateAccess($user, $me): void
     {
         // if user is ROLE_ADMIN, allow access
-        if ($user->getRoles()[0] === 'ROLE_MODERATOR' || $user->getRoles()[0] === 'ROLE_ADMIN' || $user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
-            return;
+        if ($me) {
+            if ($me->getRoles()[0] === 'ROLE_MODERATOR' || $me->getRoles()[0] === 'ROLE_ADMIN' || $me->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                return;
+            }
         }
         if ($user !== $me) {
             throw new HttpException(Response::HTTP_FORBIDDEN, $this->translator->trans('message.user.access_update_denied'));
