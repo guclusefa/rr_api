@@ -25,7 +25,7 @@ class CommentFixture extends Fixture implements OrderedFixtureInterface
         $users = $this->userRepository->findAll();
         $resources = $this->resourceRepository->findAll();
         // 100 comments
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $comment = new Comment();
             $comment->setResource($resources[array_rand($resources)]);
             $comment->setAuthor($users[array_rand($users)]);

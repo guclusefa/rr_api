@@ -75,7 +75,7 @@ class UserFixture extends Fixture implements OrderedFixtureInterface
 
         // create 100 random users
         $faker = \Faker\Factory::create('fr_FR');
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $user = new User();
             $user->setEmail($faker->email);
             $user->setUsername($faker->userName);

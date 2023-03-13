@@ -29,7 +29,7 @@ class ResourceFixture extends Fixture implements OrderedFixtureInterface
         $relations = $this->relationRepository->findAll();
 
         // 100 resources
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $resource = new Resource();
             $resource->setAuthor($users[array_rand($users)]);
             $resource->setRelation($relations[array_rand($relations)]);
@@ -37,6 +37,7 @@ class ResourceFixture extends Fixture implements OrderedFixtureInterface
             $resource->setContent("Contenu {$i}");
             $resource->setLink("https://www.google.com");
             $resource->setVisibility(1);
+            $resource->setIsVerified(rand(0, 1));
             for($j = 0; $j < $faker->numberBetween(1,5); $j++) {
                 $resource->addCategory($categories[array_rand($categories)]);
             }
