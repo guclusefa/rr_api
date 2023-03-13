@@ -187,6 +187,13 @@ class UserService
                 $this->translator->trans('message.user.already_banned_error')
             );
         }
+        // if user is ROLE_SUPER_ADMIN, cant be banned
+        if ($user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                $this->translator->trans('message.user.super_admin_ban_error')
+            );
+        }
         // date, author and user
         $userBan->setUser($user);
         $userBan->setAuthor($me);
