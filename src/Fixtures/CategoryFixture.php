@@ -11,11 +11,47 @@ class CategoryFixture extends Fixture implements OrderedFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $faker = \Faker\Factory::create('fr_FR');
-        // 20 categories
-        for ($i = 0; $i < 20; $i++) {
+        $categories = [
+            "Action",
+            "Adventure",
+            "Animation",
+            "Biography",
+            "Comedy",
+            "Actualités",
+            "Art et culture",
+            "Beauté et mode",
+            "Cuisine et recettes",
+            "Développement personnel",
+            "Divertissement",
+            "Économie et finance",
+            "Éducation",
+            "Environnement et écologie",
+            "Histoire",
+            "Informatique et technologie",
+            "Jeux et loisirs",
+            "Langues étrangères",
+            "Littérature",
+            "Musique",
+            "Nature et voyage",
+            "Politique",
+            "Psychologie",
+            "Religion et spiritualité",
+            "Santé et bien-être",
+            "Science",
+            "Sport",
+            "Télévision et cinéma",
+            "Vie professionnelle",
+            "Vie quotidienne",
+            "Vie sociale et relations",
+            "Voyages",
+            "Animaux et nature",
+            "Automobiles et transports",
+            "Science-fiction et fantasy"
+        ];
+        // for each category, create a new category object and persist it
+        for ($i = 0; $i < count($categories); $i++) {
             $category = new Category();
-            $category->setName($faker->word);
+            $category->setName($categories[$i]);
             $manager->persist($category);
         }
         $manager->flush();

@@ -25,21 +25,55 @@ class UserFixture extends Fixture implements OrderedFixtureInterface
         $states = $this->stateRepository->findAll();
         $genders = ["M", "F", "O"];
 
+        // create 1 super admin
+        $admin = new User();
+        $admin->setEmail("superadmin@gmail.com");
+        $admin->setUsername("superadmin");
+        $admin->setPassword($this->userPasswordHasher->hashPassword($admin, 'password'));
+        $admin->setFirstName("Sefa");
+        $admin->setLastName("GUCLU");
+        $admin->setGender("M");
+        $admin->setBio("Biographie super admin");
+        $admin->setBirthDate(new \DateTime("2002-11-15"));
+        $admin->setRoles(['ROLE_SUPER_ADMIN']);
+        $admin->setState($states[array_rand($states)]);
+        $admin->setIsVerified(true);
+        $admin->setIsCertified(true);
+        $manager->persist($admin);
+
         // create 1 admin
         $admin = new User();
         $admin->setEmail("admin@gmail.com");
         $admin->setUsername("admin");
         $admin->setPassword($this->userPasswordHasher->hashPassword($admin, 'password'));
-        $admin->setFirstName("admin");
-        $admin->setLastName("admin");
+        $admin->setFirstName("Sefa");
+        $admin->setLastName("GUCLU");
         $admin->setGender("M");
-        $admin->setBio("bio admin");
+        $admin->setBio("Biographie admin");
         $admin->setBirthDate(new \DateTime("2002-11-15"));
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setState($states[array_rand($states)]);
+        $admin->setIsVerified(true);
+        $admin->setIsCertified(true);
         $manager->persist($admin);
 
-        // create 20 random users
+        // create 1 moderator
+        $moderator = new User();
+        $moderator->setEmail("moderator@gmail.com");
+        $moderator->setUsername("moderator");
+        $moderator->setPassword($this->userPasswordHasher->hashPassword($moderator, 'password'));
+        $moderator->setFirstName("Sefa");
+        $moderator->setLastName("GUCLU");
+        $moderator->setGender("M");
+        $moderator->setBio("Biographie moderator");
+        $moderator->setBirthDate(new \DateTime("2002-11-15"));
+        $moderator->setRoles(['ROLE_MODERATOR']);
+        $moderator->setState($states[array_rand($states)]);
+        $moderator->setIsVerified(true);
+        $moderator->setIsCertified(true);
+        $manager->persist($moderator);
+
+        // create 100 random users
         $faker = \Faker\Factory::create('fr_FR');
         for ($i = 0; $i < 20; $i++) {
             $user = new User();
@@ -53,6 +87,10 @@ class UserFixture extends Fixture implements OrderedFixtureInterface
             $user->setBirthDate($faker->dateTimeBetween('-50 years', '-18 years'));
             $user->setState($states[array_rand($states)]);
             $user->setRoles(['ROLE_USER']);
+            $isVerified = rand(0, 1);
+            $user->setIsVerified((bool)$isVerified);
+            $isCertified = rand(0, 1);
+            $user->setIsCertified((bool)$isCertified);
             $manager->persist($user);
         }
         // flush

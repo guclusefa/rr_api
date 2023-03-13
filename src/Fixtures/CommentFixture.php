@@ -24,7 +24,7 @@ class CommentFixture extends Fixture implements OrderedFixtureInterface
         $faker = \Faker\Factory::create('fr_FR');
         $users = $this->userRepository->findAll();
         $resources = $this->resourceRepository->findAll();
-        // 20 comments
+        // 100 comments
         for ($i = 0; $i < 20; $i++) {
             $comment = new Comment();
             $comment->setResource($resources[array_rand($resources)]);

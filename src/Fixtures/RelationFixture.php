@@ -11,11 +11,41 @@ class RelationFixture extends Fixture implements OrderedFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $faker = \Faker\Factory::create('fr_FR');
-        // 20 relations
-        for ($i = 0; $i < 20; $i++) {
+        $relations = [
+            "Amour",
+            "Famille",
+            "Mariage",
+            "Divorce",
+            "Parentalité",
+            "Fratrie",
+            "Amitié",
+            "Relations amoureuses",
+            "Relations familiales",
+            "Relations professionnelles",
+            "Relations interculturelles",
+            "Relations intergénérationnelles",
+            "Relations de couple",
+            "Relations de travail",
+            "Relations sociales",
+            "Relations communautaires",
+            "Relations de voisinage",
+            "Relations de pouvoir",
+            "Coopération",
+            "Collaboration",
+            "Communication",
+            "Confiance",
+            "Respect",
+            "Écoute",
+            "Empathie",
+            "Soutien",
+            "Solidarité",
+            "Épanouissement personnel",
+            "Développement personnel",
+            "Bien-être émotionnel"
+        ];
+        for ($i = 0; $i < count($relations); $i++) {
             $relation = new Relation();
-            $relation->setName($faker->word);
+            $relation->setName($relations[$i]);
             $manager->persist($relation);
         }
         $manager->flush();

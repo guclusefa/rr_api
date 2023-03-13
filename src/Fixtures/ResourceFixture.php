@@ -28,7 +28,7 @@ class ResourceFixture extends Fixture implements OrderedFixtureInterface
         $categories = $this->categoryRepository->findAll();
         $relations = $this->relationRepository->findAll();
 
-        // 20 resources
+        // 100 resources
         for ($i = 0; $i < 20; $i++) {
             $resource = new Resource();
             $resource->setAuthor($users[array_rand($users)]);
