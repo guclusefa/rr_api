@@ -11,7 +11,7 @@ apt-get install -y apache2
 # Set up Apache virtual host
 cat <<EOF > /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
-    ServerName cesi-rr.azurewebsites
+    ServerName cesi-rr.azurewebsites.net
     DocumentRoot /home/site/wwwroot/public
     <Directory /home/site/wwwroot/public>
         AllowOverride All
