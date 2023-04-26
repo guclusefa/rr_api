@@ -16,3 +16,5 @@
 - Run `php bin/console doctrine:fixtures:load`
 ## Run the project
 - Run `symfony serve`
+## Run stats command
+- Run `php bin/console generate-resource-stats`
