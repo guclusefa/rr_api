@@ -18,3 +18,5 @@
 - Run `symfony serve`
 ## Run stats command
 - Run `php bin/console generate-resource-stats`
+## Run tests
+- Run `php bin/phpunit`
